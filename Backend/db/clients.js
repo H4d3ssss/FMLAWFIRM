@@ -41,4 +41,17 @@ const insertClient = async (data) => {
   }
 };
 
-export { fetchClients, insertClient, fetchClient };
+const ifClientExist = async (email) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewClients" WHERE email = $1`,
+      [email]
+    );
+    console.log(response.rowCount);
+    return response.rowCount;
+  } catch (error) {
+    console.log(error.stack);
+  }
+};
+
+export { fetchClients, insertClient, fetchClient, ifClientExist };

@@ -1,5 +1,10 @@
 import express from "express";
-import { fetchClients, insertClient, fetchClient } from "../db/clients.js";
+import {
+  fetchClients,
+  insertClient,
+  fetchClient,
+  ifClientExist,
+} from "../db/clients.js";
 import bcrypt from "bcrypt";
 const router = express.Router();
 
@@ -34,6 +39,12 @@ router.post("/", async (req, res) => {
       !data.dateOfBirth.trim()
     ) {
       return res.status(400).json({ error: "Please fill in all fields" });
+    }
+
+    const clientExist = await ifClientExist(data.email);
+    console.log(clientExist);
+    if (clientExist) {
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     if (data.password !== data.confirmPassword) {

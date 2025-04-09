@@ -1,5 +1,5 @@
 import express from "express";
-import { insertLawyer, fetchLawyers } from "../db/lawyers.js";
+import { insertLawyer, fetchLawyers, ifLawyerExist } from "../db/lawyers.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
@@ -20,6 +20,12 @@ router.post("/", async (req, res) => {
       !data.specialization.trim()
     ) {
       return res.status(400).json({ error: "Please fill in all fields" });
+    }
+
+    const lawyerExists = await ifLawyerExist(data.email);
+    console.log(lawyerExists);
+    if (lawyerExists) {
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     if (data.password !== data.confirmPassword) {

@@ -11,6 +11,19 @@ const fetchLawyers = async () => {
   }
 };
 
+const ifLawyerExist = async (email) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewLawyers" WHERE email = $1`,
+      [email]
+    );
+    console.log(response.rowCount);
+    return response.rowCount;
+  } catch (error) {
+    console.log(error.stack);
+  }
+};
+
 const insertLawyer = async (data) => {
   const query = `WITH new_user AS (
     INSERT INTO users (
@@ -41,4 +54,4 @@ const insertLawyer = async (data) => {
   }
 };
 
-export { insertLawyer, fetchLawyers };
+export { insertLawyer, fetchLawyers, ifLawyerExist };
