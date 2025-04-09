@@ -7,6 +7,25 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
+
+    if (
+      !data.firstName.trim() ||
+      !data.lastName.trim() ||
+      !data.email.trim() ||
+      !data.password.trim() ||
+      !data.confirmPassword.trim() ||
+      !data.address.trim() ||
+      !data.dateOfBirth.trim() ||
+      !data.barNumber.trim() ||
+      !data.specialization.trim()
+    ) {
+      return res.status(400).json({ error: "Please fill in all fields" });
+    }
+
+    if (data.password !== data.confirmPassword) {
+      return res.status(400).json({ error: "Password dont match" });
+    }
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
     const response = await insertLawyer(data);

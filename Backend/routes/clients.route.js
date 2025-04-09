@@ -1,7 +1,6 @@
 import express from "express";
 import { fetchClients, insertClient, fetchClient } from "../db/clients.js";
 import bcrypt from "bcrypt";
-import { fetchLawyers } from "../db/lawyers.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -24,6 +23,23 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
+
+    if (
+      !data.firstName.trim() ||
+      !data.lastName.trim() ||
+      !data.email.trim() ||
+      !data.password.trim() ||
+      !data.confirmPassword.trim() ||
+      !data.address.trim() ||
+      !data.dateOfBirth.trim()
+    ) {
+      return res.status(400).json({ error: "Please fill in all fields" });
+    }
+
+    if (data.password !== data.confirmPassword) {
+      return res.status(400).json({ error: "Password dont match" });
+    }
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
     const response = await insertClient(data);

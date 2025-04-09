@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import lawyerRoutes from "./routes/lawyers.js";
-import clientRoutes from "./routes/clients.js";
+import lawyerRoutes from "./routes/lawyers.route.js";
+import clientRoutes from "./routes/clients.route.js";
 
 dotenv.config();
 
