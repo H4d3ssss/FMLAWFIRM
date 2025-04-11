@@ -1,13 +1,10 @@
 import React from 'react'
-import { Navbar, Calendar, Sidebar, Footer } from './components'
+import { Navbar, Calendar, Sidebar, Footer, LoginForm, RegisterForm } from './components'
 
 const App = () => {
   return (
     <>
-      <Navbar />
-      <Calendar />
-      <Sidebar />
-      <Footer />
+      <RegisterForm />
     </>
   )
 }
