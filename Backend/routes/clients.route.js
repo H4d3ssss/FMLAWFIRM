@@ -4,8 +4,10 @@ import {
   insertClient,
   fetchClient,
   ifClientExist,
+  fetchClientsViaEmail,
 } from "../db/clients.js";
 import bcrypt from "bcrypt";
+import generateToken from "./auth.route.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -56,6 +58,13 @@ router.post("/", async (req, res) => {
     const response = await insertClient(data);
 
     if (response.success) {
+      const response = await fetchClientsViaEmail(data.email);
+      const newUser = {
+        id: response.response[0].client_id,
+        email: response.response[0].email,
+      };
+      console.log(newUser);
+      generateToken(newUser, res);
       res.status(200).json({ message: "successfully added a client" });
     } else {
       res
