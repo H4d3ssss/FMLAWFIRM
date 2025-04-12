@@ -1,25 +1,96 @@
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import express from "express";
+import {
+  ifClientExist,
+  insertClient,
+  ifClientExistAndForApproval,
+  ifClientExistAndApproved,
+  fetchClientsViaEmail,
+} from "../db/clients.js";
+import bcrypt from "bcrypt";
 
-dotenv.config();
+const router = express.Router();
 
-const generateToken = async (user, res) => {
-  const payLoad = {
-    id: user.id,
-    email: user.email,
-  };
+router.post("/signup", async (req, res) => {
+  try {
+    const data = req.body;
+    // console.log(data);
+    if (
+      !data.firstName.trim() ||
+      !data.lastName.trim() ||
+      !data.email.trim() ||
+      !data.password.trim() ||
+      !data.confirmPassword.trim() ||
+      !data.address.trim() ||
+      !data.dateOfBirth.trim() ||
+      !data.sex.trim()
+    ) {
+      return res.status(400).json({ error: "Please fill in all fields" });
+    }
 
-  const token = jwt.sign(payLoad, process.env.JWT_KEY, { expiresIn: "1h" });
-  console.log(`Generated token: ${token}`);
+    const clientExist = await ifClientExist(data.email);
+    const clientExistAndForApproval = await ifClientExistAndForApproval(
+      data.email
+    );
+    if (clientExist) {
+      if (clientExistAndForApproval) {
+        return res.status(202).json({ message: "Wait for admin's approval" });
+      }
+      return res.status(409).json({ error: "Email already exists" });
+    }
 
-  res.cookie("jwt", token, {
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV !== "development",
-  });
+    if (data.password !== data.confirmPassword) {
+      return res.status(400).json({ error: "Password dont match" });
+    }
 
-  return token;
-};
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    data.password = hashedPassword;
+    const response = await insertClient(data);
 
-export default generateToken;
+    if (response.success) {
+      return res.status(200).json({ message: "Wait for admin's approval" });
+    } else {
+      res
+        .status(500)
+        .json({ message: "failed to add client", error: response.error.stack });
+    }
+  } catch (err) {
+    console.log(err.stack);
+    res
+      .status(500)
+      .json({ message: "An error has occured while inserting client" });
+  }
+});
+router.post("/login", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const response = await ifClientExist(data.email);
+
+    if (response) {
+      const forApproval = await ifClientExistAndForApproval(data.email);
+      if (forApproval) {
+        return res.status(409).json({ message: "Wait for admin's approval" });
+      }
+      const responseApproved = await ifClientExistAndApproved(data.email);
+      if (responseApproved) {
+        const user = await fetchClientsViaEmail(data.email);
+        const validated = await bcrypt.compare(
+          data.password,
+          user.response[0].password
+        );
+        if (validated) {
+          return res.status(200).json({ message: "You are logged in" });
+        } else {
+          return res.status(400).json({ message: "Wrong credentials" });
+        }
+      }
+    }
+    return res.status(401).json({ message: "Email is not registered yet" });
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).json({ error: error });
+  }
+});
+router.post("/logout", async (req, res) => {});
+
+export default router;
