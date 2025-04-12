@@ -14,7 +14,7 @@ const Sidebar = () => {
 
     return (
         <div
-            className={`fixed top-1/2 left-0 -translate-y-1/2 flex ${sidebarOpen ? 'bg-[#FFB600]' : ''}`}
+            className={`z-50 fixed top-1/2 left-0 -translate-y-1/2 flex ${sidebarOpen ? 'bg-[#FFB600]' : ''}`}
         >
             <div
                 className={`bg-[#FFB600] text-black overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-48 opacity-100' : 'w-0 opacity-0'

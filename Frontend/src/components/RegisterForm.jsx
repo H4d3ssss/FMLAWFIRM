@@ -97,7 +97,7 @@ function RegisterForm() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
+        <div className="min-h-screen flex items-center justify-center px-4 py-12">
             <form
                 onSubmit={handleSubmit}
                 className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg space-y-4"
@@ -284,9 +284,17 @@ function RegisterForm() {
                 >
                     {isLoading ? 'Processing...' : 'Register'}
                 </button>
+
+                {/* Already have an account? */}
+                <p className="text-sm text-center text-gray-600 mt-4">
+                    Already have an account?{" "}
+                    <a href="./LoginPage" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                        Log in
+                    </a>
+                </p>
             </form>
         </div>
     );
 }
 
-export default RegisterForm;    
+export default RegisterForm;
