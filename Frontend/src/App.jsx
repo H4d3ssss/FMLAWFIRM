@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from './pages/LoginPage.jsx';
@@ -20,8 +21,21 @@ function App() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+=======
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  Navbar,
+  Calendar,
+  Sidebar,
+  Footer,
+  LoginForm,
+  RegisterForm,
+} from "./components";
+>>>>>>> 68271b81ed458b5044393788eac4f7d8b8f7c096
 
   return (
+<<<<<<< HEAD
     <Router>
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
@@ -42,5 +56,18 @@ function App() {
     </Router>
   );
 }
+=======
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/dashboard" element={<Calendar />} />
+        </Routes>
+      </Router>
+    </>
+  );
+};
+>>>>>>> 68271b81ed458b5044393788eac4f7d8b8f7c096
 
 export default App;
