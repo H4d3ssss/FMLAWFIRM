@@ -1,5 +1,9 @@
 import express from "express";
-import { insertLawyer, fetchLawyers, ifLawyerExist } from "../db/lawyers.js";
+import {
+  insertLawyer,
+  fetchLawyers,
+  ifLawyerExist,
+} from "../db/adminSide/lawyers.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
@@ -15,7 +19,9 @@ router.post("/", async (req, res) => {
       !data.password.trim() ||
       !data.confirmPassword.trim() ||
       !data.address.trim() ||
+      !data.sex.trim() ||
       !data.dateOfBirth.trim() ||
+      !data.contactNumber.trim() ||
       !data.barNumber.trim() ||
       !data.specialization.trim()
     ) {

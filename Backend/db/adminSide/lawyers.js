@@ -1,4 +1,4 @@
-import pool from "./index.js";
+import pool from "../index.js";
 
 const fetchLawyers = async () => {
   const query = `SELECT * FROM "viewLawyers"`;
@@ -27,15 +27,15 @@ const ifLawyerExist = async (email) => {
 const insertLawyer = async (data) => {
   const query = `WITH new_user AS (
     INSERT INTO users (
-      first_name, last_name, email, password, address, date_of_birth, role
+      first_name, last_name, email, password, address, sex, date_of_birth, contact_number, role
     )
     VALUES (
-      $1, $2, $3, $4, $5, $6, 'Lawyer'
+      $1, $2, $3, $4, $5, $6, $7, $8, 'Lawyer'
     )
     RETURNING user_id, role
   )
   INSERT INTO lawyers (user_id, bar_number, specialization)
-  SELECT user_id, $7, $8 FROM new_user WHERE role = 'Lawyer';`;
+  SELECT user_id, $9, $10 FROM new_user WHERE role = 'Lawyer';`;
   try {
     const response = await pool.query(query, [
       data.firstName,
@@ -43,7 +43,9 @@ const insertLawyer = async (data) => {
       data.email,
       data.password, // hash natin to
       data.address,
+      data.sex,
       data.dateOfBirth,
+      data.contactNumber,
       data.barNumber,
       data.specialization,
     ]);

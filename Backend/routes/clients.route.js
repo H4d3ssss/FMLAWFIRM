@@ -6,7 +6,18 @@ import {
   fetchClientsViaEmail,
 } from "../db/clients.js";
 
+import { fetchClientsForApproval } from "../db/adminSide/clients.js";
+
 const router = express.Router();
+
+router.get("/clientsforapproval", async (req, res) => {
+  try {
+    const response = await fetchClientsForApproval();
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+});
 
 router.get("/", async (req, res) => {
   try {

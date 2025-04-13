@@ -4,7 +4,7 @@ import {
   fetchScheduledAppointments,
   fetchCompletedAppointments,
   fetchCancelledAppointments,
-} from "../db/appointments.js";
+} from "../db/adminSide/appointments.js";
 
 const router = express.Router();
 
