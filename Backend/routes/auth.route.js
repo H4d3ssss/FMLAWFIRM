@@ -91,6 +91,10 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: error });
   }
 });
-router.post("/logout", async (req, res) => {});
+router.post("/logout", async (req, res) => {
+  // this should clear out the cookies in the browser
+  // also i havent added a function that'll generate a token in the login route (should i also add in the sign up route?)
+  // i stil think that they arent needed yet sooo.....
+});
 
 export default router;
