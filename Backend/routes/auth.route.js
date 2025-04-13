@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   try {
     const data = req.body;
-    // console.log(data);
+    console.log(data);
     if (
       !data.firstName.trim() ||
       !data.lastName.trim() ||
