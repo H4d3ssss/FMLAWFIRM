@@ -82,13 +82,6 @@ function RegisterForm() {
     };
 
     try {
-      //   const res = await fetch("http://localhost:3000/api/auth/signup", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(payload),
-      //   });
-
-      //   const data = await res.json();
       const response = await axios.post(
         "http://localhost:3000/api/auth/signup",
         payload
@@ -386,6 +379,17 @@ function RegisterForm() {
         >
           {isLoading ? "Processing..." : "Register"}
         </button>
+
+        {/* Already have an account? */}
+        <p className="text-sm text-center text-gray-600 mt-4">
+          Already have an account?{" "}
+          <a
+            href="./LoginPage"
+            className="text-indigo-600 hover:text-indigo-500 font-medium"
+          >
+            Log in
+          </a>
+        </p>
       </form>
     </div>
   );
