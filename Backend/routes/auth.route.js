@@ -13,7 +13,6 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
     if (
       !data.firstName.trim() ||
       !data.lastName.trim() ||
@@ -22,11 +21,12 @@ router.post("/signup", async (req, res) => {
       !data.confirmPassword.trim() ||
       !data.address.trim() ||
       !data.dateOfBirth.trim() ||
+      !data.contactNumber.trim() ||
       !data.sex.trim()
     ) {
       return res.status(400).json({ error: "Please fill in all fields" });
     }
-
+    console.log(data);
     const clientExist = await ifClientExist(data.email);
     const clientExistAndForApproval = await ifClientExistAndForApproval(
       data.email
@@ -60,6 +60,7 @@ router.post("/signup", async (req, res) => {
       .json({ message: "An error has occured while inserting client" });
   }
 });
+
 router.post("/login", async (req, res) => {
   try {
     const data = req.body;

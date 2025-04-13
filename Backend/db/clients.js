@@ -37,7 +37,7 @@ const fetchClientsViaEmail = async (email) => {
 };
 
 const insertClient = async (data) => {
-  const query = `CALL insert_client($1, $2, $3, $4, $5, $6, $7)`;
+  const query = `CALL insert_client($1, $2, $3, $4, $5, $6, $7, $8)`;
   try {
     const response = await pool.query(query, [
       data.firstName,
@@ -46,6 +46,7 @@ const insertClient = async (data) => {
       data.password,
       data.address,
       data.dateOfBirth,
+      data.contactNumber,
       data.sex,
     ]);
     return { success: true };
