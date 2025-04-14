@@ -7,6 +7,7 @@ import {
   ifClientExistAndApproved,
   fetchClientsViaEmail,
   generateTemporaryClientPassword,
+  validatePasswordOrTemporaryPassword,
 } from "../db/clients.js";
 import bcrypt from "bcrypt";
 
@@ -89,11 +90,19 @@ router.post("/login", async (req, res) => {
       const responseApproved = await ifClientExistAndApproved(data.email);
       if (responseApproved) {
         const user = await fetchClientsViaEmail(data.email);
+        const user1 = await validatePasswordOrTemporaryPassword(data.email);
+        console.log(user1.response[0]);
         const validated = await bcrypt.compare(
           data.password,
           user.response[0].password
         );
-        if (validated) {
+        const validated1 = await bcrypt.compare(
+          data.password,
+          user1.response[0].temporary_password || ""
+        );
+        console.log(`validated: ` + validated);
+        console.log(`validated1: ` + validated1);
+        if (validated || validated1) {
           return res.status(200).json({ message: "You are logged in" });
         } else {
           return res.status(400).json({ message: "Wrong credentials" });
