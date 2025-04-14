@@ -1,5 +1,6 @@
 import pool from "./index.js";
-
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 const fetchClient = async (clientId) => {
   try {
     const response = await pool.query(
@@ -79,6 +80,41 @@ const ifClientExistAndApproved = async (email) => {
   }
 };
 
+const generateTemporaryClientPassword = async (email) => {
+  const isApproval = await ifClientExistAndForApproval(email);
+  const isApproved = await ifClientExistAndApproved(email);
+  const isExist = await fetchClientsViaEmail(email);
+
+  if (!isExist.success || isExist.response.length === 0) {
+    return { message: "Email doesn't exist" };
+  }
+
+  if (isApproval > 0) {
+    return { message: "You are not registered yet, wait for admin's approval" };
+  }
+
+  if (isApproved > 0) {
+    const unhashedTemporaryPassword = crypto.randomBytes(4).toString("hex");
+    const hashedPassword = await bcrypt.hash(unhashedTemporaryPassword, 10);
+
+    try {
+      await pool.query(`UPDATE users SET password = $1 WHERE email = $2`, [
+        hashedPassword,
+        email,
+      ]);
+      return {
+        message: "Temporary password has been set",
+        temporaryPassword: unhashedTemporaryPassword,
+      };
+    } catch (error) {
+      console.log("Database error:", error);
+      return { message: "An error occurred while updating the password" };
+    }
+  }
+
+  return { message: "Account found but status is not approved" };
+};
+
 const ifClientExist = async (email) => {
   try {
     const response = await pool.query(
@@ -99,4 +135,5 @@ export {
   ifClientExist,
   fetchClientsViaEmail,
   ifClientExistAndApproved,
+  generateTemporaryClientPassword,
 };

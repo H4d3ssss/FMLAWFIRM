@@ -1,14 +1,28 @@
 import express from "express";
+import axios from "axios";
 import {
   ifClientExist,
   insertClient,
   ifClientExistAndForApproval,
   ifClientExistAndApproved,
   fetchClientsViaEmail,
+  generateTemporaryClientPassword,
 } from "../db/clients.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
+
+router.post("/resetpassword", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const response = await generateTemporaryClientPassword(email);
+    console.log(response);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
 
 router.post("/signup", async (req, res) => {
   try {
