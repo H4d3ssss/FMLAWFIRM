@@ -1,5 +1,10 @@
 [
     {
+        "id": "1",
+        "name": "Metro Manila",
+        "region_id": "fameuaegh7iqxli5zfazndyv8rmuvbz2t8wg"
+    },
+    {
         "id": "dlbqd776cpw0woegzl69ckbgc3pi91q1s4ka",
         "name": "Ilocos Norte",
         "region_id": "bimgjhtj1lbn9558hqbewnw4bn8l4fi7285a"
