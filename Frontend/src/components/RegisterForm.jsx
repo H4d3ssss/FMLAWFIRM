@@ -3,8 +3,8 @@ import regionsData from "./data/regions.json";
 import provincesData from "./data/provinces.json";
 import citiesData from "./data/cities.json";
 import barangaysData from "./data/barangays.json";
-import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
+import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -33,7 +33,10 @@ function RegisterForm() {
   const [errors, setErrors] = useState({});
   const [serverMessage, setServerMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState({ password: false, confirmPassword: false });
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirmPassword: false,
+  });
 
   useEffect(() => {
     if (formData.birthDate) {
@@ -47,7 +50,9 @@ function RegisterForm() {
   }, [formData.birthDate]);
 
   useEffect(() => {
-    const provinces = provincesData.filter((p) => p.region_id === formData.region);
+    const provinces = provincesData.filter(
+      (p) => p.region_id === formData.region
+    );
     setFilteredProvinces(provinces);
     setFormData((prev) => ({ ...prev, province: "", city: "", barangay: "" }));
     setFilteredCities([]);
@@ -56,7 +61,8 @@ function RegisterForm() {
 
   useEffect(() => {
     const cities = citiesData.filter(
-      (c) => c.province_id === formData.province && c.region_id === formData.region
+      (c) =>
+        c.province_id === formData.province && c.region_id === formData.region
     );
     setFilteredCities(cities);
     setFormData((prev) => ({ ...prev, city: "", barangay: "" }));
@@ -65,7 +71,10 @@ function RegisterForm() {
 
   useEffect(() => {
     const barangays = barangaysData.filter(
-      (b) => b.city_id === formData.city && b.province_id === formData.province && b.region_id === formData.region
+      (b) =>
+        b.city_id === formData.city &&
+        b.province_id === formData.province &&
+        b.region_id === formData.region
     );
     setFilteredBarangays(barangays);
     setFormData((prev) => ({ ...prev, barangay: "" }));
@@ -76,7 +85,8 @@ function RegisterForm() {
     if (!formData.firstName.trim()) newErrors.firstName = "Required";
     if (!formData.lastName.trim()) newErrors.lastName = "Required";
     if (!formData.email.trim()) newErrors.email = "Required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Invalid email";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      newErrors.email = "Invalid email";
     if (!formData.birthDate) newErrors.birthDate = "Required";
     if (!formData.sex) newErrors.sex = "Required";
     if (!formData.phone.trim()) newErrors.phone = "Required";
@@ -88,9 +98,12 @@ function RegisterForm() {
     if (!formData.barangay) newErrors.barangay = "Required";
     if (!/^\d{4,5}$/.test(formData.zipCode)) newErrors.zipCode = "4–5 digits";
     if (!formData.password) newErrors.password = "Required";
-    else if (formData.password.length < 6) newErrors.password = "At least 6 characters";
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
-    if (!formData.acceptedTerms) newErrors.acceptedTerms = "You must accept the terms";
+    else if (formData.password.length < 6)
+      newErrors.password = "At least 6 characters";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+    if (!formData.acceptedTerms)
+      newErrors.acceptedTerms = "You must accept the terms";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -98,7 +111,10 @@ function RegisterForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const togglePasswordVisibility = (field) => {
@@ -117,14 +133,18 @@ function RegisterForm() {
       lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
-      birthDate: formData.birthDate,
-      sex: formData.sex,
-      phone: formData.phone,
+      confirmPassword: formData.confirmPassword,
       address: fullAddress,
+      dateOfBirth: formData.birthDate,
+      contactNumber: formData.phone,
+      sex: formData.sex,
     };
 
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/signup", payload);
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/signup",
+        payload
+      );
       setServerMessage(
         response.status === 202
           ? "Wait for admin's approval"
@@ -153,7 +173,9 @@ function RegisterForm() {
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  First Name*
+                </label>
                 <input
                   name="firstName"
                   type="text"
@@ -161,10 +183,14 @@ function RegisterForm() {
                   value={formData.firstName}
                   onChange={handleChange}
                 />
-                {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+                {errors.firstName && (
+                  <p className="text-sm text-red-600">{errors.firstName}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Last Name*
+                </label>
                 <input
                   name="lastName"
                   type="text"
@@ -172,13 +198,17 @@ function RegisterForm() {
                   value={formData.lastName}
                   onChange={handleChange}
                 />
-                {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
+                {errors.lastName && (
+                  <p className="text-sm text-red-600">{errors.lastName}</p>
+                )}
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email*</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Email*
+              </label>
               <input
                 name="email"
                 type="email"
@@ -186,13 +216,17 @@ function RegisterForm() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
 
             {/* Birthdate + Age */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Birth Date*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Birth Date*
+                </label>
                 <input
                   name="birthDate"
                   type="date"
@@ -201,10 +235,14 @@ function RegisterForm() {
                   value={formData.birthDate}
                   onChange={handleChange}
                 />
-                {errors.birthDate && <p className="text-sm text-red-600">{errors.birthDate}</p>}
+                {errors.birthDate && (
+                  <p className="text-sm text-red-600">{errors.birthDate}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Age</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Age
+                </label>
                 <input
                   name="age"
                   type="text"
@@ -217,7 +255,9 @@ function RegisterForm() {
 
             {/* Sex */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">Sex*</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Sex*
+              </label>
               <select
                 name="sex"
                 className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
@@ -228,12 +268,16 @@ function RegisterForm() {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
-              {errors.sex && <p className="text-sm text-red-600">{errors.sex}</p>}
+              {errors.sex && (
+                <p className="text-sm text-red-600">{errors.sex}</p>
+              )}
             </div>
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">Phone Number*</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number*
+              </label>
               <input
                 name="phone"
                 type="text"
@@ -243,7 +287,9 @@ function RegisterForm() {
                 value={formData.phone}
                 onChange={handleChange}
               />
-              {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+              {errors.phone && (
+                <p className="text-sm text-red-600">{errors.phone}</p>
+              )}
             </div>
           </div>
 
@@ -252,7 +298,9 @@ function RegisterForm() {
             {/* Address Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">House/Block No.*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  House/Block No.*
+                </label>
                 <input
                   name="houseNumber"
                   type="text"
@@ -260,10 +308,14 @@ function RegisterForm() {
                   value={formData.houseNumber}
                   onChange={handleChange}
                 />
-                {errors.houseNumber && <p className="text-sm text-red-600">{errors.houseNumber}</p>}
+                {errors.houseNumber && (
+                  <p className="text-sm text-red-600">{errors.houseNumber}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Street Name*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Street Name*
+                </label>
                 <input
                   name="streetName"
                   type="text"
@@ -271,13 +323,17 @@ function RegisterForm() {
                   value={formData.streetName}
                   onChange={handleChange}
                 />
-                {errors.streetName && <p className="text-sm text-red-600">{errors.streetName}</p>}
+                {errors.streetName && (
+                  <p className="text-sm text-red-600">{errors.streetName}</p>
+                )}
               </div>
             </div>
             {/* Region + Province */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Region*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Region*
+                </label>
                 <select
                   name="region"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
@@ -293,7 +349,9 @@ function RegisterForm() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Province*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Province*
+                </label>
                 <select
                   name="province"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
@@ -314,7 +372,9 @@ function RegisterForm() {
             {/* City + Barangay */}
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">City/Municipality*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  City/Municipality*
+                </label>
                 <select
                   name="city"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
@@ -331,7 +391,9 @@ function RegisterForm() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Barangay*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Barangay*
+                </label>
                 <select
                   name="barangay"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
@@ -350,7 +412,9 @@ function RegisterForm() {
             </div>
             {/* ZIP Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">ZIP Code*</label>
+              <label className="block text-sm font-medium text-gray-700">
+                ZIP Code*
+              </label>
               <input
                 name="zipCode"
                 type="text"
@@ -359,13 +423,17 @@ function RegisterForm() {
                 value={formData.zipCode}
                 onChange={handleChange}
               />
-              {errors.zipCode && <p className="text-sm text-red-600">{errors.zipCode}</p>}
+              {errors.zipCode && (
+                <p className="text-sm text-red-600">{errors.zipCode}</p>
+              )}
             </div>
 
             {/* Password Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700">Password*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Password*
+                </label>
                 <div className="relative">
                   <input
                     name="password"
@@ -377,7 +445,7 @@ function RegisterForm() {
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center mt-1"
-                    onClick={() => togglePasswordVisibility('password')}
+                    onClick={() => togglePasswordVisibility("password")}
                   >
                     {showPassword.password ? (
                       <EyeOff className="h-5 w-5 text-gray-400" />
@@ -386,10 +454,14 @@ function RegisterForm() {
                     )}
                   </button>
                 </div>
-                {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
+                {errors.password && (
+                  <p className="text-sm text-red-600">{errors.password}</p>
+                )}
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700">Confirm Password*</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Confirm Password*
+                </label>
                 <div className="relative">
                   <input
                     name="confirmPassword"
@@ -401,7 +473,7 @@ function RegisterForm() {
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center mt-1"
-                    onClick={() => togglePasswordVisibility('confirmPassword')}
+                    onClick={() => togglePasswordVisibility("confirmPassword")}
                   >
                     {showPassword.confirmPassword ? (
                       <EyeOff className="h-5 w-5 text-gray-400" />
@@ -410,7 +482,11 @@ function RegisterForm() {
                     )}
                   </button>
                 </div>
-                {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-600">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -435,8 +511,11 @@ function RegisterForm() {
 
         {serverMessage && (
           <p
-            className={`text-sm text-center ${serverMessage.includes("success") ? "text-green-600" : "text-red-600"
-              }`}
+            className={`text-sm text-center ${
+              serverMessage.includes("success")
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
           >
             {serverMessage}
           </p>
@@ -444,10 +523,11 @@ function RegisterForm() {
 
         <button
           type="submit"
-          className={`w-full py-2 rounded-md transition ${isLoading
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-indigo-600 text-white hover:bg-indigo-700"
-            }`}
+          className={`w-full py-2 rounded-md transition ${
+            isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-indigo-600 text-white hover:bg-indigo-700"
+          }`}
           disabled={isLoading}
         >
           {isLoading ? "Processing..." : "Register"}

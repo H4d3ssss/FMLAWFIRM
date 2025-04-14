@@ -109,7 +109,6 @@ const generateTemporaryClientPassword = async (email) => {
   if (isApproved > 0) {
     const unhashedTemporaryPassword = crypto.randomBytes(4).toString("hex");
     const hashedPassword = await bcrypt.hash(unhashedTemporaryPassword, 10);
-
     try {
       await pool.query(
         `UPDATE users SET temporary_password = $1 WHERE email = $2`,
@@ -118,6 +117,7 @@ const generateTemporaryClientPassword = async (email) => {
       return {
         message: "Temporary password has been set",
         temporaryPassword: unhashedTemporaryPassword,
+        fullName: isExist.response[0].full_name,
       };
     } catch (error) {
       console.log("Database error:", error);

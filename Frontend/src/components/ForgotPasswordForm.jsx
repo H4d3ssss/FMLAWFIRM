@@ -18,6 +18,7 @@ function ForgotPasswordForm() {
         { email }
       );
       const temporaryPassword = response.data.temporaryPassword;
+      console.log(response.data);
 
       const payLoad = {
         service_id: "service_93zdpcs",
@@ -27,6 +28,7 @@ function ForgotPasswordForm() {
           from_email: "jbialen@mtivalenzuela.edu.ph",
           to_email: email,
           temporaryPassword,
+          fullName: response.data.fullName,
         },
       };
 
@@ -39,6 +41,8 @@ function ForgotPasswordForm() {
       } catch (error) {
         console.error("Error sending email:", error);
         setMessage("Failed to send email. Please try again.");
+        setIsLoading(false);
+        return;
       }
 
       if (response.status === 200) {
