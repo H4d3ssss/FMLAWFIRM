@@ -28,6 +28,7 @@ router.post("/resetpassword", async (req, res) => {
 router.post("/signup", async (req, res) => {
   try {
     const data = req.body;
+    console.log(data);
     if (
       !data.firstName.trim() ||
       !data.lastName.trim() ||
