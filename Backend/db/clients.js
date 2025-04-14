@@ -80,6 +80,19 @@ const ifClientExistAndApproved = async (email) => {
   }
 };
 
+const validatePasswordOrTemporaryPassword = async (email) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewClients" WHERE email = $1`,
+      [email]
+    );
+    return { success: true, response: response.rows };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error };
+  }
+};
+
 const generateTemporaryClientPassword = async (email) => {
   const isApproval = await ifClientExistAndForApproval(email);
   const isApproved = await ifClientExistAndApproved(email);
@@ -98,10 +111,10 @@ const generateTemporaryClientPassword = async (email) => {
     const hashedPassword = await bcrypt.hash(unhashedTemporaryPassword, 10);
 
     try {
-      await pool.query(`UPDATE users SET password = $1 WHERE email = $2`, [
-        hashedPassword,
-        email,
-      ]);
+      await pool.query(
+        `UPDATE users SET temporary_password = $1 WHERE email = $2`,
+        [hashedPassword, email]
+      );
       return {
         message: "Temporary password has been set",
         temporaryPassword: unhashedTemporaryPassword,
@@ -136,4 +149,5 @@ export {
   fetchClientsViaEmail,
   ifClientExistAndApproved,
   generateTemporaryClientPassword,
+  validatePasswordOrTemporaryPassword,
 };
