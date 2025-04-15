@@ -27,6 +27,13 @@ function RegisterForm() {
     acceptedTerms: false,
   });
 
+  // Track IDs for filtering while keeping names for submission
+  const [locationIds, setLocationIds] = useState({
+    region: "",
+    province: "",
+    city: "",
+  });
+
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [filteredBarangays, setFilteredBarangays] = useState([]);
@@ -50,35 +57,49 @@ function RegisterForm() {
   }, [formData.birthDate]);
 
   useEffect(() => {
-    const provinces = provincesData.filter(
-      (p) => p.region_id === formData.region
-    );
-    setFilteredProvinces(provinces);
-    setFormData((prev) => ({ ...prev, province: "", city: "", barangay: "" }));
-    setFilteredCities([]);
-    setFilteredBarangays([]);
-  }, [formData.region]);
+    if (locationIds.region) {
+      const provinces = provincesData.filter(
+        (p) => p.region_id === locationIds.region
+      );
+      setFilteredProvinces(provinces);
+      setFormData((prev) => ({
+        ...prev,
+        province: "",
+        city: "",
+        barangay: "",
+      }));
+      setLocationIds((prev) => ({ ...prev, province: "", city: "" }));
+      setFilteredCities([]);
+      setFilteredBarangays([]);
+    }
+  }, [locationIds.region]);
 
   useEffect(() => {
-    const cities = citiesData.filter(
-      (c) =>
-        c.province_id === formData.province && c.region_id === formData.region
-    );
-    setFilteredCities(cities);
-    setFormData((prev) => ({ ...prev, city: "", barangay: "" }));
-    setFilteredBarangays([]);
-  }, [formData.province, formData.region]);
+    if (locationIds.province) {
+      const cities = citiesData.filter(
+        (c) =>
+          c.province_id === locationIds.province &&
+          c.region_id === locationIds.region
+      );
+      setFilteredCities(cities);
+      setFormData((prev) => ({ ...prev, city: "", barangay: "" }));
+      setLocationIds((prev) => ({ ...prev, city: "" }));
+      setFilteredBarangays([]);
+    }
+  }, [locationIds.province, locationIds.region]);
 
   useEffect(() => {
-    const barangays = barangaysData.filter(
-      (b) =>
-        b.city_id === formData.city &&
-        b.province_id === formData.province &&
-        b.region_id === formData.region
-    );
-    setFilteredBarangays(barangays);
-    setFormData((prev) => ({ ...prev, barangay: "" }));
-  }, [formData.city, formData.province, formData.region]);
+    if (locationIds.city) {
+      const barangays = barangaysData.filter(
+        (b) =>
+          b.city_id === locationIds.city &&
+          b.province_id === locationIds.province &&
+          b.region_id === locationIds.region
+      );
+      setFilteredBarangays(barangays);
+      setFormData((prev) => ({ ...prev, barangay: "" }));
+    }
+  }, [locationIds.city, locationIds.province, locationIds.region]);
 
   const validate = () => {
     const newErrors = {};
@@ -111,10 +132,24 @@ function RegisterForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+
+    if (type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+      return;
+    }
+
+    // Handle location selections
+    if (["region", "province", "city"].includes(name)) {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      const locationName = selectedOption.text;
+
+      setLocationIds((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: locationName }));
+      return;
+    }
+
+    // Handle other inputs
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const togglePasswordVisibility = (field) => {
@@ -138,6 +173,10 @@ function RegisterForm() {
       dateOfBirth: formData.birthDate,
       contactNumber: formData.phone,
       sex: formData.sex,
+      region: formData.region,
+      province: formData.province,
+      city: formData.city,
+      barangay: formData.barangay,
     };
 
     try {
@@ -337,7 +376,7 @@ function RegisterForm() {
                 <select
                   name="region"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
-                  value={formData.region}
+                  value={locationIds.region}
                   onChange={handleChange}
                 >
                   <option value="">Select Region</option>
@@ -355,7 +394,7 @@ function RegisterForm() {
                 <select
                   name="province"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
-                  value={formData.province}
+                  value={locationIds.province}
                   onChange={handleChange}
                   disabled={!filteredProvinces.length}
                 >
@@ -378,7 +417,7 @@ function RegisterForm() {
                 <select
                   name="city"
                   className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
-                  value={formData.city}
+                  value={locationIds.city}
                   onChange={handleChange}
                   disabled={!filteredCities.length}
                 >
@@ -548,5 +587,3 @@ function RegisterForm() {
 }
 
 export default RegisterForm;
-
-// bakit ayaw mag merge
