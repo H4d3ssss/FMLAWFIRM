@@ -5,6 +5,9 @@ import Calendar from "./Calendar";
 import { default as LoginForm } from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
+import EventViewModal from "./EventViewModal";
+import EventAddForm from "./EventAddForm";
+import EventEditForm from "./EventEditForm";
 
 export {
     Navbar,
@@ -14,4 +17,6 @@ export {
     LoginForm,
     RegisterForm,
     ForgotPasswordForm,
+    EventViewModal,
+    EventAddForm,
 }

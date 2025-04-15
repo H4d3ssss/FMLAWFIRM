@@ -1,43 +1,159 @@
-import React from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import React, { useEffect, useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import axios from 'axios';
+import EventAddForm from '../components/EventAddForm';
+import EventEditForm from '../components/EventEditForm';
+import EventViewModal from '../components/EventViewModal'; // Import the Event Modal for viewing
 
-function Calendar() {
-    // Handler for when a selection is made
-    const handleDateSelect = (selectInfo) => {
-        let title = prompt("Enter event title:");
-        let calendarApi = selectInfo.view.calendar;
+const Calendar = () => {
+    const [events, setEvents] = useState([]);
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [viewModalOpen, setViewModalOpen] = useState(false); // For viewing events
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
-        calendarApi.unselect(); // clear date selection
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const res = await axios.get('/api/events');
+                console.log('Fetched Events:', res.data);  // Log the fetched events
+                const formatted = res.data.map((event) => ({
+                    id: event.id,
+                    title: event.case_title,
+                    start: event.start_date,
+                    end: event.end_date,
+                    backgroundColor: event.type === 'Hearing' ? '#FFB600' : '#4CAF50',
+                    borderColor: event.type === 'Hearing' ? '#FFB600' : '#4CAF50',
+                    extendedProps: {
+                        type: event.type,
+                        location: event.location,
+                        notes: event.notes,
+                        startTime: event.start_time,
+                        endTime: event.end_time,
+                    },
+                }));
+                setEvents(formatted); // Set the events in state
+            } catch (err) {
+                console.error('Failed to fetch events:', err);
+            }
+        };
+        fetchEvents();
+    }, []);
 
-        if (title) {
-            calendarApi.addEvent({
-                title,
-                start: selectInfo.startStr,
-                end: selectInfo.endStr,
-                allDay: selectInfo.allDay,
-            });
+
+    const handleDateClick = (info) => {
+        setSelectedDate(info.dateStr);
+        setCreateModalOpen(true);
+    };
+
+    const handleEventClick = (info) => {
+        console.log('Clicked Event:', info.event); // Log the FullCalendar event
+        const eventData = events.find((event) => event.id === parseInt(info.event.id, 10));
+        if (!eventData) {
+            console.error('No event data found for this ID:', info.event.id);
+            return; // Prevent further actions if event data is missing
         }
+        setSelectedEvent(eventData); // Set the selected event
+        setViewModalOpen(true); // Open the View Modal
+    };
+
+
+    const handleAddEvent = (data) => {
+        const newEvent = {
+            id: Date.now(),
+            title: data.title,
+            start: `${selectedDate}T${data.startTime}`,
+            end: `${selectedDate}T${data.endTime}`,
+            backgroundColor: data.color, // Use selected color
+            borderColor: data.color, // Use selected color
+            extendedProps: {
+                type: data.type,
+                location: data.location,
+                notes: data.notes,
+                startTime: data.startTime,
+                endTime: data.endTime,
+            },
+        };
+        setEvents((prev) => [...prev, newEvent]);
+        setCreateModalOpen(false);
+    };
+
+    const handleEditEvent = (updatedEvent) => {
+        const updatedEvents = events.map((event) =>
+            event.id === updatedEvent.id
+                ? {
+                    ...event,
+                    title: updatedEvent.title,
+                    start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
+                    end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
+                    extendedProps: {
+                        ...event.extendedProps,
+                        type: updatedEvent.type,
+                        location: updatedEvent.location,
+                        notes: updatedEvent.notes,
+                        startTime: updatedEvent.startTime,
+                        endTime: updatedEvent.endTime,
+                    },
+                }
+                : event
+        );
+        setEvents(updatedEvents);
+        setEditModalOpen(false); // Close the edit modal after saving changes
     };
 
     return (
-        <div>
+        <div className="p-4 bg-white rounded-xl shadow-md min-h-screen">
+            <h2 className="text-xl font-semibold mb-4">📅 Case Calendar</h2>
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
-                selectable={true}
-                select={handleDateSelect}
                 headerToolbar={{
-                    start: "today prev,next",
-                    center: "title",
-                    end: "dayGridMonth,timeGridWeek,timeGridDay",
+                    start: 'today prev,next',
+                    center: 'title',
+                    end: 'dayGridMonth, timeGridWeek, timeGridDay',
                 }}
-                height="100vh"
+                events={events}
+                dateClick={handleDateClick}
+                eventClick={handleEventClick}
+                height={"100vh"}
             />
+
+            {/* Add Event Modal */}
+            <EventAddForm
+                isOpen={createModalOpen}
+                onClose={() => setCreateModalOpen(false)}
+                onSubmit={handleAddEvent}
+                date={selectedDate}
+            />
+
+            {/* Event View Modal: Only render when `viewModalOpen` is true */}
+            {viewModalOpen && selectedEvent && (
+                <EventViewModal
+                    isOpen={viewModalOpen}
+                    onClose={() => setViewModalOpen(false)}
+                    onEdit={() => {
+                        setViewModalOpen(false);
+                        setEditModalOpen(true);
+                    }}
+                    event={selectedEvent}
+                />
+            )}
+
+            {/* Event Edit Modal: Only render when `editModalOpen` is true */}
+            {editModalOpen && (
+                <EventEditForm
+                    isOpen={editModalOpen}
+                    onClose={() => setEditModalOpen(false)}
+                    onSubmit={handleEditEvent}
+                    eventData={selectedEvent}
+                />
+            )}
         </div>
     );
-}
+};
 
 export default Calendar;
