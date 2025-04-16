@@ -1,13 +1,13 @@
 import React from 'react'
-import { Calendar, Footer, Sidebar, Navbar, ActivityLog } from './components';
+import { Calendar, Footer, Sidebar, Navbar, ActivityLog, Todo } from './components';
 
 const AppTest = () => {
     return (
         <>
             <Navbar />
             <Sidebar />
-            <Calendar />
-            <Footer />
+            <Todo />
+
 
         </>
     )

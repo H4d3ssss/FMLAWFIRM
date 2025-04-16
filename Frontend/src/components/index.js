@@ -10,6 +10,7 @@ import EventAddForm from "./EventAddForm";
 import EventEditForm from "./EventEditForm";
 import ActivityLog from "./ActivityLog";
 import ActiveCard from "./ActiveCard";
+import Todo from "./Todo";
 
 export {
     Navbar,
@@ -24,4 +25,5 @@ export {
     EventEditForm,
     ActivityLog,
     ActiveCard,
+    Todo,
 }
