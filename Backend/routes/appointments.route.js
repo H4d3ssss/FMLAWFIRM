@@ -5,6 +5,7 @@ import {
   fetchCompletedAppointments,
   fetchCancelledAppointments,
   insertAppointment,
+  fetchAppointments,
 } from "../db/adminSide/appointments.js";
 
 const router = express.Router();
@@ -69,17 +70,36 @@ router.get("/cancelled", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
+    console.log(data);
     const response = await insertAppointment(data);
-
+    console.log(response);
     if (response.success) {
-      res
-        .status(200)
-        .json({ message: "Successfully scheduled an appointment" });
+      res.status(200).json({
+        sucess: true,
+        message: "Successfully scheduled an appointment",
+      });
     } else {
-      res.status(500).json({ message: "Failed Appointment" });
+      res.status(500).json({ success: false, message: "Failed Appointment" });
     }
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const response = await fetchAppointments();
+    console.log(response);
+    if (response.success) {
+      res.status(200).json(response.response);
+    } else {
+      res.status(500).json({ message: "failed fetching appointments" });
+    }
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).json({
+      message: "an error has occured in the server while fething appointments",
+    });
   }
 });
 
