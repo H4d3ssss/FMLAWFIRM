@@ -29,6 +29,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
   const [error, setError] = useState(""); // Error message state
   const [lawyers, setLawyers] = useState([]);
   const [clients, setClients] = useState([]);
+  const [lawyer, setLawyer] = useState("");
+  const [client, setClient] = useState("");
 
   const fetchActiveLawyers = async () => {
     try {
@@ -61,6 +63,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
       // Reset form
       setTitle("");
       setType(eventTypes[0]);
+      setClient("");
+      setLawyer("");
       setLocation("");
       setNotes("");
       setStartTime("");
@@ -102,6 +106,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
     onSubmit({
       title,
       type,
+      lawyer,
+      client,
       location,
       notes,
       startTime,
@@ -165,30 +171,40 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
         <div>
           <label className="block text-sm font-medium mb-1">Lawyers</label>
           <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+            value={lawyer}
+            onChange={(e) => setLawyer(e.target.value)}
             className="w-full p-2 border rounded"
           >
-            {lawyers.map((lawyer, index) => (
-              <option key={index} value={lawyer.lawyer_id}>
-                {lawyer.full_name}
+            <>
+              <option value="" disabled>
+                Select Lawyer
               </option>
-            ))}
+              {lawyers.map((lawyer, index) => (
+                <option key={index} value={lawyer.lawyer_id}>
+                  {lawyer.full_name}
+                </option>
+              ))}
+            </>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">Clients</label>
           <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+            value={client}
+            onChange={(e) => setClient(e.target.value)}
             className="w-full p-2 border rounded"
           >
-            {clients.map((client, index) => (
-              <option key={index} value={client.client_id}>
-                {client.full_name}
+            <>
+              <option value="" disabled>
+                Select Client
               </option>
-            ))}
+              {clients.map((client, index) => (
+                <option key={index} value={client.client_id}>
+                  {client.full_name}
+                </option>
+              ))}
+            </>
           </select>
         </div>
 
