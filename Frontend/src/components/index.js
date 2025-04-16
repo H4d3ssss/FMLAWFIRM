@@ -9,8 +9,9 @@ import EventViewModal from "./EventViewModal";
 import EventAddForm from "./EventAddForm";
 import EventEditForm from "./EventEditForm";
 import ActivityLog from "./ActivityLog";
-import ActiveCard from "./ActiveCard";
+import ActiveCaseCard from "./ActiveCaseCard";
 import Todo from "./Todo";
+import TaskListCard from "./TaskListCard";
 
 export {
     Navbar,
@@ -24,6 +25,7 @@ export {
     EventAddForm,
     EventEditForm,
     ActivityLog,
-    ActiveCard,
+    ActiveCaseCard,
     Todo,
+    TaskListCard,
 }

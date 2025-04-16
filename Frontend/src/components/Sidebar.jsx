@@ -23,7 +23,7 @@ const Sidebar = () => {
                 <div className="p-4 space-y-4">
                     <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
                         <Home className="w-5 h-5 mr-3" />
-                        <span className="text-sm font-medium">Home</span>
+                        <span className="text-sm font-medium">Dashboard</span>
                     </button>
 
                     <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">

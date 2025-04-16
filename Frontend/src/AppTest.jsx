@@ -1,12 +1,11 @@
 import React from 'react'
-import { Calendar, Footer, Sidebar, Navbar, ActivityLog, Todo } from './components';
+import { Calendar, Footer, Sidebar, Navbar, ActivityLog, Todo, TaskListCard } from './components';
+import { AdminDashboard, } from './pages';
 
 const AppTest = () => {
     return (
         <>
-            <Navbar />
-            <Sidebar />
-            <Todo />
+            <AdminDashboard />
 
 
         </>

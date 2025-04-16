@@ -5,7 +5,7 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import RegistrationPage from "./pages/RegistrationPage.jsx";
 import ForgotPass from "./pages/ForgotPass.jsx";
 import Footer from "./components/Footer.jsx";
-import Sidebar from "./components/Sidebar.jsx";
+
 
 function App() {
   const [showFooter, setShowFooter] = useState(false);
