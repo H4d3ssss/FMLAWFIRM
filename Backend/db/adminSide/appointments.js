@@ -36,8 +36,31 @@ const fetchCancelledAppointments = async () => {
   }
 };
 
+const insertAppointment = async (data) => {
+  try {
+    const response = await pool.query(
+      `CALL insert_appointment($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [
+        data.caseId,
+        data.clientId,
+        data.lawyerId,
+        data.appointmentDate,
+        "Scheduled",
+        data.purpose,
+        data.location,
+        data.startTime,
+        data.endTime,
+      ]
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
 export {
   fetchScheduledAppointments,
   fetchCompletedAppointments,
   fetchCancelledAppointments,
+  insertAppointment,
 };

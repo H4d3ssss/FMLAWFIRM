@@ -140,6 +140,21 @@ const ifClientExist = async (email) => {
   }
 };
 
+const fetchApprovedClients = async () => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewClients" WHERE account_status = 'Approved'`
+    );
+    if (response.rowCount > 0) {
+      return { success: true, response: response.rows };
+    } else {
+      return { success: false, response: "No Approved Clients" };
+    }
+  } catch (error) {
+    console.log(error.stack);
+  }
+};
+
 export {
   fetchClients,
   insertClient,
@@ -150,4 +165,5 @@ export {
   ifClientExistAndApproved,
   generateTemporaryClientPassword,
   validatePasswordOrTemporaryPassword,
+  fetchApprovedClients,
 };

@@ -34,8 +34,8 @@ const insertLawyer = async (data) => {
     )
     RETURNING user_id, role
   )
-  INSERT INTO lawyers (user_id, bar_number, specialization)
-  SELECT user_id, $9, $10 FROM new_user WHERE role = 'Lawyer';`;
+  INSERT INTO lawyers (user_id, bar_number, specialization, account_status)
+  SELECT user_id, $9, $10, 'Active' FROM new_user WHERE role = 'Lawyer';`;
   try {
     const response = await pool.query(query, [
       data.firstName,
@@ -56,4 +56,20 @@ const insertLawyer = async (data) => {
   }
 };
 
-export { insertLawyer, fetchLawyers, ifLawyerExist };
+const fetchActiveLawyers = async () => {
+  try {
+    const response = await pool.query(
+      `SELECT lawyer_id, full_name FROM "viewLawyers" WHERE account_status = 'Active'`
+    );
+
+    if (response.rowCount > 0) {
+      return { success: true, response: response.rows };
+    } else {
+      return { success: false, response: "No active lawyers were found" };
+    }
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export { insertLawyer, fetchLawyers, ifLawyerExist, fetchActiveLawyers };
