@@ -25,7 +25,22 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
     const [notes, setNotes] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const [error, setError] = useState(''); // Error message state
+    const [lawyerId, setLawyerId] = useState('');
+    const [clientId, setClientId] = useState('');
+    const [error, setError] = useState('');
+
+    // Example data for lawyers and clients
+    const lawyers = [
+        { id: 1, name: 'Atty. John Doe' },
+        { id: 2, name: 'Atty. Jane Smith' },
+        { id: 3, name: 'Atty. Robert Brown' },
+    ];
+
+    const clients = [
+        { id: 1, name: 'Client Alice Johnson' },
+        { id: 2, name: 'Client Bob Williams' },
+        { id: 3, name: 'Client Charlie Davis' },
+    ];
 
     useEffect(() => {
         if (isOpen) {
@@ -36,6 +51,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
             setNotes('');
             setStartTime('');
             setEndTime('');
+            setLawyerId('');
+            setClientId('');
             setError('');
         }
     }, [isOpen]);
@@ -60,13 +77,15 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
         if (!title.trim()) return alert('Please enter a title.');
         if (!startTime || !endTime) return alert('Please select start and end times.');
         if (startTime >= endTime) return alert('End time must be after start time.');
+        if (!lawyerId) return alert('Please select a lawyer.');
+        if (!clientId) return alert('Please select a client.');
 
         if (hasTimeConflict(startTime, endTime)) {
             setError('The selected time conflicts with an existing event.');
             return;
         }
 
-        const color = eventTypeColors[type]; // Automatically set color based on event type
+        const color = eventTypeColors[type];
 
         onSubmit({
             title,
@@ -75,6 +94,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
             notes,
             startTime,
             endTime,
+            lawyerId, // Include lawyerId
+            clientId, // Include clientId
             color,
         });
         onClose();
@@ -83,7 +104,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 backdrop-blur-sm bg-grey/30 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
             <form
                 onSubmit={handleSubmit}
                 className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative space-y-4 border"
@@ -108,7 +129,6 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
                     <label className="block text-sm font-medium mb-1">Event Title</label>
                     <input
                         type="text"
-                        name="title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Enter title"
@@ -127,6 +147,40 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
                         {eventTypes.map((t) => (
                             <option key={t} value={t}>
                                 {t}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Assign Lawyer</label>
+                    <select
+                        value={lawyerId}
+                        onChange={(e) => setLawyerId(e.target.value)}
+                        className="w-full p-2 border rounded"
+                        required
+                    >
+                        <option value="" disabled>Select a lawyer</option>
+                        {lawyers.map((lawyer) => (
+                            <option key={lawyer.id} value={lawyer.id}>
+                                {lawyer.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Assign Client</label>
+                    <select
+                        value={clientId}
+                        onChange={(e) => setClientId(e.target.value)}
+                        className="w-full p-2 border rounded"
+                        required
+                    >
+                        <option value="" disabled>Select a client</option>
+                        {clients.map((client) => (
+                            <option key={client.id} value={client.id}>
+                                {client.name}
                             </option>
                         ))}
                     </select>

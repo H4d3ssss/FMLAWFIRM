@@ -20,7 +20,6 @@ const Calendar = () => {
         const fetchEvents = async () => {
             try {
                 const res = await axios.get('/api/events');
-                console.log('Fetched Events:', res.data);  // Log the fetched events
                 const formatted = res.data.map((event) => ({
                     id: event.id,
                     title: event.case_title,
@@ -44,19 +43,14 @@ const Calendar = () => {
         fetchEvents();
     }, []);
 
-
     const handleDateClick = (info) => {
         setSelectedDate(info.dateStr);
         setCreateModalOpen(true);
     };
 
     const handleEventClick = (info) => {
-        console.log('Clicked Event:', info.event); // Log the FullCalendar event
         const eventData = events.find((event) => event.id === parseInt(info.event.id, 10));
-        if (!eventData) {
-            console.error('No event data found for this ID:', info.event.id);
-            return; // Prevent further actions if event data is missing
-        }
+        if (!eventData) return;
         setSelectedEvent(eventData); // Set the selected event
         setViewModalOpen(true); // Open the View Modal
     };
@@ -75,6 +69,8 @@ const Calendar = () => {
                 notes: data.notes,
                 startTime: data.startTime,
                 endTime: data.endTime,
+                lawyerId: data.lawyerId, // Include lawyerId
+                clientId: data.clientId, // Include clientId
             },
         };
         setEvents((prev) => [...prev, newEvent]);
@@ -96,6 +92,8 @@ const Calendar = () => {
                         notes: updatedEvent.notes,
                         startTime: updatedEvent.startTime,
                         endTime: updatedEvent.endTime,
+                        lawyerId: updatedEvent.lawyerId, // Include lawyerId
+                        clientId: updatedEvent.clientId, // Include clientId
                     },
                 }
                 : event
@@ -136,7 +134,7 @@ const Calendar = () => {
                 events={events} // Pass existing events
             />
 
-            {/* Event View Modal: Only render when `viewModalOpen` is true */}
+            {/* Event View Modal */}
             {viewModalOpen && selectedEvent && (
                 <EventViewModal
                     isOpen={viewModalOpen}
@@ -145,12 +143,11 @@ const Calendar = () => {
                         setViewModalOpen(false);
                         setEditModalOpen(true);
                     }}
-                    onDelete={handleDeleteEvent} // Pass the delete handler
                     event={selectedEvent}
                 />
             )}
 
-            {/* Event Edit Modal: Only render when `editModalOpen` is true */}
+            {/* Event Edit Modal */}
             {editModalOpen && (
                 <EventEditForm
                     isOpen={editModalOpen}

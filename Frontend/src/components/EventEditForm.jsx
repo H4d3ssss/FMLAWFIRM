@@ -24,6 +24,21 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     const [notes, setNotes] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [lawyerId, setLawyerId] = useState('');
+    const [clientId, setClientId] = useState('');
+
+    // Example data for lawyers and clients
+    const lawyers = [
+        { id: 1, name: 'Atty. John Doe' },
+        { id: 2, name: 'Atty. Jane Smith' },
+        { id: 3, name: 'Atty. Robert Brown' },
+    ];
+
+    const clients = [
+        { id: 1, name: 'Client Alice Johnson' },
+        { id: 2, name: 'Client Bob Williams' },
+        { id: 3, name: 'Client Charlie Davis' },
+    ];
 
     useEffect(() => {
         if (isOpen && eventData) {
@@ -34,6 +49,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             setNotes(eventData.extendedProps?.notes || '');
             setStartTime(eventData.extendedProps?.startTime || '');
             setEndTime(eventData.extendedProps?.endTime || '');
+            setLawyerId(eventData.extendedProps?.lawyerId || '');
+            setClientId(eventData.extendedProps?.clientId || '');
         } else {
             // Reset form fields when the form is reopened
             setTitle('');
@@ -42,6 +59,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             setNotes('');
             setStartTime('');
             setEndTime('');
+            setLawyerId('');
+            setClientId('');
         }
     }, [isOpen, eventData]);
 
@@ -50,6 +69,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         if (!title.trim()) return alert('Please enter a title.');
         if (!startTime || !endTime) return alert('Please select start and end times.');
         if (startTime >= endTime) return alert('End time must be after start time.');
+        if (!lawyerId) return alert('Please select a lawyer.');
+        if (!clientId) return alert('Please select a client.');
 
         const color = eventTypeColors[type]; // Automatically set color based on event type
 
@@ -61,6 +82,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             notes,
             startTime,
             endTime,
+            lawyerId, // Include lawyerId
+            clientId, // Include clientId
             color, // Include the color in the updated event data
         });
         onClose();
@@ -107,6 +130,40 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                         {eventTypes.map((t) => (
                             <option key={t} value={t}>
                                 {t}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Assign Lawyer</label>
+                    <select
+                        value={lawyerId}
+                        onChange={(e) => setLawyerId(e.target.value)}
+                        className="w-full p-2 border rounded"
+                        required
+                    >
+                        <option value="" disabled>Select a lawyer</option>
+                        {lawyers.map((lawyer) => (
+                            <option key={lawyer.id} value={lawyer.id}>
+                                {lawyer.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Assign Client</label>
+                    <select
+                        value={clientId}
+                        onChange={(e) => setClientId(e.target.value)}
+                        className="w-full p-2 border rounded"
+                        required
+                    >
+                        <option value="" disabled>Select a client</option>
+                        {clients.map((client) => (
+                            <option key={client.id} value={client.id}>
+                                {client.name}
                             </option>
                         ))}
                     </select>

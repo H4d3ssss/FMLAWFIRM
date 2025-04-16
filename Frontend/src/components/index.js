@@ -8,6 +8,8 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 import EventViewModal from "./EventViewModal";
 import EventAddForm from "./EventAddForm";
 import EventEditForm from "./EventEditForm";
+import ActivityLog from "./ActivityLog";
+import ActiveCard from "./ActiveCard";
 
 export {
     Navbar,
@@ -19,4 +21,7 @@ export {
     ForgotPasswordForm,
     EventViewModal,
     EventAddForm,
+    EventEditForm,
+    ActivityLog,
+    ActiveCard,
 }

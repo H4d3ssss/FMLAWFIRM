@@ -1,5 +1,5 @@
 import React from 'react'
-import { Calendar, Footer, Sidebar, Navbar, } from './components';
+import { Calendar, Footer, Sidebar, Navbar, ActivityLog } from './components';
 
 const AppTest = () => {
     return (
