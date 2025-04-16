@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import axios from "axios";
 const eventTypes = [
   "Consultation",
   "Meeting",
@@ -29,20 +29,34 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
   const [clientId, setClientId] = useState("");
   const [error, setError] = useState("");
 
-  // Example data for lawyers and clients
-  const lawyers = [
-    { id: 1, name: "Atty. John Doe" },
-    { id: 2, name: "Atty. Jane Smith" },
-    { id: 3, name: "Atty. Robert Brown" },
-  ];
+  const [lawyers, setLawyers] = useState([]);
+  const [clients, setClients] = useState([]);
 
-  const clients = [
-    { id: 1, name: "Client Alice Johnson" },
-    { id: 2, name: "Client Bob Williams" },
-    { id: 3, name: "Client Charlie Davis" },
-  ];
+  const fetchActiveLawyers = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/lawyers/active-lawyers"
+      );
+      setLawyers(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchApprovedClients = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/clients/approved-clients`
+      );
+      setClients(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
+    fetchActiveLawyers();
+    fetchApprovedClients();
     if (isOpen) {
       // Reset form
       setTitle("");
@@ -72,7 +86,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return alert("Please enter a title.");
     if (!startTime || !endTime)
@@ -89,17 +103,33 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
 
     const color = eventTypeColors[type];
 
-    onSubmit({
-      title,
-      type,
+    const payload = {
+      eventTitle: title,
+      typeOfEvent: type,
       location,
       notes,
       startTime,
       endTime,
       lawyerId, // Include lawyerId
       clientId, // Include clientId
-      color,
-    });
+      appointmentDate: date,
+    };
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/appointments`,
+        payload
+      ); // route dapat to
+      console.log(response);
+      if (response.data.success) {
+        console.log(response.data.message);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     onClose();
   };
 
@@ -168,8 +198,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
               Select a lawyer
             </option>
             {lawyers.map((lawyer) => (
-              <option key={lawyer.id} value={lawyer.id}>
-                {lawyer.name}
+              <option key={lawyer.lawyer_id} value={lawyer.lawyer_id}>
+                {lawyer.full_name}
               </option>
             ))}
           </select>
@@ -189,8 +219,8 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
               Select a client
             </option>
             {clients.map((client) => (
-              <option key={client.id} value={client.id}>
-                {client.name}
+              <option key={client.client_id} value={client.client_id}>
+                {client.full_name}
               </option>
             ))}
           </select>
