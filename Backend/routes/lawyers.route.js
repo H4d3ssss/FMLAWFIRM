@@ -3,6 +3,7 @@ import {
   insertLawyer,
   fetchLawyers,
   ifLawyerExist,
+  fetchActiveLawyers,
 } from "../db/adminSide/lawyers.js";
 import bcrypt from "bcrypt";
 
@@ -70,6 +71,21 @@ router.get("/", async (req, res) => {
   } catch (err) {
     console.log(err.stack);
     res.status(500).json({ message: "Server error while fetching lawyers" });
+  }
+});
+
+router.get("/active-lawyers", async (req, res) => {
+  try {
+    const data = req.body;
+    const response = await fetchActiveLawyers();
+    if (response.success) {
+      res.status(200).json(response.response);
+    } else {
+      res.status(500).json(response.response);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 });
 

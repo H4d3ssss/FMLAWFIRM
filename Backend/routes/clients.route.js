@@ -4,6 +4,7 @@ import {
   fetchClient,
   ifClientExist,
   fetchClientsViaEmail,
+  fetchApprovedClients,
 } from "../db/clients.js";
 
 import { fetchClientsForApproval } from "../db/adminSide/clients.js";
@@ -48,6 +49,21 @@ router.post("/one", async (req, res) => {
   } catch (err) {
     console.log(err.stack);
     res.status(500).json({ error: err });
+  }
+});
+
+router.get("/approved-clients", async (req, res) => {
+  try {
+    const response = await fetchApprovedClients();
+
+    if (response.success) {
+      res.status(200).json(response.response);
+    } else {
+      res.status(500).json(response.response);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 });
 
