@@ -8,6 +8,14 @@ const eventTypes = [
     'Follow-up',
     'Other',
 ];
+const eventTypeColors = {
+    Consultation: '#4CAF50', // Green
+    Meeting: '#2196F3', // Blue
+    'Case Hearing': '#FF9800', // Orange
+    Filing: '#9C27B0', // Purple
+    'Follow-up': '#FFC107', // Yellow
+    Other: '#607D8B', // Gray
+};
 
 const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     const [title, setTitle] = useState('');
@@ -42,6 +50,9 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         if (!title.trim()) return alert('Please enter a title.');
         if (!startTime || !endTime) return alert('Please select start and end times.');
         if (startTime >= endTime) return alert('End time must be after start time.');
+
+        const color = eventTypeColors[type]; // Automatically set color based on event type
+
         onSubmit({
             id: eventData.id,
             title,
@@ -50,6 +61,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             notes,
             startTime,
             endTime,
+            color, // Include the color in the updated event data
         });
         onClose();
     };

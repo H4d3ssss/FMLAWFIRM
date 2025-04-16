@@ -9,14 +9,23 @@ const eventTypes = [
     'Other',
 ];
 
-const EventAddForm = ({ isOpen, onClose, onSubmit, date }) => {
+const eventTypeColors = {
+    Consultation: '#4CAF50', // Green
+    Meeting: '#2196F3', // Blue
+    'Case Hearing': '#FF9800', // Orange
+    Filing: '#9C27B0', // Purple
+    'Follow-up': '#FFC107', // Yellow
+    Other: '#607D8B', // Gray
+};
+
+const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
     const [title, setTitle] = useState('');
     const [type, setType] = useState(eventTypes[0]);
     const [location, setLocation] = useState('');
     const [notes, setNotes] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const [color, setColor] = useState('#4CAF50'); // Default color
+    const [error, setError] = useState(''); // Error message state
 
     useEffect(() => {
         if (isOpen) {
@@ -27,15 +36,38 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date }) => {
             setNotes('');
             setStartTime('');
             setEndTime('');
-            setColor('#4CAF50');
+            setError('');
         }
     }, [isOpen]);
+
+    const hasTimeConflict = (start, end) => {
+        return events.some((event) => {
+            const eventStart = new Date(event.start).getTime();
+            const eventEnd = new Date(event.end).getTime();
+            const newStart = new Date(`${date}T${start}`).getTime();
+            const newEnd = new Date(`${date}T${end}`).getTime();
+
+            return (
+                (newStart >= eventStart && newStart < eventEnd) || // New start overlaps existing event
+                (newEnd > eventStart && newEnd <= eventEnd) || // New end overlaps existing event
+                (newStart <= eventStart && newEnd >= eventEnd) // New event fully overlaps existing event
+            );
+        });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!title.trim()) return alert('Please enter a title.');
         if (!startTime || !endTime) return alert('Please select start and end times.');
         if (startTime >= endTime) return alert('End time must be after start time.');
+
+        if (hasTimeConflict(startTime, endTime)) {
+            setError('The selected time conflicts with an existing event.');
+            return;
+        }
+
+        const color = eventTypeColors[type]; // Automatically set color based on event type
+
         onSubmit({
             title,
             type,
@@ -65,6 +97,12 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date }) => {
                 </button>
 
                 <h3 className="text-lg font-bold">New Event on {new Date(date).toDateString()}</h3>
+
+                {error && (
+                    <div className="text-red-500 text-sm mb-2">
+                        {error}
+                    </div>
+                )}
 
                 <div>
                     <label className="block text-sm font-medium mb-1">Event Title</label>
@@ -135,16 +173,6 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date }) => {
                         onChange={(e) => setEndTime(e.target.value)}
                         className="w-full p-2 border rounded"
                         required
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Select Color</label>
-                    <input
-                        type="color"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="w-full p-2 border rounded"
                     />
                 </div>
 

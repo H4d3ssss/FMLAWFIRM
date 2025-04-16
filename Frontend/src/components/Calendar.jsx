@@ -61,7 +61,6 @@ const Calendar = () => {
         setViewModalOpen(true); // Open the View Modal
     };
 
-
     const handleAddEvent = (data) => {
         const newEvent = {
             id: Date.now(),
@@ -105,6 +104,12 @@ const Calendar = () => {
         setEditModalOpen(false); // Close the edit modal after saving changes
     };
 
+    const handleDeleteEvent = (eventId) => {
+        const updatedEvents = events.filter((event) => event.id !== eventId);
+        setEvents(updatedEvents);
+        setViewModalOpen(false); // Close the view modal after deletion
+    };
+
     return (
         <div className="p-4 bg-white rounded-xl shadow-md min-h-screen">
             <h2 className="text-xl font-semibold mb-4">📅 Case Calendar</h2>
@@ -128,6 +133,7 @@ const Calendar = () => {
                 onClose={() => setCreateModalOpen(false)}
                 onSubmit={handleAddEvent}
                 date={selectedDate}
+                events={events} // Pass existing events
             />
 
             {/* Event View Modal: Only render when `viewModalOpen` is true */}
@@ -139,6 +145,7 @@ const Calendar = () => {
                         setViewModalOpen(false);
                         setEditModalOpen(true);
                     }}
+                    onDelete={handleDeleteEvent} // Pass the delete handler
                     event={selectedEvent}
                 />
             )}
