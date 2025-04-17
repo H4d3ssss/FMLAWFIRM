@@ -105,7 +105,7 @@ const Todo = () => {
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
             <div className="w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 mb-8">
-                <h1 className="text-2xl font-bold text-center mb-4 text-gray-700">Task Manager</h1>
+                <h1 className="text-2xl font-bold text-center mb-4 text-gray-700">Task Manager "FOR PUSH PURPOSES"</h1>
                 <div className="flex flex-col md:flex-row mb-4">
                     <input
                         type="text"
