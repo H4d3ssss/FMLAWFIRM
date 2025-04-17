@@ -5,7 +5,7 @@ import { AdminDashboard, } from './pages';
 const AppTest = () => {
     return (
         <>
-            <AdminDashboard />
+            <Todo />
 
 
         </>

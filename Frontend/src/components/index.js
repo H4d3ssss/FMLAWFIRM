@@ -12,6 +12,9 @@ import ActivityLog from "./ActivityLog";
 import ActiveCaseCard from "./ActiveCaseCard";
 import Todo from "./Todo";
 import TaskListCard from "./TaskListCard";
+import PendingCaseCard from "./PendingCaseCard";
+import UpcomingHearingCard from "./UpcomingHearingCard";
+import TasksDueCard from "./TaskDueCard";
 
 export {
     Navbar,
@@ -28,4 +31,7 @@ export {
     ActiveCaseCard,
     Todo,
     TaskListCard,
+    PendingCaseCard,
+    UpcomingHearingCard,
+    TasksDueCard,
 }

@@ -1,50 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
-import ActiveCaseCard from '../components/ActiveCaseCard';
+import { Navbar, Sidebar, Footer, ActiveCaseCard, PendingCaseCard, UpcomingHearingCard, TasksDueCard } from '../components';
 
 const AdminDashboard = () => {
-    // Assume this data is fetched or populated dynamically.
     const [activeCases, setActiveCases] = useState([]);
+    const [pendingCases, setPendingCases] = useState([]);
+    const [upcomingHearings, setUpcomingHearings] = useState([]);
+    const [tasksDue, setTasksDue] = useState([]);
 
-    // Example: Simulate fetching active cases with a useEffect.
     useEffect(() => {
-        // In a real scenario, replace this with an API call.
-        const fetchedCases = [
+        // Example: Fetch cases, hearings, and tasks
+        const fetchedActiveCases = [
             { id: 1, title: "Case 1", status: "active" },
             { id: 2, title: "Case 2", status: "active" },
-            { id: 3, title: "Case 3", status: "active" },
         ];
-        setActiveCases(fetchedCases);
+        const fetchedPendingCases = [
+            { id: 3, title: "Case 3", status: "pending" },
+        ];
+        const fetchedUpcomingHearings = [
+            { id: 4, title: "Hearing for Case 1", date: "2025-04-20" },
+        ];
+        const fetchedTasksDue = [
+            { id: 5, title: "Submit Financial Report", deadline: "2025-04-18" },
+            { id: 6, title: "Prepare Case Notes", deadline: "2025-04-19" },
+        ];
+
+        setActiveCases(fetchedActiveCases);
+        setPendingCases(fetchedPendingCases);
+        setUpcomingHearings(fetchedUpcomingHearings);
+        setTasksDue(fetchedTasksDue);
     }, []);
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
-            {/* Navbar */}
             <Navbar />
 
             <div className="flex flex-1">
-                {/* Sidebar */}
                 <Sidebar />
 
-                {/* Main Content */}
                 <main className="flex p-6 mx-60">
-                    {/* Main content container with margins that do not affect Navbar/Sidebar/Footer */}
                     <div className="max-w-4xl mx-auto">
                         <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
-                        {/* Active Case Count Card directly under the H1 */}
-                        <div className="mb-6 flex justify-center">
+                        <div className="mb-5 grid grid-cols-4 gap-0 place-items-center">
                             <ActiveCaseCard count={activeCases.length} />
+                            <PendingCaseCard count={pendingCases.length} />
+                            <UpcomingHearingCard
+                                count={upcomingHearings.length}
+                                nextHearing={upcomingHearings[0]} // Pass the first hearing as the next one
+                            />
+                            <TasksDueCard
+                                count={tasksDue.length}
+                                nextTask={tasksDue[0]} // Pass the first task as the next one
+                            />
                         </div>
 
-                        {/* Additional Dashboard Content */}
                     </div>
                 </main>
             </div>
 
-            {/* Footer */}
             <Footer />
         </div>
     );
