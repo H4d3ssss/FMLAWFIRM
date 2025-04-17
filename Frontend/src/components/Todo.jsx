@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 const dayNames = [
   "Sunday",
   "Monday",
@@ -8,35 +8,48 @@ const dayNames = [
   "Thursday",
   "Friday",
   "Saturday",
+  "Sunday",
 ];
 
 const Todo = () => {
+  const [renderTasks, setRenderTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
   const [dayInput, setDayInput] = useState("Today");
   const [assignedDay, setAssignedDay] = useState(""); // For "This Week" tasks
   const [unfinishedTasks, setUnfinishedTasks] = useState([]);
 
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/tasks/fetch-inprogress-tasks"
+      );
+      // console.log(response.data);
+      setTasks(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchUnfinishedTasks = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/tasks/fetch-unfinished-tasks"
+      );
+      // console.log(response.data);
+      setUnfinishedTasks(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // Periodically check if completed tasks need to be auto-deleted
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      const updatedTasks = tasks.map((task) => {
-        if (
-          task.completed &&
-          task.autoDeleteTime &&
-          now >= new Date(task.autoDeleteTime)
-        ) {
-          return null; // Mark task for deletion
-        }
-        return task;
-      });
+    fetchTasks();
+    fetchUnfinishedTasks();
+    console.log("rendering");
 
-      setTasks(updatedTasks.filter((task) => task !== null)); // Remove auto-deleted tasks
-    }, 1000);
-
-    return () => clearInterval(timer); // Cleanup on component unmount
-  }, [tasks]);
+    // Cleanup on component unmount
+  }, [tasks]); // LAGAY KO ULIT TASKS DITO WAIT
 
   const addTask = async () => {
     if (taskInput.trim() !== "") {
@@ -44,8 +57,9 @@ const Todo = () => {
       setTasks([
         ...tasks,
         {
-          text: taskInput,
-          day: dayInput,
+          taskDescription: taskInput,
+          day: dayInput || dayToday,
+          dueDate: new Date().toISOString().split("T")[0],
           assignedDay: dayInput === "This Week" ? assignedDay : "", // Assign day for "This Week"
           completed: false,
           creationTime: taskCreationTime,
@@ -54,11 +68,51 @@ const Todo = () => {
       ]);
 
       try {
-        const response = await axios.post(
-          "http://localhost:3000/api/tasks/create-today-task",
-          [tasks]
-        );
-      } catch (error) {}
+        if (dayInput === "Today") {
+          // 📌 INSERT TODAY'S ROUTE HERE
+          const response = await axios.post(
+            "http://localhost:3000/api/tasks/create-today-task",
+            {
+              taskDescription: taskInput,
+              day: dayNames[new Date().getDay()],
+              dueDate: new Date().toISOString().split("T")[0],
+              dateCreated: new Date().toISOString().split("T")[0],
+            }
+          );
+        } else if (dayInput === "Tomorrow") {
+          // 📌 INSERT TOMORROW'S ROUTE HERE
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          await axios.post(
+            "http://localhost:3000/api/tasks/create-tomorrow-task",
+            {
+              taskDescription: taskInput,
+              day: dayNames[new Date().getDay() + 1],
+              dueDate: tomorrow.toISOString().split("T")[0],
+              dateCreated: new Date().toISOString().split("T")[0],
+            }
+          );
+        } else if (dayInput === "This Week") {
+          // 📌 INSERT THIS WEEK'S ROUTE HERE (day picked from dropdown)
+          const today = new Date();
+          const todayIndex = today.getDay();
+          const assignedIndex = dayNames.indexOf(assignedDay);
+          const diff = assignedIndex - todayIndex;
+          const assignedDate = new Date(today);
+          assignedDate.setDate(today.getDate() + diff);
+
+          await axios.post("http://localhost:3000/api/tasks/create-week-task", {
+            taskDescription: taskInput,
+            day: assignedDay,
+            dueDate: assignedDate.toISOString().split("T")[0],
+            dateCreated: new Date().toISOString().split("T")[0],
+          });
+        }
+        fetchTasks();
+        fetchUnfinishedTasks();
+      } catch (error) {
+        console.log(error);
+      }
 
       setTaskInput("");
       setDayInput("Today");
@@ -66,26 +120,49 @@ const Todo = () => {
     }
   };
 
-  const handleTaskCompletion = (index) => {
-    const updatedTasks = tasks.map((task, i) => {
-      if (i === index) {
-        const now = new Date();
-        if (!task.completed) {
-          // Mark as completed and set autoDeleteTime (24 hours later)
-          const autoDeleteTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
-          return { ...task, completed: true, autoDeleteTime };
-        } else {
-          // Mark as incomplete and reset autoDeleteTime
-          return { ...task, completed: false, autoDeleteTime: null };
-        }
-      }
-      return task;
-    });
-    setTasks(updatedTasks);
+  const handleTaskCompletion = async (taskId) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3000/api/tasks/mark-finished-task`,
+        { taskId }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (tasks.length <= 0) {
+      console.log("all tasks done");
+      fetchUnfinishedTasks();
+    } else if (unfinishedTasks.length <= 0) {
+      console.log("all unfinished tasks done");
+      fetchTasks();
+    } else {
+      fetchTasks();
+      fetchUnfinishedTasks();
+    }
   };
 
-  const deleteTask = (index) => {
-    setTasks((prev) => prev.filter((_, i) => i !== index));
+  const deleteTask = async (taskId) => {
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/tasks/mark-deleted-task",
+        { taskId }
+      );
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
+    if (tasks.length <= 0) {
+      console.log("all tasks done");
+      fetchUnfinishedTasks();
+    } else if (unfinishedTasks.length <= 0) {
+      console.log("all unfinished tasks done");
+      fetchTasks();
+    } else {
+      fetchTasks();
+      fetchUnfinishedTasks();
+    }
   };
 
   const getRemainingTime = (task) => {
@@ -196,22 +273,53 @@ const Todo = () => {
               }`}
             >
               <div>
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => handleTaskCompletion(index)}
-                  className="mr-2"
-                />
-                <span>{task.text}</span>
+                <button
+                  onClick={() => handleTaskCompletion(task.task_id)}
+                  className="mr-2 bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                >
+                  ✓
+                </button>
+
+                <span>Task Description: {task.task_description}</span>
                 <span className="block text-sm text-gray-500">
-                  Assigned: {task.assignedDay || task.day}
+                  Assigned: {task.assigned}
                 </span>
                 <span className="block text-sm text-gray-500">
-                  {getRemainingTime(task)}
+                  Deadline:{task.day_to_be_finished} {task.deadline}
+                </span>
+                <span className="block text-sm text-gray-500">
+                  Current Time:{" "}
+                  {new Date().toLocaleTimeString("en-US", {
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </span>
+                <span className="block text-sm text-gray-500">
+                  Time Remaining:{" "}
+                  {(() => {
+                    const now = new Date();
+                    const deadline = new Date();
+                    deadline.setHours(23, 59, 0, 0); // 11:59 PM today
+
+                    const diff = deadline - now;
+                    if (diff <= 0) return "Expired";
+
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor(
+                      (diff % (1000 * 60 * 60)) / (1000 * 60)
+                    );
+
+                    return `${hours}h ${minutes}m`;
+                  })()}
                 </span>
               </div>
               <button
-                onClick={() => deleteTask(index)}
+                onClick={() => {
+                  deleteTask(task.task_id);
+                  console.log("deleted");
+                }}
                 className="text-red-500 hover:text-red-700 ml-4"
               >
                 Delete
@@ -238,15 +346,23 @@ const Todo = () => {
               className="flex justify-between items-center p-2 rounded-md bg-red-100 text-red-700"
             >
               <div>
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => handleTaskCompletion(index, true)}
-                  className="mr-2"
-                />
-                <span>{task.text}</span>
+                <button
+                  onClick={() => handleTaskCompletion(task.task_id)}
+                  className="mr-2 bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                >
+                  ✓
+                </button>
+
                 <span className="block text-sm text-gray-500">
-                  {getRemainingTime(task)}
+                  Task Description: {task.task_description}
+                </span>
+                <span className="block text-sm text-gray-500">
+                  Assigned: {task.assigned}
+                </span>
+                <span className="block text-sm text-gray-500">
+                  Due Date:{" "}
+                  {new Date(task.due_date_only).toISOString().split("T")[0]}{" "}
+                  {task.day_to_be_finished}
                 </span>
               </div>
               <button
