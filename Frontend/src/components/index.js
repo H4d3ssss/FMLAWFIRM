@@ -13,7 +13,7 @@ import ActiveCaseCard from "./ActiveCaseCard";
 import Todo from "./Todo";
 import TaskListCard from "./TaskListCard";
 import PendingCaseCard from "./PendingCaseCard";
-import UpcomingHearingCard from "./UpcomingHearingCard";
+import UpcomingEventCard from "./UpcomingEventCard";
 import TasksDueCard from "./TaskDueCard";
 
 export {
@@ -32,6 +32,6 @@ export {
     Todo,
     TaskListCard,
     PendingCaseCard,
-    UpcomingHearingCard,
+    UpcomingEventCard,
     TasksDueCard,
 }

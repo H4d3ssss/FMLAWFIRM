@@ -1,9 +1,15 @@
-import React from 'react'
+import React from 'react';
+import { Todo, Navbar, Sidebar, Footer } from '../components';
 
 const TodoPage = () => {
     return (
-        <div>TodoPage</div>
-    )
-}
+        <>
+            <Navbar />
+            <Sidebar />
+            <Todo />
+            <Footer />
+        </>
+    );
+};
 
-export default TodoPage
+export default TodoPage;

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Sidebar, Footer, ActiveCaseCard, PendingCaseCard, UpcomingHearingCard, TasksDueCard } from '../components';
+import { Navbar, Sidebar, Footer, ActiveCaseCard, PendingCaseCard, UpcomingEventCard, TasksDueCard, TaskListCard } from '../components';
 
 const AdminDashboard = () => {
     const [activeCases, setActiveCases] = useState([]);
     const [pendingCases, setPendingCases] = useState([]);
-    const [upcomingHearings, setUpcomingHearings] = useState([]);
+    const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [tasksDue, setTasksDue] = useState([]);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
         const fetchedPendingCases = [
             { id: 3, title: "Case 3", status: "pending" },
         ];
-        const fetchedUpcomingHearings = [
+        const fetchedUpcomingEvents = [
             { id: 4, title: "Hearing for Case 1", date: "2025-04-20" },
         ];
         const fetchedTasksDue = [
@@ -41,19 +41,24 @@ const AdminDashboard = () => {
                     <div className="max-w-4xl mx-auto">
                         <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
-                        <div className="mb-5 grid grid-cols-4 gap-0 place-items-center">
+                        <div className="mb-6 grid grid-cols-4 gap-90">
                             <ActiveCaseCard count={activeCases.length} />
                             <PendingCaseCard count={pendingCases.length} />
-                            <UpcomingHearingCard
-                                count={upcomingHearings.length}
-                                nextHearing={upcomingHearings[0]} // Pass the first hearing as the next one
+                            <UpcomingEventCard
+                                count={upcomingEvents.length}
+                                nextEvents={upcomingEvents[0]}
                             />
                             <TasksDueCard
                                 count={tasksDue.length}
-                                nextTask={tasksDue[0]} // Pass the first task as the next one
+                                nextTask={tasksDue[0]}
                             />
                         </div>
-
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Task List Card */}
+                            <div>
+                                <TaskListCard />
+                            </div>
+                        </div>
                     </div>
                 </main>
             </div>
