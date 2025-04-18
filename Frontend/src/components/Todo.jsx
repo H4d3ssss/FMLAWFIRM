@@ -10,9 +10,10 @@ const dayNames = [
   "Saturday",
   "Sunday",
 ];
+import Clock from "./Clock";
 
 const Todo = () => {
-  const [renderTasks, setRenderTasks] = useState([]);
+  const [count, setCount] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [taskInput, setTaskInput] = useState("");
   const [dayInput, setDayInput] = useState("Today");
@@ -26,10 +27,12 @@ const Todo = () => {
       );
       // console.log(response.data);
       setTasks(response.data);
+      console.log(tasks);
     } catch (error) {
       console.log(error);
     }
   };
+
   const fetchUnfinishedTasks = async () => {
     try {
       const response = await axios.get(
@@ -42,14 +45,25 @@ const Todo = () => {
     }
   };
 
-  // Periodically check if completed tasks need to be auto-deleted
   useEffect(() => {
     fetchTasks();
     fetchUnfinishedTasks();
+  }, []);
+
+  // Periodically check if completed tasks need to be auto-deleted
+  useEffect(() => {
+    if (tasks.length) {
+      fetchTasks();
+    }
+
+    if (unfinishedTasks.length) {
+      fetchUnfinishedTasks();
+    }
+    console.log(unfinishedTasks);
     console.log("rendering");
 
     // Cleanup on component unmount
-  }, [tasks]); // LAGAY KO ULIT TASKS DITO WAIT
+  }, [count]);
 
   const addTask = async () => {
     if (taskInput.trim() !== "") {
@@ -95,12 +109,19 @@ const Todo = () => {
         } else if (dayInput === "This Week") {
           // 📌 INSERT THIS WEEK'S ROUTE HERE (day picked from dropdown)
           const today = new Date();
-          const todayIndex = today.getDay();
-          const assignedIndex = dayNames.indexOf(assignedDay);
-          const diff = assignedIndex - todayIndex;
+          const todayIndex = today.getDay(); // 0 (Sun) to 6 (Sat)
+          const assignedIndex = dayNames.indexOf(assignedDay); // 0 (Sun) to 6 (Sat)
+
+          // If assigned day is before today in the week, add 7 to move it to next week
+          let diff = assignedIndex - todayIndex;
+          if (diff < 0) {
+            diff += 7;
+          }
+
           const assignedDate = new Date(today);
           assignedDate.setDate(today.getDate() + diff);
 
+          // Post the data
           await axios.post("http://localhost:3000/api/tasks/create-week-task", {
             taskDescription: taskInput,
             day: assignedDay,
@@ -108,15 +129,28 @@ const Todo = () => {
             dateCreated: new Date().toISOString().split("T")[0],
           });
         }
-        fetchTasks();
-        fetchUnfinishedTasks();
+
+        console.log(count);
       } catch (error) {
         console.log(error);
       }
+      setCount((prev) => prev + 1);
 
       setTaskInput("");
       setDayInput("Today");
       setAssignedDay(""); // Reset assigned day
+    }
+  };
+
+  const handleUnfinishedTask = async (taskId) => {
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/tasks/mark-unfinished-task",
+        { taskId }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -131,16 +165,7 @@ const Todo = () => {
       console.log(error);
     }
 
-    if (tasks.length <= 0) {
-      console.log("all tasks done");
-      fetchUnfinishedTasks();
-    } else if (unfinishedTasks.length <= 0) {
-      console.log("all unfinished tasks done");
-      fetchTasks();
-    } else {
-      fetchTasks();
-      fetchUnfinishedTasks();
-    }
+    setCount((prev) => prev + 1);
   };
 
   const deleteTask = async (taskId) => {
@@ -153,16 +178,7 @@ const Todo = () => {
     } catch (err) {
       console.log(err);
     }
-    if (tasks.length <= 0) {
-      console.log("all tasks done");
-      fetchUnfinishedTasks();
-    } else if (unfinishedTasks.length <= 0) {
-      console.log("all unfinished tasks done");
-      fetchTasks();
-    } else {
-      fetchTasks();
-      fetchUnfinishedTasks();
-    }
+    setCount((prev) => prev + 1);
   };
 
   const getRemainingTime = (task) => {
@@ -287,31 +303,31 @@ const Todo = () => {
                 <span className="block text-sm text-gray-500">
                   Deadline:{task.day_to_be_finished} {task.deadline}
                 </span>
-                <span className="block text-sm text-gray-500">
-                  Current Time:{" "}
-                  {new Date().toLocaleTimeString("en-US", {
-                    hour12: false,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}
-                </span>
+                <Clock />
                 <span className="block text-sm text-gray-500">
                   Time Remaining:{" "}
                   {(() => {
                     const now = new Date();
-                    const deadline = new Date();
-                    deadline.setHours(23, 59, 0, 0); // 11:59 PM today
+                    const deadline = new Date(task.due_date);
+                    deadline.setHours(23, 59, 0, 0); // 11:59 PM of the due date
 
                     const diff = deadline - now;
-                    if (diff <= 0) return "Expired";
+                    console.log(diff);
+                    if (diff <= 0) {
+                      setTimeout(() => {
+                        handleUnfinishedTask(task.task_id);
+                        setCount((count) => count + 1); // this is just to re render */
+                        console.log(" potangina may bug dito ");
+                      }, 10000);
+                      return "Deadline Passed";
+                    }
 
                     const hours = Math.floor(diff / (1000 * 60 * 60));
                     const minutes = Math.floor(
                       (diff % (1000 * 60 * 60)) / (1000 * 60)
                     );
 
-                    return `${hours}h ${minutes}m`;
+                    return `${hours}h ${minutes}m remaining`;
                   })()}
                 </span>
               </div>
@@ -353,9 +369,8 @@ const Todo = () => {
                   ✓
                 </button>
 
-                <span className="block text-sm text-gray-500">
-                  Task Description: {task.task_description}
-                </span>
+                <span>Task Description: {task.task_description}</span>
+
                 <span className="block text-sm text-gray-500">
                   Assigned: {task.assigned}
                 </span>
@@ -366,7 +381,7 @@ const Todo = () => {
                 </span>
               </div>
               <button
-                onClick={() => deleteTask(index, true)}
+                onClick={() => deleteTask(task.task_id)}
                 className="text-red-500 hover:text-red-700 ml-4"
               >
                 Delete

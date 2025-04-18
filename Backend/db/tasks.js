@@ -30,7 +30,7 @@ WHERE task_status = 'In Progress'`);
     if (response.rowCount > 0) {
       return { success: true, response: response.rows };
     } else {
-      return { success: false, response: "No in progress tasks" };
+      return { success: true, message: "No in progress tasks", response: [] };
     }
   } catch (error) {
     return { response: false, error };
@@ -55,7 +55,7 @@ WHERE task_status = 'Unfinished'`);
     if (response.rowCount > 0) {
       return { success: true, response: response.rows };
     } else {
-      return { success: false, response: "No unfinished tasks" };
+      return { success: true, message: "No in progress tasks", response: [] };
     }
   } catch (error) {
     return { response: false, error };
@@ -88,10 +88,24 @@ const markAsDeletedTask = async (task_id) => {
   }
 };
 
+const markAsUnfinishedTask = async (task_id) => {
+  try {
+    const response = await pool.query(
+      `UPDATE tasks SET task_status = 'Unfinished' WHERE task_id = $1`,
+      [task_id]
+    );
+    console.log(response);
+    return { success: response.rowCount > 0, response };
+  } catch (error) {
+    return { success: fakse, error };
+  }
+};
+
 export {
   insertTask,
   fetchInProgressTasks,
   fetchUnfinishedTasks,
   markAsFinishedTask,
   markAsDeletedTask,
+  markAsUnfinishedTask,
 };
