@@ -5,7 +5,6 @@ const TodoPage = () => {
     return (
         <>
             <Navbar />
-            <Sidebar />
             <Todo />
             <Footer />
         </>

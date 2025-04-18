@@ -49,27 +49,29 @@ const TaskListCard = () => {
 
     return (
         <div className="bg-white shadow-md rounded-xl p-4 w-[660px] h-[300px] border border-gray-200">
-            <h2 className="text-base font-semibold mb-3">Tasks</h2>
-            <ul className="space-y-2 text-sm text-gray-700">
-                {tasks.length > 0 ? (
-                    tasks.map((task, index) => (
-                        <li key={index} className="flex items-center">
-                            {/* Checkbox to toggle task completion */}
-                            <input
-                                type="checkbox"
-                                checked={task.completed}
-                                onChange={() => toggleTaskCompletion(index)}
-                                className="w-4 h-4 rounded border-gray-300 focus:ring-0 cursor-pointer"
-                            />
-                            <span className={task.completed ? 'line-through text-gray-400 ml-2' : 'ml-2'}>
-                                {task.title}
-                            </span>
-                        </li>
-                    ))
-                ) : (
-                    <p className="text-gray-500 italic">No tasks available</p>
-                )}
-            </ul>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Task List</h1>
+            <div className='border border-gray-300 rounded-md'>
+                <ul className="m-2 h-50 overflow-y-auto space-y-2 text-sm text-gray-700">
+                    {tasks.length > 0 ? (
+                        tasks.map((task, index) => (
+                            <li key={index} className="flex items-center">
+                                {/* Checkbox to toggle task completion */}
+                                <input
+                                    type="checkbox"
+                                    checked={task.completed}
+                                    onChange={() => toggleTaskCompletion(index)}
+                                    className="w-4 h-4 rounded border-gray-300 focus:ring-0 cursor-pointer"
+                                />
+                                <span className={task.completed ? 'line-through text-gray-400 ml-2' : 'ml-2'}>
+                                    {task.title}
+                                </span>
+                            </li>
+                        ))
+                    ) : (
+                        <p className="text-gray-500 italic">No tasks available</p>
+                    )}
+                </ul>
+            </div>
         </div>
     );
 };

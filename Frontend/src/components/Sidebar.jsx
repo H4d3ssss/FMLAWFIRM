@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Menu, X, Home, Users, Mail, Calendar, BriefcaseBusiness, User, Archive } from 'lucide-react';
+import { Menu, X, Home, Users, Mail, Calendar, BriefcaseBusiness, User, Archive, CheckSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [calendarDropdownOpen, setCalendarDropdownOpen] = useState(false); // Added state for dropdown
 
     const handleSidebarOpen = () => {
         setSidebarOpen(true);
@@ -21,35 +23,53 @@ const Sidebar = () => {
                     }`}
             >
                 <div className="p-4 space-y-4">
-                    <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
+                    <Link to="/AdminDashboard" className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
                         <Home className="w-5 h-5 mr-3" />
                         <span className="text-sm font-medium">Dashboard</span>
-                    </button>
-
-                    <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
+                    </Link>
+                    {/* Dropdown Toggle */}
+                    <button
+                        className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]"
+                        onClick={() => setCalendarDropdownOpen(!calendarDropdownOpen)}
+                    >
                         <Calendar className="w-5 h-5 mr-3" />
                         <span className="text-sm font-medium">Calendar</span>
                     </button>
-
-                    <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
+                    {/* Dropdown Items */}
+                    {calendarDropdownOpen && (
+                        <div className="pl-8 space-y-2">
+                            <Link
+                                to="/calendar"
+                                className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]"
+                            >
+                                <Calendar className="w-4 h-4 mr-2" />
+                                <span className="text-sm font-medium">View Calendar</span>
+                            </Link>
+                            <Link
+                                to="/todo"
+                                className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]"
+                            >
+                                <CheckSquare className="w-4 h-4 mr-2" />
+                                <span className="text-sm font-medium">To-Do</span>
+                            </Link>
+                        </div>
+                    )}
+                    <Link to="/cases" className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
                         <BriefcaseBusiness className="w-5 h-5 mr-3" />
                         <span className="text-sm font-medium">Cases</span>
-                    </button>
-
-                    <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
+                    </Link>
+                    <Link to="/clients" className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
                         <Users className="w-5 h-5 mr-3" />
                         <span className="text-sm font-medium">Clients</span>
-                    </button>
-
-                    <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
+                    </Link>
+                    <Link to="/accounts" className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
                         <User className="w-5 h-5 mr-3" />
                         <span className="text-sm font-medium">Accounts</span>
-                    </button>
-
-                    <button className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
+                    </Link>
+                    <Link to="/archives" className="sidebar-item group flex items-center w-full p-2 rounded-lg transition-colors hover:bg-[#E68900]">
                         <Archive className="w-5 h-5 mr-3" />
                         <span className="text-sm font-medium">Archives</span>
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -68,4 +88,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar; 
+export default Sidebar;

@@ -550,11 +550,10 @@ function RegisterForm() {
 
         {serverMessage && (
           <p
-            className={`text-sm text-center ${
-              serverMessage.includes("success")
+            className={`text-sm text-center ${serverMessage.includes("success")
                 ? "text-green-600"
                 : "text-red-600"
-            }`}
+              }`}
           >
             {serverMessage}
           </p>
@@ -562,11 +561,10 @@ function RegisterForm() {
 
         <button
           type="submit"
-          className={`w-full py-2 rounded-md transition ${
-            isLoading
+          className={`w-full py-2 rounded-md transition ${isLoading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-indigo-600 text-white hover:bg-indigo-700"
-          }`}
+            }`}
           disabled={isLoading}
         >
           {isLoading ? "Processing..." : "Register"}
