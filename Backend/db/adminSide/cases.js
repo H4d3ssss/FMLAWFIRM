@@ -100,6 +100,50 @@ const fetchAwaitingTrialCases = async () => {
   }
 };
 
+const insertNewCase = async (
+  caseTitle,
+  clientId,
+  lawyerId,
+  status,
+  fileName,
+  filePath
+) => {
+  try {
+    const response = await pool.query(
+      `WITH new_case AS (
+  INSERT INTO cases (case_title, client_id, lawyer_id, case_status)
+  VALUES ($1, $2, $3, $4)
+  RETURNING case_id
+)
+
+INSERT INTO documents (case_id, file_name, file_path)
+SELECT case_id, $5, $6
+FROM new_case;`,
+      [caseTitle, clientId, lawyerId, status, fileName, filePath]
+    );
+    return {
+      success: response.rowCount > 0,
+      response: response.rows,
+    };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+const fetchAllCases = async () => {
+  try {
+    const response = await pool.query(`SELECT * FROM "viewAllCases"`);
+
+    if (response.rowCount > 0) {
+      return { success: true, response: response.rows };
+    } else {
+      return { success: true, message: "No cases" };
+    }
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
 export {
   fetchActiveCases,
   fetchClosedCases,
@@ -111,4 +155,6 @@ export {
   fetchArchivedCases,
   fetchUnderReviewCases,
   fetchAwaitingTrialCases,
+  insertNewCase,
+  fetchAllCases,
 };

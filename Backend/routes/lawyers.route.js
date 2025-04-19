@@ -64,7 +64,7 @@ router.get("/", async (req, res) => {
     const response = await fetchLawyers();
 
     if (response.success) {
-      res.status(200).json(response);
+      res.status(200).json(response.response);
     } else {
       res.status(500).json({ message: "Failed to fetch lawyers" });
     }

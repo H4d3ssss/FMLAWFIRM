@@ -6,6 +6,7 @@ import CalendarPage from "./pages/CalendarPage";
 import TodoPage from "./pages/TodoPage";
 import { CasesPage } from "./pages";
 import ClientsPage from "./pages/ClientsPage";
+import ViewFile from "./components/ViewFile";
 
 function AppTest() {
   return (
@@ -22,6 +23,7 @@ function AppTest() {
             <Route path="/todo" element={<TodoPage />} />
             <Route path="/cases" element={<CasesPage />} />
             <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/view-file/:filename" element={<ViewFile />} />
           </Routes>
         </main>
       </div>

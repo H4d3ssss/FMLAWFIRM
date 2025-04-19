@@ -10,7 +10,12 @@ import {
   fetchArchivedCases,
   fetchUnderReviewCases,
   fetchAwaitingTrialCases,
+  insertNewCase,
+  fetchAllCases,
 } from "../db/adminSide/cases.js";
+// import upload from "../middleware/upload.js";
+import multer from "multer";
+
 const router = express.Router();
 
 router.get("/active", async (req, res) => {
@@ -206,6 +211,63 @@ router.get("/awaitingtrial", async (req, res) => {
       messsage:
         "An error has occured in the server while fetching awaiting trial cases",
     });
+  }
+});
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.post("/new-case", upload.single("file"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "no file uploaded" });
+  }
+  try {
+    // console.log(req.file.originalname);
+    const { caseTitle, clientId, lawyerId, status, link } = req.body;
+
+    const filePath = req.file ? req.file.path : link;
+    const fileName = req.file ? req.file.originalname : "Link Provided";
+
+    const response = await insertNewCase(
+      caseTitle,
+      clientId,
+      lawyerId,
+      status,
+      fileName,
+      filePath
+    );
+    console.log(response);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const response = await fetchAllCases();
+
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(error);
+    }
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
