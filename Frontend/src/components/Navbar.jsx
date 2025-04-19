@@ -55,9 +55,6 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <button className="text-gray-800 hover:text-gray-900">
-            <Settings className="w-5 h-5" />
-          </button>
           <div className="w-8 h-8 bg-white rounded-full overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=faces"

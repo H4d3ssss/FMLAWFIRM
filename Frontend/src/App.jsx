@@ -5,6 +5,8 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import RegistrationPage from "./pages/RegistrationPage.jsx";
 import ForgotPass from "./pages/ForgotPass.jsx";
 import Footer from "./components/Footer.jsx";
+import CalendarPage from "./pages/CalendarPage.jsx";
+import CasesPage from "./pages/CasesPage.jsx";
 
 
 function App() {
@@ -24,20 +26,31 @@ function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
+        {/* Conditionally render Sidebar for specific routes */}
+        {location.pathname.startsWith("/AdminDashboard") && <Sidebar />}
+
         <main className="flex-grow">
           <Routes>
+            {/* Default route (LoginPage) */}
             <Route path="/" element={<LoginPage />} />
             <Route path="/LoginPage" element={<LoginPage />} />
+
+            {/* Other pages */}
             <Route path="/ForgotPass" element={<ForgotPass />} />
             <Route path="/AdminDashboard" element={<AdminDashboard />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/cases" element={<CasesPage />} />
             <Route path="/Register" element={<RegistrationPage />} />
           </Routes>
+
         </main>
 
-        {/* This block reserves space, and toggles visibility */}
-        <div>
-          <Footer />
-        </div>
+        {/* Footer visibility logic */}
+        {showFooter && (
+          <div>
+            <Footer />
+          </div>
+        )}
       </div>
     </Router>
   );

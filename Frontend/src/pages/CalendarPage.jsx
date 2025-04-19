@@ -5,7 +5,6 @@ const CalendarPage = () => {
     return (
         <>
             <Navbar />
-            <Sidebar />
             <Calendar />
             <Footer />
         </>

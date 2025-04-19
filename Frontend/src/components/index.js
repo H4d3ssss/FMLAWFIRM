@@ -15,6 +15,14 @@ import TaskListCard from "./TaskListCard";
 import PendingCaseCard from "./PendingCaseCard";
 import UpcomingEventCard from "./UpcomingEventCard";
 import TasksDueCard from "./TaskDueCard";
+import UpcomingEvent from "./UpcomingEvent";
+import AdminActivityLog from "./AdminActivityLog";
+import AdminCaseTable from "./AdminCaseTable";
+import AddCaseModal from "./AddCaseModal";
+import EditCaseModal from "./EditCaseModal";
+import ViewCaseModal from "./ViewCaseModal";
+import ArchiveCaseModal from "./ArchiveCaseModal";
+import AdminClientsTable from "./AdminClientsTable";
 
 export {
     Navbar,
@@ -34,4 +42,12 @@ export {
     PendingCaseCard,
     UpcomingEventCard,
     TasksDueCard,
+    UpcomingEvent,
+    AdminActivityLog,
+    AdminCaseTable,
+    AddCaseModal,
+    EditCaseModal,
+    ViewCaseModal,
+    ArchiveCaseModal,
+    AdminClientsTable,
 }
