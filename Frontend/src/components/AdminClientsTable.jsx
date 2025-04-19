@@ -4,15 +4,6 @@ import AddClientModal from './AddClientModal'; // Import AddClientModal
 
 const AdminClientsTable = () => {
     const [clients, setClients] = useState([
-        {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'johndoe@example.com',
-            phone: '+63 999-999-9999',
-            sex: 'Male',
-            birthDate: '1990-01-01',
-            address: '123 Main St, Barangay 1, City A, Province B, Region C, 12345',
-        },
     ]);
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -110,7 +101,7 @@ const AdminClientsTable = () => {
                                 <td className="p-3">{client.phone}</td>
                                 <td className="p-3">{client.sex}</td>
                                 <td className="p-3">{client.birthDate}</td>
-                                <td className="p-3">{client.address}</td> {/* Ensure this is correct */}
+                                <td className="p-3">{client.fullAddress}</td> {/* Ensure this is correct */}
                                 <td className="p-3 flex space-x-2">
                                     <button className="text-blue-500 hover:bg-blue-100 p-2 rounded">
                                         <Edit size={18} />

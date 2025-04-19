@@ -6,7 +6,7 @@ import citiesData from './data/cities.json';
 import barangaysData from './data/barangays.json';
 
 const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
-    const [formData, setFormData] = useState({
+    const initialFormData = {
         firstName: '',
         lastName: '',
         email: '',
@@ -20,8 +20,9 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
         city: '',
         barangay: '',
         zipCode: '',
-    });
+    };
 
+    const [formData, setFormData] = useState(initialFormData);
     const [locationIds, setLocationIds] = useState({
         region: '',
         province: '',
@@ -31,7 +32,17 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
     const [filteredProvinces, setFilteredProvinces] = useState([]);
     const [filteredCities, setFilteredCities] = useState([]);
     const [filteredBarangays, setFilteredBarangays] = useState([]);
-    const [submittedAddress, setSubmittedAddress] = useState('');
+
+    // Reset form data when the modal is reopened
+    useEffect(() => {
+        if (!showModal) {
+            setFormData(initialFormData);
+            setLocationIds({ region: '', province: '', city: '' });
+            setFilteredProvinces([]);
+            setFilteredCities([]);
+            setFilteredBarangays([]);
+        }
+    }, [showModal]);
 
     useEffect(() => {
         if (locationIds.region) {
@@ -73,9 +84,6 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
         const { name, value } = e.target;
 
         if (['region', 'province', 'city', 'barangay'].includes(name)) {
-            const selectedOption = e.target.options[e.target.selectedIndex];
-            const locationName = selectedOption.text;
-
             setLocationIds((prev) => ({ ...prev, [name]: value }));
             setFormData((prev) => ({ ...prev, [name]: value })); // Store the ID
             return;
@@ -90,7 +98,7 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
         const regionName = regionsData.find((r) => r.id === locationIds.region)?.name || '';
         const provinceName = provincesData.find((p) => p.id === locationIds.province)?.name || '';
         const cityName = citiesData.find((c) => c.id === locationIds.city)?.name || '';
-        const barangayName = barangaysData.find((b) => b.id === formData.barangay)?.name || ''; // Use ID here
+        const barangayName = barangaysData.find((b) => b.id === formData.barangay)?.name || '';
 
         const fullAddress = `${formData.houseNumber}, ${formData.streetName}, ${barangayName}, ${cityName}, ${provinceName}, ${regionName}, ${formData.zipCode}`;
         const clientData = {
@@ -98,9 +106,8 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
             fullAddress,
         };
 
-        setSubmittedAddress(fullAddress);
         handleAddClient(clientData);
-        closeModal();
+        closeModal(); // Close the modal after submission
     };
 
     if (!showModal) return null;
@@ -367,13 +374,6 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient }) => {
                             Add Client
                         </button>
                     </form>
-
-                    {submittedAddress && (
-                        <div className="mt-4 p-4 bg-gray-100 rounded">
-                            <h3 className="text-sm font-bold">Submitted Address:</h3>
-                            <p className="text-sm">{submittedAddress}</p>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

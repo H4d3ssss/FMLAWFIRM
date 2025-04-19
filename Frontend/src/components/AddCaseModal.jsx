@@ -1,8 +1,37 @@
-import React, { useState } from 'react';
-import { FileText, Link, X } from 'lucide-react'; // Importing Lucide icons
+import React, { useState, useEffect } from 'react';
+import { FileText, Link, X } from 'lucide-react';
 
 const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
-    const [useLink, setUseLink] = useState(false); // Toggle between file upload and link input
+    const [useLink, setUseLink] = useState(false);
+    const [clients, setClients] = useState([]); // Placeholder for clients
+    const [lawyers, setLawyers] = useState([]); // Placeholder for lawyers
+    const [selectedClient, setSelectedClient] = useState('');
+    const [selectedLawyer, setSelectedLawyer] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState(''); // For status dropdown
+
+    // General case statuses
+    const caseStatuses = [
+        'Open',
+        'In Progress',
+        'Pending',
+        'On Hold',
+        'Resolved',
+        'Closed',
+        'Reopened',
+        'Cancelled',
+    ];
+
+    // Temporary mock data for clients and lawyers
+    useEffect(() => {
+        setClients([
+            { id: '1', name: 'John Doe' },
+            { id: '2', name: 'Jane Smith' },
+        ]);
+        setLawyers([
+            { id: '1', name: 'Attorney A' },
+            { id: '2', name: 'Attorney B' },
+        ]);
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -10,14 +39,14 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
         const formData = {
             caseNo: event.target.caseNo.value,
             title: event.target.title.value,
-            client: event.target.client.value,
-            dateAdded: event.target.dateAdded.value,
-            status: event.target.status.value,
-            lastUpdate: event.target.lastUpdate.value,
-            lawyer: event.target.lawyer.value,
+            clientId: selectedClient, // Use client ID for database reference
+            status: selectedStatus, // Use selected status
+            lawyerId: selectedLawyer, // Use lawyer ID for database reference
             fileOrLink: useLink
-                ? event.target.link.value // Store link if chosen
-                : event.target.file.files[0], // Store file if chosen
+                ? event.target.link.value
+                : event.target.file.files[0], // File or link
+            dateAdded: new Date().toISOString(), // Automatically set current date
+            lastUpdate: new Date().toISOString(), // Automatically set current date
         };
 
         handleAddCase(formData); // Pass data to parent component
@@ -68,48 +97,61 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                             <label htmlFor="client" className="block text-sm font-medium">
                                 Client
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 id="client"
                                 name="client"
                                 className="border border-gray-300 rounded w-full px-3 py-2"
+                                value={selectedClient}
+                                onChange={(e) => setSelectedClient(e.target.value)}
                                 required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="dateAdded" className="block text-sm font-medium">
-                                Date Added
-                            </label>
-                            <input
-                                type="datetime-local"
-                                id="dateAdded"
-                                name="dateAdded"
-                                className="border border-gray-300 rounded w-full px-3 py-2"
-                                required
-                            />
+                            >
+                                <option value="" disabled>Select a client</option>
+                                {clients.map((client) => (
+                                    <option key={client.id} value={client.id}>
+                                        {client.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="status" className="block text-sm font-medium">
                                 Status
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 id="status"
                                 name="status"
                                 className="border border-gray-300 rounded w-full px-3 py-2"
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.target.value)}
                                 required
-                            />
+                            >
+                                <option value="" disabled>Select a status</option>
+                                {caseStatuses.map((status, index) => (
+                                    <option key={index} value={status}>
+                                        {status}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="lastUpdate" className="block text-sm font-medium">
-                                Last Update
+                            <label htmlFor="lawyer" className="block text-sm font-medium">
+                                Lawyer
                             </label>
-                            <input
-                                type="datetime-local"
-                                id="lastUpdate"
-                                name="lastUpdate"
+                            <select
+                                id="lawyer"
+                                name="lawyer"
                                 className="border border-gray-300 rounded w-full px-3 py-2"
-                            />
+                                value={selectedLawyer}
+                                onChange={(e) => setSelectedLawyer(e.target.value)}
+                                required
+                            >
+                                <option value="" disabled>Select a lawyer</option>
+                                {lawyers.map((lawyer) => (
+                                    <option key={lawyer.id} value={lawyer.id}>
+                                        {lawyer.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         {/* File Upload or Link Input */}
@@ -160,17 +202,6 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                             )}
                         </div>
 
-                        <div className="mb-4">
-                            <label htmlFor="lawyer" className="block text-sm font-medium">
-                                Lawyer
-                            </label>
-                            <input
-                                type="text"
-                                id="lawyer"
-                                name="lawyer"
-                                className="border border-gray-300 rounded w-full px-3 py-2"
-                            />
-                        </div>
                         <button
                             type="submit"
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
