@@ -6,10 +6,14 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
   const [useLink, setUseLink] = useState(false); // Toggle between file upload and link input
   const [approvedClients, setApprovedClients] = useState([]);
   const [lawyers, setLawyers] = useState([]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-
     const formData = new FormData();
+    console.log(event.target.title.value);
+    console.log(event.target.status.value);
+    console.log(event.target.lawyer.value);
+    console.log(event.target.client.value);
     formData.append("caseTitle", event.target.title.value);
     formData.append("clientId", event.target.client.value);
     formData.append("status", event.target.status.value);
@@ -21,6 +25,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
     // } else {
     //   formData.append("file", event.target.file.files[0]); // Important for Multer
     // }
+    console.log(formData);
     addCase(formData); // Pass data to parent component
     closeModal(); // Close the modal
   };
@@ -119,7 +124,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 Status
               </label>
               <select
-                name="client"
+                name="status"
                 className="border border-gray-300 rounded w-full px-3 py-2"
               >
                 <option value="" defaultChecked>

@@ -14,7 +14,7 @@ const AdminCaseTable = () => {
   const [showViewModal, setShowViewModal] = useState(false); // Control ViewCaseModal visibility
   const [showArchiveModal, setShowArchiveModal] = useState(false); // Control ArchiveCaseModal visibility
   const [currentCase, setCurrentCase] = useState(null); // Store the current case for editing/viewing/archiving
-
+  const [count, setCount] = useState(0);
   const fetchAllCases = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/cases");
@@ -28,7 +28,7 @@ const AdminCaseTable = () => {
   useEffect(() => {
     fetchAllCases();
     console.log(cases);
-  }, []);
+  }, [showAddModal, showEditModal, showViewModal, showArchiveModal, count]);
 
   const handleEditCase = (updatedCase) => {
     const updatedCases = cases.map((caseItem) =>
@@ -50,13 +50,14 @@ const AdminCaseTable = () => {
   };
 
   const handleViewButtonClick = (caseItem) => {
-    // setCurrentCase(caseItem); // Set the current case for viewing
-    // setShowViewModal(true); // Show the ViewCaseModal
+    setCurrentCase(caseItem); // Set the current case for viewing
+    setShowViewModal(true); // Show the ViewCaseModal
   };
 
   const handleArchiveButtonClick = (caseItem) => {
-    // setCurrentCase(caseItem); // Set the current case for archiving
-    // setShowArchiveModal(true); // Show the ArchiveCaseModal
+    setCurrentCase(caseItem); // Set the current case for archiving
+    setShowArchiveModal(true); // Show the ArchiveCaseModal
+    console.log(caseItem);
   };
 
   // Filtering Cases
@@ -92,16 +93,19 @@ const AdminCaseTable = () => {
             <option value="">Filter by Case No.</option>
             {cases
               ? cases.map((item, index) => (
-                <option key={index} value={item.caseNo}>
-                  {item.caseNo}
-                </option>
-              ))
+                  <option key={index} value={item.caseNo}>
+                    {item.caseNo}
+                  </option>
+                ))
               : "No cases"}
           </select>
         </div>
         <button
           className="bg-green-500 text-white px-6 py-2 mt-4 md:mt-0 rounded hover:bg-green-600"
-          onClick={() => setShowAddModal(true)} // Open AddCaseModal
+          onClick={() => {
+            setShowAddModal(true);
+            setCount((prev) => prev + 1);
+          }} // Open AddCaseModal
         >
           NEW CASE
         </button>
@@ -136,7 +140,9 @@ const AdminCaseTable = () => {
                     {caseValue.time_only} | {caseValue.date_only}
                   </td>
                   <td className="p-3">{caseValue.case_status}</td>
-                  <td className="p-3">{caseValue.last_update}</td>
+                  <td className="p-3">
+                    {caseValue.last_time_only} | {caseValue.last_date_only}
+                  </td>
                   <td className="p-3">
                     <a
                       href={`http://localhost:3000/${caseValue.file_path}`} // full backend path
@@ -159,13 +165,13 @@ const AdminCaseTable = () => {
                     </button>
                     <button
                       className="text-green-500 hover:bg-green-100 p-2 rounded"
-                      onClick={() => handleViewButtonClick(item)} // Open ViewCaseModal
+                      onClick={() => handleViewButtonClick(caseValue)} // Open ViewCaseModal
                     >
                       <Eye size={18} />
                     </button>
                     <button
                       className="text-red-500 hover:bg-red-100 p-2 rounded"
-                      onClick={() => handleArchiveButtonClick(item)} // Open ArchiveCaseModal
+                      onClick={() => handleArchiveButtonClick(caseValue)} // Open ArchiveCaseModal
                     >
                       <Archive size={18} />
                     </button>

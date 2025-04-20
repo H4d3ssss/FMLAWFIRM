@@ -12,6 +12,9 @@ import {
   fetchAwaitingTrialCases,
   insertNewCase,
   fetchAllCases,
+  fetchCaseByCaseId,
+  updateCase,
+  archiveCase,
 } from "../db/adminSide/cases.js";
 // import upload from "../middleware/upload.js";
 import multer from "multer";
@@ -266,6 +269,52 @@ router.get("/", async (req, res) => {
     } else {
       res.status(500).json(error);
     }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.patch("/edit-case", upload.single("file"), async (req, res) => {
+  try {
+    // Log the incoming file and data
+    console.log("Uploaded file:", req.file);
+    console.log("Body data:", req.body);
+
+    const data = req.body;
+
+    // If a file was uploaded
+    if (req.file) {
+      data.fileName = req.file.originalname;
+      data.filePath = `/uploads/${req.file.filename}`; // Path for the file stored in the DB
+    }
+
+    // Log the data being sent for the case update
+    console.log("Data to update:", data);
+
+    // Call the update function
+    const response = await updateCase(data);
+
+    if (response) {
+      res.status(200).json(response.response);
+    } else {
+      res.status(500).json({ error: "Update failed" });
+    }
+  } catch (error) {
+    console.error("Error in /edit-case:", error); // Better logging of the error
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/archived-case", async (req, res) => {
+  try {
+    const { caseId } = req.body;
+    const response = await archiveCase(caseId);
+
+    console.log(!response.success);
+    if (!response.success)
+      return res.status(404).json({ message: response.message });
+
+    res.status(200).json({ message: response.message });
   } catch (error) {
     res.status(500).json(error);
   }

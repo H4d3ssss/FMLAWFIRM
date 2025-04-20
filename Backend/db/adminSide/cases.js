@@ -132,7 +132,9 @@ FROM new_case;`,
 
 const fetchAllCases = async () => {
   try {
-    const response = await pool.query(`SELECT * FROM "viewAllCases"`);
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases2" WHERE case_status != 'Archived'`
+    );
 
     if (response.rowCount > 0) {
       return { success: true, response: response.rows };
@@ -141,6 +143,77 @@ const fetchAllCases = async () => {
     }
   } catch (error) {
     return { success: false, error };
+  }
+};
+
+const fetchCaseByCaseId = async (case_id) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases" WHERE case_id = $1`,
+      [case_id]
+    );
+
+    if (response.rowCount > 0) {
+      return { success: true, response: response.rows };
+    } else {
+      return { success: true, message: "No cases" };
+    }
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+// WAIT FETCH MUNA DETAISL PARA SA EDIT CASE MODAL PS PA ADD NUNG LAST UPDATED BY AND YUNG NAME
+const updateCase = async (data, fileName, filePath) => {
+  const query1 = `UPDATE cases
+SET case_title = $1,
+    case_status = $2,
+    last_update = NOW(),
+    updated_by = $3
+WHERE case_id = $4;`;
+  const query2 = `UPDATE documents
+SET file_name = $1,
+    file_path = $2
+WHERE case_id = $3;`;
+  try {
+    const response = await pool.query(query1, [
+      data.caseTitle,
+      data.caseStatus,
+      data.lawyerId,
+      data.caseId,
+    ]);
+    const response1 = await pool.query(query2, [
+      data.fileName,
+      data.filePath,
+      data.caseId,
+    ]);
+    console.log(response);
+    if (response.rowCount > 0) {
+      return { success: true, response: response.rows };
+    } else {
+      return { success: true, response: "Failed to update" };
+    }
+  } catch (error) {
+    return { error };
+  }
+};
+
+const archiveCase = async (caseId) => {
+  try {
+    const response = await pool.query(
+      `UPDATE cases SET case_status = 'Archived' WHERE case_id = $1`,
+      [caseId]
+    );
+
+    if (response.rowCount > 0) {
+      return {
+        success: true,
+        message: "Successfully arvhived case id: " + caseId,
+      };
+    } else {
+      return { success: false, message: "Case id cannot be found" };
+    }
+  } catch (error) {
+    return { error };
   }
 };
 
@@ -157,4 +230,7 @@ export {
   fetchAwaitingTrialCases,
   insertNewCase,
   fetchAllCases,
+  fetchCaseByCaseId,
+  updateCase,
+  archiveCase,
 };
