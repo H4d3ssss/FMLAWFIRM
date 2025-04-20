@@ -92,10 +92,10 @@ const AdminCaseTable = () => {
             <option value="">Filter by Case No.</option>
             {cases
               ? cases.map((item, index) => (
-                  <option key={index} value={item.caseNo}>
-                    {item.caseNo}
-                  </option>
-                ))
+                <option key={index} value={item.caseNo}>
+                  {item.caseNo}
+                </option>
+              ))
               : "No cases"}
           </select>
         </div>
@@ -153,7 +153,7 @@ const AdminCaseTable = () => {
                   <td className="p-3 flex space-x-2">
                     <button
                       className="text-blue-500 hover:bg-blue-100 p-2 rounded"
-                      onClick={() => handleEditButtonClick(caseValue)} // Open EditCaseModal
+                      onClick={() => handleEditButtonClick(caseValue)} // Pass caseValue to EditCaseModal
                     >
                       <Edit size={18} />
                     </button>

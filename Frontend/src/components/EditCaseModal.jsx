@@ -49,7 +49,7 @@ const EditCaseModal = ({ showModal, closeModal, handleEditCase, existingCase }) 
                                 type="text"
                                 id="caseNo"
                                 name="caseNo"
-                                defaultValue={existingCase?.caseNo}
+                                defaultValue={existingCase?.caseNo || existingCase?.case_id} // Pre-fill with caseNo or case_id
                                 className="border border-gray-300 rounded w-full px-3 py-2"
                                 required
                             />
