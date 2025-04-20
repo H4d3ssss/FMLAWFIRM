@@ -16,6 +16,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
     console.log(event.target.client.value);
     formData.append("caseTitle", event.target.title.value);
     formData.append("clientId", event.target.client.value);
+    console.log("im here");
     formData.append("status", event.target.status.value);
     formData.append("lawyerId", event.target.lawyer.value);
     formData.append("file", event.target.file.files[0]); // Important for Multer
