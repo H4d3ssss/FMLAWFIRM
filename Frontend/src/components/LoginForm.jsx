@@ -33,12 +33,23 @@ function LoginForm() {
     // Proceed with login logic
 
     try {
+      const response = await axios.get("http://localhost:3000/api/auth/getme", {
+        withCredentials: true,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/login",
         formData
       );
-      console.log(response);
-      navigate("/AdminDashboard"); // testing lang kung gumagana login ahahahah
+      console.log(response.data.role);
+      response.data.role === "Client"
+        ? navigate("/Clientdashboard")
+        : navigate("/admindashboard");
     } catch (error) {
       console.log(error.status);
       if (error.status === 401) {
@@ -75,8 +86,9 @@ function LoginForm() {
           <input
             name="email"
             type="email"
-            className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
+            className={`w-full px-3 py-2 border ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
             value={formData.email}
             onChange={handleChange}
           />
@@ -91,8 +103,9 @@ function LoginForm() {
           <input
             name="password"
             type="password"
-            className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
+            className={`w-full px-3 py-2 border ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
             value={formData.password}
             onChange={handleChange}
           />

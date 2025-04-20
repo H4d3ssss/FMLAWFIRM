@@ -7,15 +7,31 @@ import caseRoutes from "./routes/cases.route.js";
 import appointmentRoutes from "./routes/appointments.route.js";
 import authRoutes from "./routes/auth.route.js";
 import taskRoutes from "./routes/tasks.route.js";
-
+import sessions from "express-session";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
-
+app.use(
+  sessions({
+    secret: process.env.SECRET_KEY,
+    saveUninitialized: false,
+    resave: false,
+    cooke: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/lawyers", lawyerRoutes);

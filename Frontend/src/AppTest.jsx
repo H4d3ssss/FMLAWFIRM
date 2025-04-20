@@ -4,7 +4,7 @@ import Sidebar from "./components/Sidebar";
 import AdminDashboard from "./pages/AdminDashboard";
 import CalendarPage from "./pages/CalendarPage";
 import TodoPage from "./pages/TodoPage";
-import { CasesPage } from "./pages";
+import { CasesPage, LoginPage, ClientDashboard } from "./pages";
 import ClientsPage from "./pages/ClientsPage";
 import ViewFile from "./components/ViewFile";
 
@@ -18,7 +18,9 @@ function AppTest() {
         {/* Main Content */}
         <main className="flex-grow">
           <Routes>
+            <Route path="/" element={<LoginPage />} />
             <Route path="/AdminDashboard" element={<AdminDashboard />} />
+            <Route path="/ClientDashboard" element={<ClientDashboard />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/todo" element={<TodoPage />} />
             <Route path="/cases" element={<CasesPage />} />
