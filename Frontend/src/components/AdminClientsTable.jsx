@@ -1,53 +1,39 @@
 import React, { useState } from 'react';
 import { Edit, Eye, Trash2, Search } from 'lucide-react'; // Lucide React icons
 import AddClientModal from './AddClientModal'; // Import AddClientModal
+import EditClientModal from './EditClientModal'; // Import EditClientModal
 
 const AdminClientsTable = () => {
-    const [clients, setClients] = useState([
-    ]);
-
+    const [clients, setClients] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [showAddModal, setShowAddModal] = useState(false); // Control AddClientModal visibility
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false); // Control EditClientModal visibility
+    const [selectedClient, setSelectedClient] = useState(null); // Store the client being edited
+
+    const getNextClientId = () => {
+        return `CLI-${String(101 + clients.length).padStart(3, '0')}`; // Calculate the next client ID
+    };
 
     const handleAddClient = (newClient) => {
-        console.log('New Client:', newClient); // Debugging
-        setClients([...clients, newClient]);
+        const clientId = getNextClientId(); // Use getNextClientId function
+        const clientWithClientId = { ...newClient, clientId }; // Add CLIENT ID to client data
+        setClients([...clients, clientWithClientId]);
     };
 
-    const handleAddClientData = (formData, fullAddress) => {
-        const clientData = {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            sex: formData.sex,
-            birthDate: formData.birthDate,
-            address: fullAddress, // Ensure fullAddress is passed here
-        };
-        handleAddClient(clientData);
+    const handleEditClient = (updatedClient) => {
+        // Update the client in the clients array
+        const updatedClients = clients.map((client) =>
+            client.clientId === updatedClient.clientId ? updatedClient : client
+        );
+        setClients(updatedClients);
+        setShowEditModal(false); // Close the modal after editing
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const regionName = regionsData.find((r) => r.id === locationIds.region)?.name || '';
-        const provinceName = provincesData.find((p) => p.id === locationIds.province)?.name || '';
-        const cityName = citiesData.find((c) => c.id === locationIds.city)?.name || '';
-        const barangayName = barangaysData.find((b) => b.name === formData.barangay)?.name || '';
-
-        const fullAddress = `${formData.houseNumber}, ${formData.streetName}, ${barangayName}, ${cityName}, ${provinceName}, ${regionName}, ${formData.zipCode}`;
-        console.log('Full Address:', fullAddress); // Debugging
-
-        const clientData = {
-            ...formData,
-            fullAddress,
-        };
-
-        handleAddClient(clientData);
-        closeModal();
+    const handleEditButtonClick = (client) => {
+        setSelectedClient(client); // Set the client to be edited
+        setShowEditModal(true); // Open the EditClientModal
     };
 
-    // Filtering Clients
     const filteredClients = clients.filter((client) =>
         `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -82,6 +68,7 @@ const AdminClientsTable = () => {
                 <table className="table-auto border-collapse w-full rounded-b-2xl">
                     <thead className="bg-gray-200">
                         <tr>
+                            <th className="p-3">CLIENT ID</th>
                             <th className="p-3">First Name</th>
                             <th className="p-3">Last Name</th>
                             <th className="p-3">Email</th>
@@ -95,15 +82,19 @@ const AdminClientsTable = () => {
                     <tbody>
                         {filteredClients.map((client, index) => (
                             <tr key={index} className="odd:bg-white even:bg-gray-100">
+                                <td className="p-3">{client.clientId}</td>
                                 <td className="p-3">{client.firstName}</td>
                                 <td className="p-3">{client.lastName}</td>
                                 <td className="p-3">{client.email}</td>
                                 <td className="p-3">{client.phone}</td>
                                 <td className="p-3">{client.sex}</td>
                                 <td className="p-3">{client.birthDate}</td>
-                                <td className="p-3">{client.fullAddress}</td> {/* Ensure this is correct */}
+                                <td className="p-3">{client.fullAddress}</td>
                                 <td className="p-3 flex space-x-2">
-                                    <button className="text-blue-500 hover:bg-blue-100 p-2 rounded">
+                                    <button
+                                        className="text-blue-500 hover:bg-blue-100 p-2 rounded"
+                                        onClick={() => handleEditButtonClick(client)} // Open EditClientModal
+                                    >
                                         <Edit size={18} />
                                     </button>
                                     <button className="text-green-500 hover:bg-green-100 p-2 rounded">
@@ -123,7 +114,16 @@ const AdminClientsTable = () => {
             <AddClientModal
                 showModal={showAddModal}
                 closeModal={() => setShowAddModal(false)}
-                handleAddClient={handleAddClient} // Pass handleAddClient here
+                handleAddClient={handleAddClient}
+                nextClientId={getNextClientId()}
+            />
+
+            {/* EditClientModal */}
+            <EditClientModal
+                showModal={showEditModal}
+                closeModal={() => setShowEditModal(false)}
+                clientData={selectedClient} // Pass the selected client to edit
+                handleEditClient={handleEditClient} // Pass the edit handler
             />
         </div>
     );
