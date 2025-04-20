@@ -23,7 +23,9 @@ import EditCaseModal from "./EditCaseModal";
 import ViewCaseModal from "./ViewCaseModal";
 import ArchiveCaseModal from "./ArchiveCaseModal";
 import AdminClientsTable from "./AdminClientsTable";
-
+import AddClientModal from "./AddClientModal";
+import EditClientModal from "./EditClientModal";
+import ArchiveClientModal from "./ArchiveClientModal";
 export {
     Navbar,
     Sidebar,
@@ -50,4 +52,8 @@ export {
     ViewCaseModal,
     ArchiveCaseModal,
     AdminClientsTable,
+    AddClientModal,
+    EditClientModal,
+    ArchiveClientModal,
+
 }

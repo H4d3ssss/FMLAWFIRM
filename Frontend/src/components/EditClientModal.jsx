@@ -5,25 +5,8 @@ import provincesData from './data/provinces.json';
 import citiesData from './data/cities.json';
 import barangaysData from './data/barangays.json';
 
-const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }) => {
-    const initialFormData = {
-        clientId: nextClientId || '', // Use the nextClientId prop
-        firstName: '',
-        lastName: '',
-        email: '',
-        birthDate: '',
-        sex: '',
-        phone: '',
-        houseNumber: '',
-        streetName: '',
-        region: '',
-        province: '',
-        city: '',
-        barangay: '',
-        zipCode: '',
-    };
-
-    const [formData, setFormData] = useState(initialFormData);
+const EditClientModal = ({ showModal, closeModal, clientData, handleEditClient }) => {
+    const [formData, setFormData] = useState(clientData);
     const [locationIds, setLocationIds] = useState({
         region: '',
         province: '',
@@ -34,31 +17,27 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
     const [filteredCities, setFilteredCities] = useState([]);
     const [filteredBarangays, setFilteredBarangays] = useState([]);
 
-    // Reset form data when the modal is reopened
     useEffect(() => {
-        if (!showModal) {
-            setFormData(initialFormData);
+        if (clientData) {
+            setFormData(clientData);
+            const region = regionsData.find((r) => r.name === clientData.region);
+            const province = provincesData.find((p) => p.name === clientData.province);
+            const city = citiesData.find((c) => c.name === clientData.city);
+            setLocationIds({
+                region: region?.id || '',
+                province: province?.id || '',
+                city: city?.id || '',
+            });
+        } else {
+            setFormData({});
             setLocationIds({ region: '', province: '', city: '' });
-            setFilteredProvinces([]);
-            setFilteredCities([]);
-            setFilteredBarangays([]);
         }
-    }, [showModal]);
-
-    useEffect(() => {
-        if (showModal) {
-            setFormData((prev) => ({ ...prev, clientId: nextClientId })); // Update clientId when modal opens
-        }
-    }, [showModal, nextClientId]);
+    }, [clientData]);
 
     useEffect(() => {
         if (locationIds.region) {
             const provinces = provincesData.filter((p) => p.region_id === locationIds.region);
             setFilteredProvinces(provinces);
-            setFormData((prev) => ({ ...prev, province: '', city: '', barangay: '' }));
-            setLocationIds((prev) => ({ ...prev, province: '', city: '' }));
-            setFilteredCities([]);
-            setFilteredBarangays([]);
         }
     }, [locationIds.region]);
 
@@ -68,9 +47,6 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
                 (c) => c.province_id === locationIds.province && c.region_id === locationIds.region
             );
             setFilteredCities(cities);
-            setFormData((prev) => ({ ...prev, city: '', barangay: '' }));
-            setLocationIds((prev) => ({ ...prev, city: '' }));
-            setFilteredBarangays([]);
         }
     }, [locationIds.province, locationIds.region]);
 
@@ -83,7 +59,6 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
                     b.region_id === locationIds.region
             );
             setFilteredBarangays(barangays);
-            setFormData((prev) => ({ ...prev, barangay: '' }));
         }
     }, [locationIds.city, locationIds.province, locationIds.region]);
 
@@ -92,7 +67,7 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
 
         if (['region', 'province', 'city', 'barangay'].includes(name)) {
             setLocationIds((prev) => ({ ...prev, [name]: value }));
-            setFormData((prev) => ({ ...prev, [name]: value })); // Store the ID
+            setFormData((prev) => ({ ...prev, [name]: value }));
             return;
         }
 
@@ -108,13 +83,14 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
         const barangayName = barangaysData.find((b) => b.id === formData.barangay)?.name || '';
 
         const fullAddress = `${formData.houseNumber}, ${formData.streetName}, ${barangayName}, ${cityName}, ${provinceName}, ${regionName}, ${formData.zipCode}`;
-        const clientData = {
+        const updatedClientData = {
             ...formData,
+            clientId: formData.clientId, // Ensure clientId is included
             fullAddress,
         };
 
-        handleAddClient(clientData); // Pass clientData to AdminClientsTable
-        closeModal(); // Close the modal after submission
+        handleEditClient(updatedClientData);
+        closeModal();
     };
 
     if (!showModal) return null;
@@ -122,17 +98,12 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
     return (
         <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative overflow-y-auto max-h-[90vh]">
-                {/* Modal Header */}
-                <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-center items-center">
-                    <h2 className="text-lg font-bold">Add New Client</h2>
-                </div>
-                <div className="absolute top-4 right-4">
+                <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-between items-center">
+                    <h2 className="text-lg font-bold">Edit Client</h2>
                     <button onClick={closeModal} className="text-black text-xl font-bold">
                         <X size={24} />
                     </button>
                 </div>
-
-                {/* Modal Body */}
                 <div className="p-6">
                     <form onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -395,7 +366,7 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
                             type="submit"
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full mt-4"
                         >
-                            Add Client
+                            Save Changes
                         </button>
                     </form>
                 </div>
@@ -404,4 +375,4 @@ const AddClientModal = ({ showModal, closeModal, handleAddClient, nextClientId }
     );
 };
 
-export default AddClientModal;
+export default EditClientModal;
