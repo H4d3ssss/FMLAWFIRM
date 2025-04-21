@@ -13,14 +13,6 @@ import { userExist } from "../db/users.js";
 
 const router = express.Router();
 
-const isLawyer = (req, res, next) => {
-  if (req.session.user && req.session.user.role === "Lawyer") {
-    next();
-  } else {
-    return res.redirect("/login");
-  }
-};
-
 router.post("/resetpassword", async (req, res) => {
   try {
     const { email } = req.body;
@@ -154,13 +146,15 @@ router.post("/login", async (req, res) => {
       );
 
       if (isValid || isValid1) {
+        console.log(user.response[0]);
         // console.log(req.session.user);
         req.session.user = {
+          userId: user.response[0].user_id,
           email: user.response[0].email,
           role: user.response[0].role,
         };
         console.log(req.session.user);
-        res.status(200).json({ role: "Client" });
+        res.status(200).json(req.session.user);
       } else {
         res.status(401).json({ message: "Bad Credentials" });
       }
@@ -172,13 +166,14 @@ router.post("/login", async (req, res) => {
       );
 
       if (!isValid) return res.status(401).json({ message: "Bad Credentials" });
-
+      // console.log(user.response[0]);
       req.session.user = {
+        userId: user.response[0].user_id,
         email: user.response[0].email,
         role: user.response[0].role,
       };
       console.log(req.session.user);
-      res.status(200).json({ role: "Lawyer" });
+      res.status(200).json(req.session.user);
     }
 
     // if (!isValid) return res.status(401).json({ message: "Bad Credentials" });
@@ -187,25 +182,11 @@ router.post("/login", async (req, res) => {
   }
 });
 
-const requireLogin = (req, res, next) => {
-  if (!req.session.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  next();
-};
-
-const requireRole = (role) => (req, res, next) => {
-  if (req.session.user?.role !== role) {
-    return res.status(403).json({ message: "Forbidden" });
-  }
-  next();
-};
-
-router.get("/getme", (req, res) => {
+router.get("/authenticate-user", (req, res) => {
   if (!req.session.user)
-    return res.status(401).json({ message: "You are unauthorized" });
-  console.log(req.session.user.role);
-  res.status(200).json({ role: req.session.user.role });
+    return res.status(401).json({ message: "Unauthorized" });
+
+  res.status(200).json(req.session.user);
 });
 
 router.get("/logout", async (req, res) => {

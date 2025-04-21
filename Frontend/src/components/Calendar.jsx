@@ -7,7 +7,7 @@ import axios from "axios";
 import EventAddForm from "../components/EventAddForm";
 import EventEditForm from "../components/EventEditForm";
 import EventViewModal from "../components/EventViewModal"; // Import the Event Modal for viewing
-
+import { useNavigate } from "react-router-dom";
 const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -15,6 +15,33 @@ const Calendar = () => {
   const [viewModalOpen, setViewModalOpen] = useState(false); // For viewing events
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [count, setCount] = useState(0);
+
+  const navigate = useNavigate();
+  axios.defaults.withCredentials = true;
+
+  useEffect(() => {
+    const authenticateUser = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/auth/authenticate-user"
+        );
+
+        console.log(response.data);
+        if (response.data.role === "Lawyer") {
+          navigate("/calendar");
+        } else if (response.data.role === "Client") {
+          navigate("/clientdashboard");
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        navigate("/");
+        console.log(error);
+      }
+    };
+    authenticateUser();
+  }, []);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -40,16 +67,19 @@ const Calendar = () => {
             endTime: event.end_time,
           },
         }));
+        console.log(formatted);
         setEvents(formatted); // Set the events in state
       } catch (err) {
         console.error("Failed to fetch events:", err);
       }
     };
     fetchEvents();
-  }, [createModalOpen]);
+    console.log(count);
+  }, [createModalOpen, count]);
 
   const handleDateClick = (info) => {
     setSelectedDate(info.dateStr);
+    setCount((prev) => prev + 1);
     setCreateModalOpen(true);
   };
 
@@ -58,6 +88,8 @@ const Calendar = () => {
       (event) => event.id === parseInt(info.event.id, 10)
     );
     if (!eventData) return;
+    setCount((prev) => prev + 1);
+
     setSelectedEvent(eventData); // Set the selected event
     setViewModalOpen(true); // Open the View Modal
   };
@@ -80,11 +112,15 @@ const Calendar = () => {
         clientId: data.clientId, // Include clientId
       },
     };
+    setCount((prev) => prev + 1);
+
     setEvents((prev) => [...prev, newEvent]);
     setCreateModalOpen(false);
   };
 
   const handleEditEvent = (updatedEvent) => {
+    setCount((prev) => prev + 1);
+
     const updatedEvents = events.map((event) =>
       event.id === updatedEvent.id
         ? {
@@ -110,6 +146,8 @@ const Calendar = () => {
   };
 
   const handleDeleteEvent = (eventId) => {
+    setCount((prev) => prev + 1);
+
     const updatedEvents = events.filter((event) => event.id !== eventId);
     setEvents(updatedEvents);
     setViewModalOpen(false); // Close the view modal after deletion

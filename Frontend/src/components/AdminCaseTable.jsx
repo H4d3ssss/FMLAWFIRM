@@ -5,6 +5,7 @@ import EditCaseModal from "../components/EditCaseModal"; // Import EditCaseModal
 import ViewCaseModal from "../components/ViewCaseModal"; // Import ViewCaseModal
 import ArchiveCaseModal from "../components/ArchiveCaseModal"; // Import ArchiveCaseModal
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const AdminCaseTable = () => {
   const [cases, setCases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,6 +25,32 @@ const AdminCaseTable = () => {
       console.log(error);
     }
   };
+
+  const navigate = useNavigate();
+  axios.defaults.withCredentials = true;
+
+  useEffect(() => {
+    const authenticateUser = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/auth/authenticate-user"
+        );
+
+        console.log(response.data);
+        if (response.data.role === "Lawyer") {
+          navigate("/cases");
+        } else if (response.data.role === "Client") {
+          navigate("/clientdashboard");
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        navigate("/");
+        console.log(error);
+      }
+    };
+    authenticateUser();
+  }, []);
 
   useEffect(() => {
     fetchAllCases();
