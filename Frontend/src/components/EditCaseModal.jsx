@@ -61,7 +61,7 @@ const EditCaseModal = ({
     console.log(formData);
     handleUpdateCase(formData);
 
-    handleEditCase(updatedCase); // Pass the updated case back to parent component
+    // handleEditCase(updatedCase); // Pass the updated case back to parent component
     closeModal(); // Close the modal
   };
 

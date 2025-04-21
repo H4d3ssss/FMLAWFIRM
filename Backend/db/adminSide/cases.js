@@ -2,7 +2,9 @@ import pool from "../index.js";
 
 const fetchActiveCases = async () => {
   try {
-    const response = await pool.query(`SELECT * FROM "viewActiveCases"`);
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases2" WHERE case_status = 'Active'`
+    );
     return { success: true, response: response.rows };
   } catch (error) {
     console.log(error.stack);
@@ -32,7 +34,9 @@ const fetchInProgressCases = async () => {
 
 const fetchPendingCases = async () => {
   try {
-    const response = await pool.query(`SELECT * FROM "viewPendingCases"`);
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases2" WHERE case_status = 'Pending'`
+    );
     return { success: true, response: response.rows };
   } catch (error) {
     console.log(error.stack);

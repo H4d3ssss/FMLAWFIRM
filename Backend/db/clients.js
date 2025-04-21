@@ -143,13 +143,11 @@ const ifClientExist = async (email) => {
 const fetchApprovedClients = async () => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewClients" WHERE account_status = 'Approved'`
+      `SELECT * FROM "viewClients1" WHERE account_status = 'Approved'`
     );
-    if (response.rowCount > 0) {
-      return { success: true, response: response.rows };
-    } else {
+    if (response.rowCount <= 0)
       return { success: false, response: "No Approved Clients" };
-    }
+    return { success: true, response: response.rows };
   } catch (error) {
     console.log(error.stack);
   }

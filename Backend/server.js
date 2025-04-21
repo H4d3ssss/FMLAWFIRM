@@ -22,13 +22,14 @@ app.use(
 app.use(express.json());
 app.use(
   sessions({
+    name: "mySessionId",
     secret: process.env.SECRET_KEY,
     saveUninitialized: false,
     resave: false,
     cooke: {
       httpOnly: true,
       secure: false,
-      maxAge: 24 * 60 * 60 * 1000,
+      expires: 60 * 60 * 24,
     },
   })
 );

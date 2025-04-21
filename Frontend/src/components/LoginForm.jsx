@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 function LoginForm() {
@@ -7,6 +7,8 @@ function LoginForm() {
     password: "",
     rememberMe: false,
   });
+
+  axios.defaults.withCredentials = true; // TANGINA LAGI DAPAT TO NAKA SEET KAPAG MAG AAUTHENTICATE TAYO
 
   const [errors, setErrors] = useState({});
   const [response, setResponse] = useState("");
@@ -32,14 +34,14 @@ function LoginForm() {
     console.log("Login attempt:", formData);
     // Proceed with login logic
 
-    try {
-      const response = await axios.get("http://localhost:3000/api/auth/getme", {
-        withCredentials: true,
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   const response = await axios.get("http://localhost:3000/api/auth/getme", {
+    //     withCredentials: true,
+    //   });
+    //   console.log(response.data);
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
     try {
       const response = await axios.post(
@@ -47,11 +49,16 @@ function LoginForm() {
         formData
       );
       console.log(response.data.role);
-      response.data.role === "Client"
-        ? navigate("/Clientdashboard")
-        : navigate("/admindashboard");
+      if (response.data.role === "Lawyer") {
+        navigate("/admindashboard");
+      } else if (response.data.role === "Client") {
+        navigate("/clientdashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
-      console.log(error.status);
+      navigate("/");
+      console.log(error);
       if (error.status === 401) {
         console.log(error.response.data.message);
         setResponse(error.response.data.message);
@@ -72,6 +79,28 @@ function LoginForm() {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+
+  useEffect(() => {
+    const authenticateUser = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/auth/authenticate-user"
+        );
+
+        console.log(response.data);
+        if (response.data.role === "Lawyer") {
+          navigate("/admindashboard");
+        } else if (response.data.role === "Client") {
+          navigate("/clientdashboard");
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    authenticateUser();
+  }, []);
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
