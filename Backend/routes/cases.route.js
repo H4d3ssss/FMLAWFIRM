@@ -26,7 +26,7 @@ router.get("/active", async (req, res) => {
     const response = await fetchActiveCases();
 
     if (response.success) {
-      return res.status(200).json(response);
+      return res.status(200).json(response.response);
     } else {
       return res.status(500).json({ message: "Fetching active cases failed" });
     }

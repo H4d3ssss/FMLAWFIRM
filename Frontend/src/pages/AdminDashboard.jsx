@@ -44,6 +44,35 @@ const AdminDashboard = () => {
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
+    const getActiveCases = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/cases/active"
+        );
+        console.log(response.data);
+        setActiveCases(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getActiveCases();
+  }, []);
+
+  useEffect(() => {
+    const getPendingCases = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/cases/pending"
+        );
+        setPendingCases(response.data.response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getPendingCases();
+  }, []);
+
+  useEffect(() => {
     const authenticateUser = async () => {
       try {
         const response = await axios.get(

@@ -57,6 +57,7 @@ function LoginForm() {
         navigate("/");
       }
     } catch (error) {
+      navigate("/");
       console.log(error);
       if (error.status === 401) {
         console.log(error.response.data.message);

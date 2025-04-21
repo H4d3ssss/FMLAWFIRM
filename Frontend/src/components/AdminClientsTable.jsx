@@ -37,6 +37,22 @@ const AdminClientsTable = () => {
     authenticateUser();
   }, []);
 
+  useEffect(() => {
+    const getApprovedClients = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/clients/approved-clients"
+        );
+        setClients(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getApprovedClients();
+  }, []);
+
   const getNextClientId = () => {
     return `CLI-${String(101 + clients.length).padStart(3, "0")}`; // Calculate the next client ID
   };
@@ -45,6 +61,7 @@ const AdminClientsTable = () => {
     const clientId = getNextClientId(); // Use getNextClientId function
     const clientWithClientId = { ...newClient, clientId }; // Add CLIENT ID to client data
     setClients([...clients, clientWithClientId]);
+    console.log(clientWithClientId);
   };
 
   const handleEditClient = (updatedClient) => {
@@ -53,6 +70,7 @@ const AdminClientsTable = () => {
       client.clientId === updatedClient.clientId ? updatedClient : client
     );
     setClients(updatedClients);
+    console.log(updatedClients);
     setShowEditModal(false); // Close the modal after editing
   };
 
@@ -111,14 +129,14 @@ const AdminClientsTable = () => {
           <tbody>
             {filteredClients.map((client, index) => (
               <tr key={index} className="odd:bg-white even:bg-gray-100">
-                <td className="p-3">{client.clientId}</td>
-                <td className="p-3">{client.firstName}</td>
-                <td className="p-3">{client.lastName}</td>
+                <td className="p-3">CLI - {client.client_id}</td>
+                <td className="p-3">{client.first_name}</td>
+                <td className="p-3">{client.last_name}</td>
                 <td className="p-3">{client.email}</td>
-                <td className="p-3">{client.phone}</td>
+                <td className="p-3">{client.contact_number}</td>
                 <td className="p-3">{client.sex}</td>
-                <td className="p-3">{client.birthDate}</td>
-                <td className="p-3">{client.fullAddress}</td>
+                <td className="p-3">{client.date_of_birth}</td>
+                <td className="p-3">{client.address}</td>
                 <td className="p-3 flex space-x-2">
                   <button
                     className="text-blue-500 hover:bg-blue-100 p-2 rounded"
