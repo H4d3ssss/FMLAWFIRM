@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Eye, Edit, Trash2, Plus } from "lucide-react"; // Icons
-// import AddAdminModal from "../components/AddAdminModal"; // Import AddAdminModal
-// import EditAdminModal from "../components/EditAdminModal"; // Import EditAdminModal
+// import AddAdminModal from "../components/AddAdminModal"; // Import AddAdminModal "KASI WALA PA"
+// import EditAdminModal from "../components/EditAdminModal"; // Import EditAdminModal  "KASI WALA PA "
 import axios from "axios";
 
 const AdminAccountTable = () => {
