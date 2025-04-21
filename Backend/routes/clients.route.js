@@ -5,6 +5,7 @@ import {
   ifClientExist,
   fetchClientsViaEmail,
   fetchApprovedClients,
+  updateArchiveClient,
 } from "../db/clients.js";
 
 import { fetchClientsForApproval } from "../db/adminSide/clients.js";
@@ -64,6 +65,17 @@ router.get("/approved-clients", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
+  }
+});
+
+router.patch("/archive-client", async (req, res) => {
+  try {
+    const { client_id } = req.body;
+    const response = await updateArchiveClient(client_id);
+    if (!response.success) return res.status(401).json(response.response);
+    return res.status(200).json(response.response);
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
 

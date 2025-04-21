@@ -81,7 +81,10 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
         {/* Modal Header */}
         <div className="bg-green-400 p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-lg font-bold">Add New Case</h2>
-          <button onClick={closeModal} className="text-black text-xl font-bold cursor-pointer">
+          <button
+            onClick={closeModal}
+            className="text-black text-xl font-bold cursor-pointer"
+          >
             <X size={24} />
           </button>
         </div>
@@ -150,7 +153,8 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 Attach File or Enter Link
               </label>
               <div className="flex items-center space-x-2 mb-2">
-                <input className="cursor-pointer"
+                <input
+                  className="cursor-pointer"
                   type="radio"
                   id="uploadFile"
                   name="fileOption"
@@ -166,7 +170,8 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 </label>
               </div>
               <div className="flex items-center space-x-2">
-                <input className="cursor-pointer"
+                <input
+                  className="cursor-pointer"
                   type="radio"
                   id="useLink"
                   name="fileOption"

@@ -153,6 +153,19 @@ const fetchApprovedClients = async () => {
   }
 };
 
+const updateArchiveClient = async (clientId) => {
+  try {
+    const response = await pool.query(
+      "UPDATE clients SET account_status = 'Archived' WHERE client_id = $1",
+      [clientId]
+    );
+    if (response.rowCount <= 0)
+      return { success: false, response: "Update Failed" };
+    return { success: true, response: "Updated Successfully" };
+  } catch (error) {
+    console.log(error);
+  }
+};
 export {
   fetchClients,
   insertClient,
@@ -164,4 +177,5 @@ export {
   generateTemporaryClientPassword,
   validatePasswordOrTemporaryPassword,
   fetchApprovedClients,
+  updateArchiveClient,
 };

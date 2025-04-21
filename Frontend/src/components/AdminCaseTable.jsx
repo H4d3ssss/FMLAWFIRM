@@ -158,7 +158,7 @@ const AdminCaseTable = () => {
             {cases ? (
               cases.map((caseValue, index) => (
                 <tr key={index} className="odd:bg-white even:bg-gray-100">
-                  <td className="p-3">{caseValue.case_id}</td>
+                  <td className="p-3">CASE - {caseValue.case_id}</td>
                   <td className="p-3">{caseValue.case_title}</td>
                   <td className="p-3">
                     {caseValue.client_fname} {caseValue.client_lname}

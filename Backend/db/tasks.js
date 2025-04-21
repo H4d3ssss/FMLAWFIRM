@@ -26,7 +26,7 @@ const fetchInProgressTasks = async () => {
 	created_at,
 	task_status
 FROM tasks  
-WHERE task_status = 'In Progress'`);
+WHERE task_status = 'In Progress' ORDER BY due_date ASC`);
     if (response.rowCount > 0) {
       return { success: true, response: response.rows };
     } else {
@@ -101,6 +101,29 @@ const markAsUnfinishedTask = async (task_id) => {
   }
 };
 
+const fetchTasksDueDateToday = async () => {
+  try {
+    const response = await pool.query(`SELECT 
+  task_id,
+  task_description,
+  deadline,
+  due_date,
+  day_to_be_finished,
+  assigned,
+  created_at,
+  task_status
+FROM tasks  
+WHERE task_status = 'In Progress'
+  AND due_date = CURRENT_DATE;`);
+
+    if (response.rowCount <= 0) return { success: false };
+
+    return { success: true, response: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
 export {
   insertTask,
   fetchInProgressTasks,
@@ -108,4 +131,5 @@ export {
   markAsFinishedTask,
   markAsDeletedTask,
   markAsUnfinishedTask,
+  fetchTasksDueDateToday,
 };

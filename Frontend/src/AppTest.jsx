@@ -4,7 +4,12 @@ import Sidebar from "./components/Sidebar";
 import AdminDashboard from "./pages/AdminDashboard";
 import CalendarPage from "./pages/CalendarPage";
 import TodoPage from "./pages/TodoPage";
-import { CasesPage, LoginPage, ClientDashboard } from "./pages";
+import {
+  CasesPage,
+  LoginPage,
+  ClientDashboard,
+  RegistrationPage,
+} from "./pages";
 import ClientsPage from "./pages/ClientsPage";
 import ViewFile from "./components/ViewFile";
 import AccountsPage from "./pages/AccountsPage";
@@ -27,6 +32,7 @@ function AppTest() {
             <Route path="/cases" element={<CasesPage />} />
             <Route path="/clients" element={<ClientsPage />} />
             <Route path="/view-file/:filename" element={<ViewFile />} />
+            <Route path="/register" element={<RegistrationPage />} />
           </Routes>
         </main>
       </div>

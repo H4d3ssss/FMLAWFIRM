@@ -1,79 +1,99 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 const TaskListCard = () => {
-    const [tasks, setTasks] = useState([
-        { title: 'Prepare witness list', completed: false, autoDeleteTime: null },
-        { title: 'Review discovery documents', completed: false, autoDeleteTime: null },
-        { title: 'Schedule deposition', completed: false, autoDeleteTime: null },
-    ]);
+  const [tasks, setTasks] = useState([]);
 
-    // Automatically delete tasks at midnight when completed
-    useEffect(() => {
-        const timer = setInterval(() => {
-            const now = new Date();
-
-            // Filter out tasks that are completed and should be deleted
-            const updatedTasks = tasks.filter((task) => {
-                return !(task.completed && task.autoDeleteTime && now >= new Date(task.autoDeleteTime));
-            });
-
-            setTasks(updatedTasks); // Update the state to remove deleted tasks
-        }, 1000);
-
-        // Cleanup interval timer on component unmount
-        return () => clearInterval(timer);
-    }, [tasks]);
-
-    // Function to toggle task completion
-    const toggleTaskCompletion = (index) => {
-        const updatedTasks = tasks.map((task, i) => {
-            if (i === index) {
-                const now = new Date();
-
-                if (!task.completed) {
-                    // Task is marked as completed; set auto-delete time to midnight next day
-                    const nextMidnight = new Date();
-                    nextMidnight.setDate(now.getDate() + 1); // Move to the next day
-                    nextMidnight.setHours(0, 0, 0, 0); // Set time to 12:00 AM
-                    return { ...task, completed: true, autoDeleteTime: nextMidnight };
-                } else {
-                    // Task is marked as incomplete; reset auto-delete time
-                    return { ...task, completed: false, autoDeleteTime: null };
-                }
-            }
-            return task; // Return other tasks as is
-        });
-
-        setTasks(updatedTasks); // Update the state with new task statuses
+  // Automatically delete tasks at midnight when completed
+  useEffect(() => {
+    const getDueTodayTasks = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/tasks/tasks-due-today"
+        );
+        setTasks(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    return (
-        <div className="bg-white shadow-md rounded-xl p-4 w-[660px] h-[300px] border border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Task List</h1>
-            <div className='border border-gray-300 rounded-md'>
-                <ul className="m-2 h-50 overflow-y-auto space-y-2 text-sm text-gray-700">
-                    {tasks.length > 0 ? (
-                        tasks.map((task, index) => (
-                            <li key={index} className="flex items-center">
-                                {/* Checkbox to toggle task completion */}
-                                <input
-                                    type="checkbox"
-                                    checked={task.completed}
-                                    onChange={() => toggleTaskCompletion(index)}
-                                    className="w-4 h-4 rounded border-gray-300 focus:ring-0 cursor-pointer"
-                                />
-                                <span className={task.completed ? 'line-through text-gray-400 ml-2' : 'ml-2'}>
-                                    {task.title}
-                                </span>
-                            </li>
-                        ))
-                    ) : (
-                        <p className="text-gray-500 italic">No tasks available</p>
-                    )}
-                </ul>
-            </div>
-        </div>
-    );
+    getDueTodayTasks();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+
+      // Filter out tasks that are completed and should be deleted
+      const updatedTasks = tasks.filter((task) => {
+        return !(
+          task.completed &&
+          task.autoDeleteTime &&
+          now >= new Date(task.autoDeleteTime)
+        );
+      });
+
+      setTasks(updatedTasks); // Update the state to remove deleted tasks
+    }, 1000);
+
+    // Cleanup interval timer on component unmount
+    return () => clearInterval(timer);
+  }, [tasks]);
+
+  // Function to toggle task completion
+  const toggleTaskCompletion = (index) => {
+    const updatedTasks = tasks.map((task, i) => {
+      if (i === index) {
+        const now = new Date();
+
+        if (!task.completed) {
+          // Task is marked as completed; set auto-delete time to midnight next day
+          const nextMidnight = new Date();
+          nextMidnight.setDate(now.getDate() + 1); // Move to the next day
+          nextMidnight.setHours(0, 0, 0, 0); // Set time to 12:00 AM
+          return { ...task, completed: true, autoDeleteTime: nextMidnight };
+        } else {
+          // Task is marked as incomplete; reset auto-delete time
+          return { ...task, completed: false, autoDeleteTime: null };
+        }
+      }
+      return task; // Return other tasks as is
+    });
+
+    setTasks(updatedTasks); // Update the state with new task statuses
+  };
+
+  return (
+    <div className="bg-white shadow-md rounded-xl p-4 w-[660px] h-[300px] border border-gray-200">
+      <h1 className="text-2xl font-bold text-gray-800 mb-4">Task List</h1>
+      <div className="border border-gray-300 rounded-md">
+        <ul className="m-2 h-50 overflow-y-auto space-y-2 text-sm text-gray-700">
+          {tasks.length > 0 ? (
+            tasks.map((task, index) => (
+              <li key={index} className="flex items-center">
+                {/* Checkbox to toggle task completion */}
+                <input
+                  type="checkbox"
+                  checked={task.completed}
+                  onChange={() => toggleTaskCompletion(index)}
+                  className="w-4 h-4 rounded border-gray-300 focus:ring-0 cursor-pointer"
+                />
+                <span
+                  className={
+                    task.completed ? "line-through text-gray-400 ml-2" : "ml-2"
+                  }
+                >
+                  {task.task_description}
+                </span>
+              </li>
+            ))
+          ) : (
+            <p className="text-gray-500 italic">No tasks available</p>
+          )}
+        </ul>
+      </div>
+    </div>
+  );
 };
 
 export default TaskListCard;

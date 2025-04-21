@@ -248,7 +248,6 @@ router.post("/new-case", upload.single("file"), async (req, res) => {
       fileName,
       filePath
     );
-    console.log(response);
     if (response.success) {
       res.status(200).json(response);
     } else {
@@ -310,7 +309,6 @@ router.patch("/archived-case", async (req, res) => {
     const { caseId } = req.body;
     const response = await archiveCase(caseId);
 
-    console.log(!response.success);
     if (!response.success)
       return res.status(404).json({ message: response.message });
 

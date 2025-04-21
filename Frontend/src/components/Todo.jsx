@@ -309,10 +309,11 @@ const Todo = () => {
           {tasks.map((task, index) => (
             <li
               key={index}
-              className={`flex justify-between items-center p-2 rounded-md ${task.completed
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-700"
-                }`}
+              className={`flex justify-between items-center p-2 rounded-md ${
+                task.completed
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
             >
               <div>
                 <button
@@ -335,10 +336,10 @@ const Todo = () => {
                   {(() => {
                     const now = new Date();
                     const deadline = new Date(task.due_date);
+                    {/* deadline.setDate(deadline.getDate() + 1); */} CHECK IF MAY BUGS PA RIN BUKAS NG UMAGA
                     deadline.setHours(23, 59, 0, 0); // 11:59 PM of the due date
-
+                    console.log(deadline);
                     const diff = deadline - now;
-                    console.log(diff);
                     if (diff <= 0) {
                       setTimeout(() => {
                         handleUnfinishedTask(task.task_id);

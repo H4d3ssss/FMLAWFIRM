@@ -44,6 +44,22 @@ const AdminDashboard = () => {
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
+    const soonestAppointments = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/appointments/soonest-appointment"
+        );
+        console.log(response.data);
+        setUpcomingEvents(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    soonestAppointments();
+  }, []);
+
+  useEffect(() => {
     const getActiveCases = async () => {
       try {
         const response = await axios.get(

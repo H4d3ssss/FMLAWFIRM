@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Edit, Eye, Trash2, Search } from "lucide-react"; // Lucide React icons
 import AddClientModal from "./AddClientModal"; // Import AddClientModal
 import EditClientModal from "./EditClientModal"; // Import EditClientModal
+import ArchiveClientModal from "./ArchiveClientModal";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const AdminClientsTable = () => {
@@ -11,7 +12,7 @@ const AdminClientsTable = () => {
   const [showEditModal, setShowEditModal] = useState(false); // Control EditClientModal visibility
   const [selectedClient, setSelectedClient] = useState(null);
   const [showArchiveModal, setShowArchiveModal] = useState(false); // Store the client being edited
-
+  const [archiveClient, setArchiveClient] = useState(null);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
@@ -39,6 +40,7 @@ const AdminClientsTable = () => {
   }, []);
 
   useEffect(() => {
+    if (!clients) return console.log("no more approved clients");
     const getApprovedClients = async () => {
       try {
         const response = await axios.get(
@@ -52,10 +54,25 @@ const AdminClientsTable = () => {
     };
 
     getApprovedClients();
-  }, []);
+  }, [showArchiveModal]);
 
   const getNextClientId = () => {
     return `CLI-${String(101 + clients.length).padStart(3, "0")}`; // Calculate the next client ID
+  };
+
+  const handleArchiveClient = async () => {
+    console.log(archiveClient.client_id);
+
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/clients/archive-client",
+        { client_id: archiveClient.client_id }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setShowArchiveModal(false);
   };
 
   const handleAddClient = (newClient) => {
@@ -148,7 +165,13 @@ const AdminClientsTable = () => {
                   <button className="text-green-500 hover:bg-green-100 p-2 rounded">
                     <Eye size={18} />
                   </button>
-                  <button className="text-red-500 hover:bg-red-100 p-2 rounded">
+                  <button
+                    className="text-red-500 hover:bg-red-100 p-2 rounded"
+                    onClick={() => {
+                      setArchiveClient(client); // Set client to be archived
+                      setShowArchiveModal(true); // Show modal
+                    }}
+                  >
                     <Trash2 size={18} />
                   </button>
                 </td>
@@ -172,6 +195,12 @@ const AdminClientsTable = () => {
         closeModal={() => setShowEditModal(false)}
         clientData={selectedClient} // Pass the selected client to edit
         handleEditClient={handleEditClient} // Pass the edit handler
+      />
+      <ArchiveClientModal
+        showModal={showArchiveModal}
+        closeModal={() => setShowArchiveModal(false)}
+        clientData={archiveClient}
+        handleArchiveClient={handleArchiveClient}
       />
     </div>
   );

@@ -30,7 +30,6 @@ router.post("/", async (req, res) => {
     }
 
     const lawyerExists = await ifLawyerExist(data.email);
-    console.log(lawyerExists);
     if (lawyerExists) {
       return res.status(400).json({ error: "Email already exists" });
     }
