@@ -9,7 +9,8 @@ const AdminClientsTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false); // Control EditClientModal visibility
-  const [selectedClient, setSelectedClient] = useState(null); // Store the client being edited
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [showArchiveModal, setShowArchiveModal] = useState(false); // Store the client being edited
 
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;

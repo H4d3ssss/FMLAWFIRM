@@ -4,7 +4,7 @@ import regionsData from "./data/regions.json";
 import provincesData from "./data/provinces.json";
 import citiesData from "./data/cities.json";
 import barangaysData from "./data/barangays.json";
-import axiso from "axios";
+import axios from "axios";
 
 const AddClientModal = ({
   showModal,

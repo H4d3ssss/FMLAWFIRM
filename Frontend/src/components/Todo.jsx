@@ -249,7 +249,7 @@ const Todo = () => {
   const dayOptions = ["Today", "Tomorrow", "This Week"];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF] flex flex-col items-center p-4">
       <div className="w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 mb-8">
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-700">
           Task Manager
@@ -294,7 +294,7 @@ const Todo = () => {
         </div>
         <button
           onClick={addTask}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full"
+          className="bg-green-500 text-black px-4 py-2 rounded-md hover:bg-green-600 w-full"
         >
           Add Task
         </button>
@@ -309,11 +309,10 @@ const Todo = () => {
           {tasks.map((task, index) => (
             <li
               key={index}
-              className={`flex justify-between items-center p-2 rounded-md ${
-                task.completed
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
+              className={`flex justify-between items-center p-2 rounded-md ${task.completed
+                ? "bg-green-100 text-green-700"
+                : "bg-gray-100 text-gray-700"
+                }`}
             >
               <div>
                 <button

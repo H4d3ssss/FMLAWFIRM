@@ -1,13 +1,13 @@
 import React from 'react';
-import { Todo, Navbar, Sidebar, Footer } from '../components';
+import { Todo, Navbar, Footer } from '../components';
 
 const TodoPage = () => {
     return (
-        <>
+        <div>
             <Navbar />
             <Todo />
             <Footer />
-        </>
+        </div>
     );
 };
 

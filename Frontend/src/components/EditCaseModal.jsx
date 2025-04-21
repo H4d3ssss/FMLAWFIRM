@@ -71,9 +71,9 @@ const EditCaseModal = ({
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative">
         {/* Modal Header */}
-        <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-between items-center">
+        <div className="bg-blue-400 p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-lg font-bold">Edit Case</h2>
-          <button onClick={closeModal} className="text-black text-xl font-bold">
+          <button onClick={closeModal} className="text-black text-xl font-bold cursor-pointer">
             <X size={24} />
           </button>
         </div>
@@ -155,7 +155,7 @@ const EditCaseModal = ({
                 Attach File or Enter Link
               </label>
               <div className="flex items-center space-x-2 mb-2">
-                <input
+                <input className="cursor-pointer"
                   type="radio"
                   id="uploadFile"
                   name="fileOption"
@@ -164,14 +164,14 @@ const EditCaseModal = ({
                 />
                 <label
                   htmlFor="uploadFile"
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 cursor-pointer"
                 >
                   <FileText size={18} />
                   <span>Upload File</span>
                 </label>
               </div>
-              <div className="flex items-center space-x-2">
-                <input
+              <div className="flex items-center space-x-2 mb-2">
+                <input className="cursor-pointer"
                   type="radio"
                   id="useLink"
                   name="fileOption"
@@ -180,7 +180,7 @@ const EditCaseModal = ({
                 />
                 <label
                   htmlFor="useLink"
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 cursor-pointer"
                 >
                   <Link size={18} />
                   <span>Enter Link</span>
@@ -230,7 +230,7 @@ const EditCaseModal = ({
             </div>
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+              className="bg-blue-400 text-black px-4 py-2 rounded hover:bg-blue-600 w-full cursor-pointer"
             >
               Update Case
             </button>
