@@ -7,6 +7,7 @@ import TodoPage from "./pages/TodoPage";
 import { CasesPage, LoginPage, ClientDashboard } from "./pages";
 import ClientsPage from "./pages/ClientsPage";
 import ViewFile from "./components/ViewFile";
+import AccountsPage from "./pages/AccountsPage";
 
 function AppTest() {
   return (

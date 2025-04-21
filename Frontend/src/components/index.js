@@ -26,6 +26,9 @@ import AdminClientsTable from "./AdminClientsTable";
 import AddClientModal from "./AddClientModal";
 import EditClientModal from "./EditClientModal";
 import ArchiveClientModal from "./ArchiveClientModal";
+import AdminAccountTable from "./AdminAccountTable";
+import ClientAccountTable from "./ClientAccountTable";
+import AccountApprovalTable from "./AccountApprovalTable";
 export {
     Navbar,
     Sidebar,
@@ -55,5 +58,8 @@ export {
     AddClientModal,
     EditClientModal,
     ArchiveClientModal,
+    AdminAccountTable,
+    ClientAccountTable,
+    AccountApprovalTable,
 
 }

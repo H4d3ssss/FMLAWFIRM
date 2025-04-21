@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Edit, Eye, Trash2, Search } from 'lucide-react'; // Lucide React icons
 import AddClientModal from './AddClientModal'; // Import AddClientModal
 import EditClientModal from './EditClientModal'; // Import EditClientModal
+import ArchiveClientModal from './ArchiveClientModal'; // Import ArchiveClientModal
 
 const AdminClientsTable = () => {
     const [clients, setClients] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false); // Control EditClientModal visibility
-    const [selectedClient, setSelectedClient] = useState(null); // Store the client being edited
+    const [showArchiveModal, setShowArchiveModal] = useState(false); // Control ArchiveClientModal visibility
+    const [selectedClient, setSelectedClient] = useState(null); // Store the client being edited or archived
 
     const getNextClientId = () => {
         return `CLI-${String(101 + clients.length).padStart(3, '0')}`; // Calculate the next client ID
@@ -29,9 +31,21 @@ const AdminClientsTable = () => {
         setShowEditModal(false); // Close the modal after editing
     };
 
+    const handleArchiveClient = (clientToArchive) => {
+        // Remove the client from the clients array
+        const updatedClients = clients.filter((client) => client.clientId !== clientToArchive.clientId);
+        setClients(updatedClients);
+        setShowArchiveModal(false); // Close the modal after archiving
+    };
+
     const handleEditButtonClick = (client) => {
         setSelectedClient(client); // Set the client to be edited
         setShowEditModal(true); // Open the EditClientModal
+    };
+
+    const handleArchiveButtonClick = (client) => {
+        setSelectedClient(client); // Set the client to be archived
+        setShowArchiveModal(true); // Open the ArchiveClientModal
     };
 
     const filteredClients = clients.filter((client) =>
@@ -56,7 +70,7 @@ const AdminClientsTable = () => {
                     </div>
                 </div>
                 <button
-                    className="bg-green-500 text-white px-6 py-2 mt-4 md:mt-0 rounded hover:bg-green-600"
+                    className="bg-green-500 text-white px-6 py-2 mt-4 md:mt-0 rounded hover:bg-green-600 cursor-pointer"
                     onClick={() => setShowAddModal(true)} // Open AddClientModal
                 >
                     NEW CLIENT
@@ -68,7 +82,7 @@ const AdminClientsTable = () => {
                 <table className="table-auto border-collapse w-full rounded-b-2xl">
                     <thead className="bg-gray-200">
                         <tr>
-                            <th className="p-3">CLIENT ID</th>
+                            <th className="p-3">Client ID</th>
                             <th className="p-3">First Name</th>
                             <th className="p-3">Last Name</th>
                             <th className="p-3">Email</th>
@@ -92,15 +106,15 @@ const AdminClientsTable = () => {
                                 <td className="p-3">{client.fullAddress}</td>
                                 <td className="p-3 flex space-x-2">
                                     <button
-                                        className="text-blue-500 hover:bg-blue-100 p-2 rounded"
+                                        className="text-blue-500 hover:bg-blue-100 p-2 rounded cursor-pointer"
                                         onClick={() => handleEditButtonClick(client)} // Open EditClientModal
                                     >
                                         <Edit size={18} />
                                     </button>
-                                    <button className="text-green-500 hover:bg-green-100 p-2 rounded">
-                                        <Eye size={18} />
-                                    </button>
-                                    <button className="text-red-500 hover:bg-red-100 p-2 rounded">
+                                    <button
+                                        className="text-red-500 hover:bg-red-100 p-2 rounded cursor-pointer"
+                                        onClick={() => handleArchiveButtonClick(client)} // Open ArchiveClientModal
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 </td>
@@ -124,6 +138,14 @@ const AdminClientsTable = () => {
                 closeModal={() => setShowEditModal(false)}
                 clientData={selectedClient} // Pass the selected client to edit
                 handleEditClient={handleEditClient} // Pass the edit handler
+            />
+
+            {/* ArchiveClientModal */}
+            <ArchiveClientModal
+                showModal={showArchiveModal}
+                closeModal={() => setShowArchiveModal(false)}
+                clientData={selectedClient} // Pass the selected client to archive
+                handleArchiveClient={handleArchiveClient} // Pass the archive handler
             />
         </div>
     );

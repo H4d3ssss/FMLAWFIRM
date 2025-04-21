@@ -98,9 +98,9 @@ const EditClientModal = ({ showModal, closeModal, clientData, handleEditClient }
     return (
         <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative overflow-y-auto max-h-[90vh]">
-                <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-between items-center">
+                <div className="bg-blue-400 p-4 rounded-t-lg flex justify-between items-center">
                     <h2 className="text-lg font-bold">Edit Client</h2>
-                    <button onClick={closeModal} className="text-black text-xl font-bold">
+                    <button onClick={closeModal} className="text-black text-xl font-bold cursor-pointer">
                         <X size={24} />
                     </button>
                 </div>
@@ -364,7 +364,7 @@ const EditClientModal = ({ showModal, closeModal, clientData, handleEditClient }
 
                         <button
                             type="submit"
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full mt-4"
+                            className="bg-blue-400 text-black px-4 py-2 rounded hover:bg-blue-600 w-full mt-4"
                         >
                             Save Changes
                         </button>
