@@ -194,8 +194,8 @@ const EditClientModal = ({
                 </label>
                 <input
                   type="text"
-                  id="lastName"
-                  name="lastName"
+                  id="last_name"
+                  name="last_name"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.last_name}
                   onChange={handleChange}
@@ -231,8 +231,8 @@ const EditClientModal = ({
                 </label>
                 <input
                   type="date"
-                  id="birthDate"
-                  name="birthDate"
+                  id="not_formatted_date_of_birth"
+                  name="not_formatted_date_of_birth"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.not_formatted_date_of_birth}
                   onChange={handleChange}
