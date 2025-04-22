@@ -7,6 +7,7 @@ import RegistrationPage from "./RegistrationPage";
 import TodoPage from "./TodoPage";
 import CasesPage from "./CasesPage"
 import ClientsPage from "./ClientsPage";
+import ArchivePage from "./ArchivePage";
 export {
     LoginPage,
     AdminDashboard,
@@ -17,4 +18,5 @@ export {
     TodoPage,
     CasesPage,
     ClientsPage,
+    ArchivePage,
 };

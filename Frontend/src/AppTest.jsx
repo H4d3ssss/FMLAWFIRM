@@ -12,6 +12,7 @@ import {
 } from "./pages";
 import ClientsPage from "./pages/ClientsPage";
 import AccountsPage from "./pages/AccountsPage";
+import ArchivePage from "./pages/ArchivePage";
 
 function AppTest() {
   return (
@@ -31,6 +32,7 @@ function AppTest() {
             <Route path="/cases" element={<CasesPage />} />
             <Route path="/clients" element={<ClientsPage />} />
             <Route path="/accounts" element={<AccountsPage />} />
+            <Route path="/archives" element={<ArchivePage />} />
           </Routes>
         </main>
       </div>

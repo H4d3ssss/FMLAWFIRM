@@ -8,6 +8,7 @@ import EventAddForm from "../components/EventAddForm";
 import EventEditForm from "../components/EventEditForm";
 import EventViewModal from "../components/EventViewModal"; // Import the Event Modal for viewing
 import { useNavigate } from "react-router-dom";
+
 const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -124,21 +125,21 @@ const Calendar = () => {
     const updatedEvents = events.map((event) =>
       event.id === updatedEvent.id
         ? {
-            ...event,
-            title: updatedEvent.title,
-            start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
-            end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
-            extendedProps: {
-              ...event.extendedProps,
-              type: updatedEvent.type,
-              location: updatedEvent.location,
-              notes: updatedEvent.notes,
-              startTime: updatedEvent.startTime,
-              endTime: updatedEvent.endTime,
-              lawyerId: updatedEvent.lawyerId, // Include lawyerId
-              clientId: updatedEvent.clientId, // Include clientId
-            },
-          }
+          ...event,
+          title: updatedEvent.title,
+          start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
+          end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
+          extendedProps: {
+            ...event.extendedProps,
+            type: updatedEvent.type,
+            location: updatedEvent.location,
+            notes: updatedEvent.notes,
+            startTime: updatedEvent.startTime,
+            endTime: updatedEvent.endTime,
+            lawyerId: updatedEvent.lawyerId, // Include lawyerId
+            clientId: updatedEvent.clientId, // Include clientId
+          },
+        }
         : event
     );
     setEvents(updatedEvents);
@@ -154,7 +155,7 @@ const Calendar = () => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md min-h-screen">
+    <div className="p-4 bg-white rounded-xl shadow-md min-h-screen mx-45 my-20">
       <h2 className="text-xl font-semibold mb-4">📅 Case Calendar</h2>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -167,7 +168,8 @@ const Calendar = () => {
         events={events}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
-        height={"100vh"}
+        height={"80vh"} // Adjust height
+        contentHeight={"auto"} // Ensure content fits
       />
 
       {/* Add Event Modal */}

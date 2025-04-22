@@ -405,7 +405,7 @@ const AddClientAccount = ({ showModal, closeModal, refreshTables, getNextClientI
                                 />
                                 <button
                                     type="button"
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center"
                                     onClick={() => togglePasswordVisibility("password")}
                                 >
                                     {showPassword.password ? (
@@ -432,7 +432,7 @@ const AddClientAccount = ({ showModal, closeModal, refreshTables, getNextClientI
                                 />
                                 <button
                                     type="button"
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center"
                                     onClick={() => togglePasswordVisibility("confirmPassword")}
                                 >
                                     {showPassword.confirmPassword ? (
@@ -451,7 +451,7 @@ const AddClientAccount = ({ showModal, closeModal, refreshTables, getNextClientI
                             type="submit"
                             className={`w-full py-2 mt-4 rounded-md transition ${isLoading
                                 ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-green-500 text-white hover:bg-green-600"
                                 }`}
                             disabled={isLoading}
                         >
