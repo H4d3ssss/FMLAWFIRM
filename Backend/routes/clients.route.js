@@ -6,11 +6,21 @@ import {
   fetchClientsViaEmail,
   fetchApprovedClients,
   updateArchiveClient,
+  updateClientDetails,
+  updateClientDetails1,
 } from "../db/clients.js";
 
 import { fetchClientsForApproval } from "../db/adminSide/clients.js";
 
 const router = express.Router();
+
+router.patch("/update-lawyer", async (req, res) => {
+  try {
+    const data = req.body;
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 
 router.get("/clientsforapproval", async (req, res) => {
   try {
@@ -76,6 +86,32 @@ router.patch("/archive-client", async (req, res) => {
     return res.status(200).json(response.response);
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+router.patch("/update-client", async (req, res) => {
+  try {
+    const data = req.body;
+    const response = await updateClientDetails(data);
+    console.log(response);
+    if (!response.success)
+      return res.status(400).json({ message: response.message });
+
+    res.status(200).json({ message: response.message });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.patch("/update-client1", async (req, res) => {
+  try {
+    const data = req.body;
+    const response = await updateClientDetails1(data);
+    if (!response.success) return res.status(400).json(response.message);
+
+    return res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 

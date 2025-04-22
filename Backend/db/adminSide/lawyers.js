@@ -1,7 +1,7 @@
 import pool from "../index.js";
 
 const fetchLawyers = async () => {
-  const query = `SELECT * FROM "viewLawyers"`;
+  const query = `SELECT * FROM "viewLawyers" ORDER BY account_status ASC`;
   try {
     const response = await pool.query(query);
     return { success: true, response: response.rows };
@@ -15,9 +15,9 @@ const updateLawyer = async (data) => {
   try {
     const response = await pool.query(
       `UPDATE users
-       SET full_name = $1
-       WHERE user_id = $2;`,
-      [data.userFullName, data.userId]
+       SET first_name = $1, last_name = $2
+       WHERE user_id = $3;`,
+      [data.firstName, data.lastName, data.userId]
     );
 
     if (response.rowCount <= 0)
@@ -68,21 +68,22 @@ const ifLawyerExist = async (email) => {
 const insertLawyer = async (data) => {
   const query = `WITH new_user AS (
     INSERT INTO users (
-      full_name, email, password, role
+      first_name, last_name, email, password, address, role
     )
     VALUES (
-      $1, $2, $3, 'Lawyer'
+      $1, $2, $3, $4, $5, 'Lawyer'
     )
     RETURNING user_id, role
   )
   INSERT INTO lawyers (user_id, account_status, position)
-  SELECT user_id, $4, $5 FROM new_user WHERE role = 'Lawyer';`;
+  SELECT user_id, 'Active', $6 FROM new_user WHERE role = 'Lawyer';`;
   try {
     const response = await pool.query(query, [
-      data.fullName,
+      data.firstName,
+      data.lastName,
       data.email,
       data.password, // hash natin to
-      data.accountStatus,
+      data.address,
       data.position,
     ]);
     return { success: response.rowCount > 0 };

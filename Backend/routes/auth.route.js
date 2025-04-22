@@ -17,7 +17,7 @@ router.post("/resetpassword", async (req, res) => {
   try {
     const { email } = req.body;
     const response = await generateTemporaryClientPassword(email);
-    console.log(response);
+    // console.log(response);
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
@@ -152,7 +152,7 @@ router.post("/login", async (req, res) => {
           email: user.response[0].email,
           role: user.response[0].role,
         };
-        console.log(req.session.user);
+        // console.log(req.session.user);
         res.status(200).json(req.session.user);
       } else {
         res.status(401).json({ message: "Bad Credentials" });

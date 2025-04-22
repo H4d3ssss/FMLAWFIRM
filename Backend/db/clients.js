@@ -4,7 +4,7 @@ import crypto from "crypto";
 const fetchClient = async (clientId) => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewClients" WHERE client_id = $1`,
+      `SELECT * FROM "viewClients1" WHERE client_id = $1`,
       [clientId]
     );
     return { success: true, response: response.rows };
@@ -16,7 +16,14 @@ const fetchClient = async (clientId) => {
 
 const fetchClients = async () => {
   try {
-    const response = await pool.query(`SELECT * FROM "viewClients"`);
+    const response = await pool.query(`SELECT * FROM "viewClients1"
+WHERE account_status != 'Archived'
+ORDER BY 
+  CASE 
+    WHEN account_status = 'Approved' THEN 0 
+    ELSE 1 
+  END;
+`);
     return { success: true, response: response.rows };
   } catch (err) {
     console.log(err.stack);
@@ -166,6 +173,54 @@ const updateArchiveClient = async (clientId) => {
     console.log(error);
   }
 };
+
+const updateClientDetails = async (data) => {
+  try {
+    const response = await pool.query(
+      `UPDATE users SET first_name = $1, last_name = $2, contact_number = $3 WHERE user_id = $4`,
+      [data.first_name, data.last_name, data.contact_number, data.user_id]
+    );
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "may error sa response" };
+
+    const response1 = await pool.query(
+      `UPDATE clients SET account_status = $1 WHERE client_id = $2`,
+      [data.status, data.client_id]
+    );
+
+    if (response1.rowCount <= 0)
+      return { success: false, message: "error sa response 2" };
+    return { success: true, message: "NAKAPAGUPDATE KA NG CLIENTS HIHIHI" };
+  } catch (error) {
+    return { error };
+  }
+};
+
+const updateClientDetails1 = async (data) => {
+  try {
+    const response = await pool.query(
+      `UPDATE users SET first_name = $1, last_name = $2, date_of_birth = $3, sex = $4, contact_number = $5, address = $6 WHERE user_id = $7`,
+      [
+        data.firstName,
+        data.lastName,
+        data.birthDate,
+        data.sex,
+        data.contact_number,
+        data.fullAddress,
+        data.user_id,
+      ]
+    );
+    console.log(response);
+    if (response.rowCount <= 0)
+      return { success: false, message: "hindi nakapag update" };
+
+    return { success: true, message: "nakapag update" };
+  } catch (error) {
+    return { error };
+  }
+};
+
 export {
   fetchClients,
   insertClient,
@@ -178,4 +233,6 @@ export {
   validatePasswordOrTemporaryPassword,
   fetchApprovedClients,
   updateArchiveClient,
+  updateClientDetails,
+  updateClientDetails1,
 };

@@ -18,11 +18,12 @@ router.post("/", async (req, res) => {
     if (
       // !data.firstName.trim() ||
       // !data.lastName.trim() ||
+      !data.firstName.trim() ||
+      !data.lastName.trim() ||
       !data.email.trim() ||
       !data.password.trim() ||
       !data.confirmPassword.trim() ||
-      !data.fullName.trim() ||
-      !data.accountStatus.trim() ||
+      !data.address.trim() ||
       !data.position.trim()
       // !data.address.trim() ||
       // !data.sex.trim() ||
