@@ -9,7 +9,8 @@ const EditAdminModal = ({
 }) => {
   const [formData, setFormData] = useState({
     userId: "",
-    userFullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     accountStatus: "",
     position: "",
@@ -20,13 +21,16 @@ const EditAdminModal = ({
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error state
 
+  useEffect(() => {}, []);
+
   // Populate form fields with the current admin details when the modal opens
   useEffect(() => {
     console.log(adminDetails);
     if (adminDetails) {
       setFormData({
         userId: adminDetails.user_id,
-        userFullName: adminDetails.user_full_name || "",
+        firstName: adminDetails.first_name,
+        lastName: adminDetails.last_name,
         email: adminDetails.email || "",
         accountStatus: adminDetails.account_status || "Active",
         position: adminDetails.position || "",
@@ -108,14 +112,29 @@ const EditAdminModal = ({
               {/* Name */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium">
-                  Admin Name
+                  Admin First Name
                 </label>
                 <input
                   type="text"
-                  id="userFullName"
-                  name="userFullName"
+                  id="firstName"
+                  name="firstName"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={formData.userFullName}
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium">
+                  Admin Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  value={formData.lastName}
                   onChange={handleChange}
                   required
                 />

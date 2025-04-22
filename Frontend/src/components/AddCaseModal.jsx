@@ -1,51 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { FileText, Link, X } from "lucide-react"; // Importing Lucide icons
+import { FileText, Link, X } from "lucide-react";
 import axios from "axios";
 
-const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
-  const [useLink, setUseLink] = useState(false); // Toggle between file upload and link input
+const AddCaseModal = ({
+  showModal,
+  closeModal,
+  handleAddCase,
+  count,
+  setCount,
+}) => {
+  const [useLink, setUseLink] = useState(false);
   const [approvedClients, setApprovedClients] = useState([]);
   const [lawyers, setLawyers] = useState([]);
-  const [count, setCount] = useState(0);
-  const handleSubmit = (event) => {
+  const [loading, setLoading] = useState(false); // Optional: for UX
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     const formData = new FormData();
-    console.log(event.target.title.value);
-    console.log(event.target.status.value);
-    console.log(event.target.lawyer.value);
-    console.log(event.target.client.value);
-    formData.append("caseTitle", event.target.title.value);
-    formData.append("clientId", event.target.client.value);
-    console.log("im here");
-    formData.append("status", event.target.status.value);
-    formData.append("lawyerId", event.target.lawyer.value);
-    formData.append("file", event.target.file.files[0]); // Important for Multer
+    const title = event.target.title.value;
+    const clientId = event.target.client.value;
+    const status = event.target.status.value;
+    const lawyerId = event.target.lawyer.value;
 
-    // if (useLink) {
-    //   formData.append("link", event.target.link.value);
-    // } else {
-    //   formData.append("file", event.target.file.files[0]); // Important for Multer
-    // }
-    console.log(formData);
-    addCase(formData); // Pass data to parent component
-    closeModal(); // Close the modal
-  };
+    formData.append("caseTitle", title);
+    formData.append("clientId", clientId);
+    formData.append("status", status);
+    formData.append("lawyerId", lawyerId);
 
-  const addCase = async (formData) => {
-    console.log("outside");
+    if (useLink) {
+      const link = event.target.link.value;
+      formData.append("link", link);
+    } else {
+      const file = event.target.file.files[0];
+      if (file) {
+        formData.append("file", file);
+      } else {
+        alert("Please upload a file.");
+        return;
+      }
+    }
+
     try {
-      console.log("is it working");
+      setLoading(true);
       const response = await axios.post(
         "http://localhost:3000/api/cases/new-case",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      console.log(response); // This will log the response when it's successful
+      console.log("Case submitted:", response.data);
+      setCount((prev) => prev + 1);
+      closeModal(); // Only close if successful
     } catch (error) {
-      console.log("its not working");
-      console.log(error); // This will log the error if something goes wrong
+      console.error("Failed to submit case:", error);
+      alert("Something went wrong while submitting the case.");
+    } finally {
+      setLoading(false);
     }
-    setCount((prev) => prev + 1);
   };
 
   const getApprovedClients = async () => {
@@ -54,26 +65,25 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
         "http://localhost:3000/api/clients/approved-clients"
       );
       setApprovedClients(response.data);
-      console.log(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch approved clients:", error);
     }
   };
 
   const getLawyers = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/lawyers`);
+      const response = await axios.get("http://localhost:3000/api/lawyers");
       setLawyers(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch lawyers:", error);
     }
   };
 
   useEffect(() => {
     getApprovedClients();
     getLawyers();
-    getApprovedClients();
-  }); // TANGGALIN TO MAMAYA, FOR PRESENTATION PURPOSES LANG
+  }, [count]);
+
   if (!showModal) return null;
 
   return (
@@ -93,7 +103,6 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
         {/* Modal Body */}
         <div className="p-6">
           <form onSubmit={handleSubmit}>
-            <div className="mb-4"></div>
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium">
                 Title
@@ -102,21 +111,21 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 type="text"
                 id="title"
                 name="title"
-                className="border border-gray-300 rounded w-full px-3 py-2"
                 required
+                className="border border-gray-300 rounded w-full px-3 py-2"
               />
             </div>
+
             <div className="mb-4">
               <label htmlFor="client" className="block text-sm font-medium">
                 Client
               </label>
               <select
                 name="client"
+                required
                 className="border border-gray-300 rounded w-full px-3 py-2"
               >
-                <option value="" defaultChecked>
-                  Client
-                </option>
+                <option value="">Select a client</option>
                 {approvedClients.map((client, index) => (
                   <option key={index} value={client.client_id}>
                     {client.full_name}
@@ -124,17 +133,17 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 ))}
               </select>
             </div>
+
             <div className="mb-4">
               <label htmlFor="status" className="block text-sm font-medium">
                 Status
               </label>
               <select
                 name="status"
+                required
                 className="border border-gray-300 rounded w-full px-3 py-2"
               >
-                <option value="" defaultChecked>
-                  Status
-                </option>
+                <option value="">Select status</option>
                 <option value="Active">Active</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Pending">Pending</option>
@@ -148,14 +157,12 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
               </select>
             </div>
 
-            {/* File Upload or Link Input */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Attach File or Enter Link
               </label>
               <div className="flex items-center space-x-2 mb-2">
                 <input
-                  className="cursor-pointer"
                   type="radio"
                   id="uploadFile"
                   name="fileOption"
@@ -170,9 +177,8 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                   <span>Upload File</span>
                 </label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mb-2">
                 <input
-                  className="cursor-pointer"
                   type="radio"
                   id="useLink"
                   name="fileOption"
@@ -193,6 +199,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                   type="file"
                   id="file"
                   name="file"
+                  required={!useLink}
                   className="border border-gray-300 rounded w-full px-3 py-2"
                 />
               ) : (
@@ -200,6 +207,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                   type="url"
                   id="link"
                   name="link"
+                  required={useLink}
                   placeholder="Enter file link"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                 />
@@ -212,11 +220,10 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
               </label>
               <select
                 name="lawyer"
-                className="border border-gray-300 rounded w-full px-3 py-2 cursor-pointer"
+                required
+                className="border border-gray-300 rounded w-full px-3 py-2"
               >
-                <option value="" defaultChecked>
-                  Lawyer
-                </option>
+                <option value="">Select a lawyer</option>
                 {lawyers.map((lawyer, index) => (
                   <option key={index} value={lawyer.lawyer_id}>
                     {lawyer.user_full_name}
@@ -224,11 +231,15 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 ))}
               </select>
             </div>
+
             <button
               type="submit"
-              className="bg-green-400 text-black px-4 py-2 rounded hover:bg-blue-600 w-full cursor-pointer"
+              disabled={loading}
+              className={`${
+                loading ? "bg-gray-400" : "bg-green-400 hover:bg-blue-600"
+              } text-black px-4 py-2 rounded w-full cursor-pointer`}
             >
-              Add Case
+              {loading ? "Submitting..." : "Add Case"}
             </button>
           </form>
         </div>

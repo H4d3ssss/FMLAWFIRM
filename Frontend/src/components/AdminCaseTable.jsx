@@ -21,6 +21,7 @@ const AdminCaseTable = () => {
       const response = await axios.get("http://localhost:3000/api/cases");
       setCases(response.data.response);
       console.log(response.data.response);
+      // console.log(response.data.response);
     } catch (error) {
       console.log(error);
     }
@@ -54,7 +55,7 @@ const AdminCaseTable = () => {
 
   useEffect(() => {
     fetchAllCases();
-    console.log(cases);
+    // console.log(cases);
   }, [showAddModal, showEditModal, showViewModal, showArchiveModal, count]);
 
   const handleEditCase = (updatedCase) => {
@@ -217,7 +218,9 @@ const AdminCaseTable = () => {
       {/* AddCaseModal */}
       <AddCaseModal
         showModal={showAddModal}
-        closeModal={() => setShowAddModal(false)} // Close AddCaseModal
+        closeModal={() => setShowAddModal(false)}
+        count={count} // Close AddCaseModal
+        setCount={setCount}
       />
 
       {/* EditCaseModal */}

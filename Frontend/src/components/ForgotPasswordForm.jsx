@@ -18,7 +18,7 @@ function ForgotPasswordForm() {
         { email }
       );
       const temporaryPassword = response.data.temporaryPassword;
-      console.log(response.data);
+      // console.log(response.data);
 
       const payLoad = {
         service_id: "service_93zdpcs",
@@ -35,8 +35,14 @@ function ForgotPasswordForm() {
       try {
         const result = await axios.post(
           "https://api.emailjs.com/api/v1.0/email/send",
-          payLoad
+          payLoad,
+          {
+            headers: "application/json",
+          }
         );
+
+        console.log(payLoad);
+        console.log(result);
         setMessage("Temporary password sent successfully.");
       } catch (error) {
         console.error("Error sending email:", error);

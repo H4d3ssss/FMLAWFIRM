@@ -39,13 +39,13 @@ const AdminAccountTable = ({ admins }) => {
       try {
         const response = await axios.get("http://localhost:3000/api/lawyers");
         setLawyers(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.log(error);
       }
     };
     getLawyers();
-  });
+  }, []);
 
   // State for search input
   const [searchTerm, setSearchTerm] = useState("");
@@ -114,11 +114,12 @@ const AdminAccountTable = ({ admins }) => {
     console.log(newAdmin);
     try {
       const response = await axios.post("http://localhost:3000/api/lawyers", {
-        fullName: newAdmin.name,
+        firstName: newAdmin.firstName,
+        lastName: newAdmin.lastName,
         email: newAdmin.email,
         password: newAdmin.password,
         position: newAdmin.position,
-        accountStatus: newAdmin.status,
+        address: newAdmin.address,
         confirmPassword: newAdmin.confirmPassword,
       });
       console.log(response);
@@ -151,11 +152,14 @@ const AdminAccountTable = ({ admins }) => {
   const handleArchiveAdmin = async (admin) => {
     setAdminData((prev) => prev.filter((a) => a.id !== admin.id)); // Remove admin from the list
     console.log(admin);
-    // try {
-    //     const response = await axios.patch('http://localhost:3000/api/lawyers/archive-lawyer')
-    // } catch (error) {
-    //     console.log(error);
-    // }
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/lawyers/archive-lawyer",
+        { lawyerId: admin.lawyer_id }
+      );
+    } catch (error) {
+      console.log(error);
+    }
     setShowArchiveAdminModal(false); // Close the modal
   };
 

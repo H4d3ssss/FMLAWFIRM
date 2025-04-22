@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Edit, Eye, Trash2, Search } from "lucide-react"; // Lucide React icons
+import { Edit, Eye, Trash2, Search, Clock } from "lucide-react"; // Lucide React icons
 import AddClientModal from "./AddClientModal"; // Import AddClientModal
 import EditClientModal from "./EditClientModal"; // Import EditClientModal
 import ArchiveClientModal from "./ArchiveClientModal";
@@ -100,17 +100,30 @@ const AdminClientsTable = () => {
     console.log(clientWithClientId);
   };
 
-  const handleEditClient = (updatedClient) => {
+  const handleEditClient = async (updatedClient) => {
     // Update the client in the clients array
     const updatedClients = clients.map((client) =>
       client.clientId === updatedClient.clientId ? updatedClient : client
     );
     setClients(updatedClients);
     console.log(updatedClients);
+
+    // try {
+    //   const response = await axios.patch(
+    //     "http://localhost:3000/api/clients/update-client1",
+    //     updatedClient
+    //   );
+    //   console.log(response);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
+    // console.log(updatedClient);
     setShowEditModal(false); // Close the modal after editing
   };
 
   const handleEditButtonClick = (client) => {
+    console.log(client);
     setSelectedClient(client); // Set the client to be edited
     setShowEditModal(true); // Open the EditClientModal
   };
@@ -138,12 +151,6 @@ const AdminClientsTable = () => {
             <Search className="absolute left-3 top-3 text-gray-500" size={20} />
           </div>
         </div>
-        <button
-          className="bg-green-500 text-white px-6 py-2 mt-4 md:mt-0 rounded hover:bg-green-600"
-          onClick={() => setShowAddModal(true)} // Open AddClientModal
-        >
-          NEW CLIENT
-        </button>
       </div>
 
       {/* Table */}
@@ -179,9 +186,6 @@ const AdminClientsTable = () => {
                     onClick={() => handleEditButtonClick(client)} // Open EditClientModal
                   >
                     <Edit size={18} />
-                  </button>
-                  <button className="text-green-500 hover:bg-green-100 p-2 rounded">
-                    <Eye size={18} />
                   </button>
                   <button
                     className="text-red-500 hover:bg-red-100 p-2 rounded"

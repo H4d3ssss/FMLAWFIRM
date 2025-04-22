@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Clock, LampCeiling, X } from "lucide-react";
 import regionsData from "./data/regions.json";
 import provincesData from "./data/provinces.json";
 import citiesData from "./data/cities.json";
 import barangaysData from "./data/barangays.json";
-
+import axios from "axios";
 const EditClientModal = ({
   showModal,
   closeModal,
@@ -21,6 +21,25 @@ const EditClientModal = ({
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [filteredBarangays, setFilteredBarangays] = useState([]);
+  const [client, setClient] = useState("");
+  const [clientId, setClientId] = useState();
+  useEffect(() => {
+    const getClient = async () => {
+      console.log(formData);
+      try {
+        const response = await axios.post(
+          `http://localhost:3000/api/clients/one`,
+          {
+            clientId: formData.client_id,
+          }
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getClient();
+  }, []);
 
   useEffect(() => {
     if (clientData) {
@@ -86,7 +105,7 @@ const EditClientModal = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const regionName =
@@ -104,8 +123,19 @@ const EditClientModal = ({
       clientId: formData.clientId, // Ensure clientId is included
       fullAddress,
     };
+    console.log(updatedClientData);
+    // handleEditClient(updatedClientData);
 
-    handleEditClient(updatedClientData);
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/clients/update-client1",
+        updatedClientData
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+    // }
     closeModal();
   };
 
@@ -148,8 +178,8 @@ const EditClientModal = ({
                 </label>
                 <input
                   type="text"
-                  id="firstName"
-                  name="firstName"
+                  id="first_name"
+                  name="first_name"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.first_name}
                   onChange={handleChange}
@@ -172,6 +202,7 @@ const EditClientModal = ({
                   required
                 />
               </div>
+              {/* {console.log(JSON.stringify(formData))} */}
 
               {/* Email */}
               <div>
@@ -186,6 +217,7 @@ const EditClientModal = ({
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  disabled
                 />
               </div>
 
