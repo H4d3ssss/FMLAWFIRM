@@ -1,48 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 
-const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateClient }) => {
-    const [formData, setFormData] = useState({
-        clientId: "",
-        clientName: "",
-        email: "",
-        phone: "",
-        status: "",
-        password: "", // Added password field
-    });
-
+const ArchiveClientAccount = ({ showModal, closeModal, clientData, handleArchiveClient }) => {
+    const [password, setPassword] = useState(""); // State for password input
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-
-    // Populate form fields with the current client details when the modal opens
-    useEffect(() => {
-        if (clientDetails) {
-            setFormData({
-                clientId: clientDetails.id || "CLI-101", // Static fallback for testing
-                clientName: clientDetails.name || "John Doe", // Static fallback for testing
-                email: clientDetails.email || "johndoe@example.com", // Static fallback for testing
-                phone: clientDetails.phone || "123-456-7890", // Static fallback for testing
-                status: clientDetails.status || "Active", // Static fallback for testing
-                password: "", // Password is not pre-filled for security reasons
-            });
-        }
-    }, [clientDetails]);
-
-    // Handle form input changes
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    // Handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Call the update handler passed as a prop
-        handleUpdateClient(formData);
-        closeModal(); // Close the modal after updating
-    };
 
     if (!showModal) return null;
 
@@ -50,20 +11,18 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
         <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative overflow-y-auto max-h-[90vh]">
                 {/* Modal Header */}
-                <div className="bg-blue-400 p-4 rounded-t-lg flex justify-center items-center">
-                    <h2 className="text-lg font-bold">Edit Client Account</h2>
-                </div>
-                <div className="absolute top-4 right-4">
-                    <button onClick={closeModal} className="text-black text-xl font-bold">
+                <div className="bg-red-500 p-4 rounded-t-lg flex justify-between items-center">
+                    <h2 className="text-lg font-bold text-white">Archive Client Account</h2>
+                    <button onClick={closeModal} className="text-white text-xl font-bold">
                         <X size={24} />
                     </button>
                 </div>
 
                 {/* Modal Body */}
                 <div className="p-6">
-                    <form onSubmit={handleSubmit}>
+                    <form>
                         <div className="grid grid-cols-1 gap-6">
-                            {/* Client ID */}
+                            {/* Client ID (Read-Only) */}
                             <div>
                                 <label htmlFor="clientId" className="block text-sm font-medium">
                                     Client ID
@@ -73,12 +32,12 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
                                     id="clientId"
                                     name="clientId"
                                     className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
-                                    value={formData.clientId}
+                                    value={clientData?.id || ""}
                                     readOnly
                                 />
                             </div>
 
-                            {/* Client Name */}
+                            {/* Client Name (Read-Only) */}
                             <div>
                                 <label htmlFor="clientName" className="block text-sm font-medium">
                                     Client Name
@@ -87,14 +46,13 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
                                     type="text"
                                     id="clientName"
                                     name="clientName"
-                                    className="border border-gray-300 rounded w-full px-3 py-2"
-                                    value={formData.clientName}
-                                    onChange={handleChange}
-                                    required
+                                    className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
+                                    value={clientData?.name || ""}
+                                    readOnly
                                 />
                             </div>
 
-                            {/* Email */}
+                            {/* Email (Read-Only) */}
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium">
                                     Email Address
@@ -103,14 +61,13 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
                                     type="email"
                                     id="email"
                                     name="email"
-                                    className="border border-gray-300 rounded w-full px-3 py-2"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
+                                    className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
+                                    value={clientData?.email || ""}
+                                    readOnly
                                 />
                             </div>
 
-                            {/* Phone */}
+                            {/* Phone (Read-Only) */}
                             <div>
                                 <label htmlFor="phone" className="block text-sm font-medium">
                                     Phone Number
@@ -119,43 +76,40 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
                                     type="text"
                                     id="phone"
                                     name="phone"
-                                    className="border border-gray-300 rounded w-full px-3 py-2"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    required
+                                    className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
+                                    value={clientData?.phone || ""}
+                                    readOnly
                                 />
                             </div>
 
-                            {/* Status */}
+                            {/* Status (Read-Only) */}
                             <div>
                                 <label htmlFor="status" className="block text-sm font-medium">
                                     Status
                                 </label>
-                                <select
+                                <input
+                                    type="text"
                                     id="status"
                                     name="status"
-                                    className="border border-gray-300 rounded w-full px-3 py-2"
-                                    value={formData.status}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
+                                    className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
+                                    value={clientData?.status || ""}
+                                    readOnly
+                                />
                             </div>
 
-                            {/* Password */}
+                            {/* Password Confirmation */}
                             <div className="relative">
                                 <label htmlFor="password" className="block text-sm font-medium">
-                                    Password
+                                    Confirm Password
                                 </label>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     id="password"
                                     name="password"
                                     className="border border-gray-300 rounded w-full px-3 py-2 pr-10"
-                                    value={formData.password}
-                                    onChange={handleChange}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
                                 />
                                 <button
                                     type="button"
@@ -171,19 +125,26 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
                             </div>
                         </div>
 
+                        {/* Confirmation Message */}
+                        <p className="text-red-500 text-sm mt-4">
+                            Are you sure you want to archive this client account? This action cannot be undone.
+                        </p>
+
+                        {/* Action Buttons */}
                         <div className="flex justify-end space-x-4 mt-6">
                             <button
                                 type="button"
+                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
                                 onClick={closeModal}
-                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
                             >
                                 Cancel
                             </button>
                             <button
-                                type="submit"
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                type="button"
+                                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
+                                onClick={() => handleArchiveClient({ ...clientData, password })}
                             >
-                                Save Changes
+                                Archive
                             </button>
                         </div>
                     </form>
@@ -193,4 +154,4 @@ const EditClientAccount = ({ showModal, closeModal, clientDetails, handleUpdateC
     );
 };
 
-export default EditClientAccount;
+export default ArchiveClientAccount;

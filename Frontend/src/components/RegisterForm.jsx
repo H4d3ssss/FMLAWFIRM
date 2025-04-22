@@ -179,21 +179,24 @@ function RegisterForm() {
       barangay: formData.barangay,
     };
 
+    // Dynamic logic: Send registration data to the backend (commented out for now)
+    /*
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/signup",
-        payload
-      );
-      setServerMessage(
-        response.status === 202
-          ? "Wait for admin's approval"
-          : "Successfully signed up!"
-      );
+        const response = await axios.post(
+            "http://localhost:3000/api/auth/signup", // Backend endpoint for registration
+            payload
+        );
+        setServerMessage(
+            response.status === 202
+                ? "Your account is waiting for admin approval."
+                : "Successfully signed up!"
+        );
     } catch (err) {
-      setServerMessage(err.response?.data?.error || "Signup failed.");
+        setServerMessage(err.response?.data?.error || "Signup failed.");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
+    */
   };
 
   return (

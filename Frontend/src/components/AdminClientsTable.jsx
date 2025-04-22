@@ -56,6 +56,24 @@ const AdminClientsTable = () => {
     getApprovedClients();
   }, [showArchiveModal]);
 
+  // Dynamic logic: Fetch approved clients from the backend (commented out for now)
+  /*
+  useEffect(() => {
+      const fetchApprovedClients = async () => {
+          try {
+              const response = await axios.get(
+                  "http://localhost:3000/api/clients/approved" // Backend endpoint for approved clients
+              );
+              setClients(response.data);
+          } catch (error) {
+              console.error("Error fetching approved clients:", error);
+          }
+      };
+
+      fetchApprovedClients();
+  }, []);
+  */
+
   const getNextClientId = () => {
     return `CLI-${String(101 + clients.length).padStart(3, "0")}`; // Calculate the next client ID
   };
