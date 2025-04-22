@@ -13,6 +13,7 @@ import {
 } from "./pages";
 import ClientsPage from "./pages/ClientsPage";
 import AccountsPage from "./pages/AccountsPage";
+import ArchivePage from "./pages/ArchivePage";
 
 function AppTest() {
   return (
@@ -34,6 +35,7 @@ function AppTest() {
             <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/forgotpass" element={<ForgotPass />} />
+            <Route path="/archives" element={<ArchivePage />} />
           </Routes>
         </main>
       </div>

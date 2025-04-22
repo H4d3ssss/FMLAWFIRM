@@ -113,9 +113,11 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
-      <Navbar />
+      {/* Ensure Navbar has a fixed height */}
+      <Navbar className="h-16" /> {/* Adjust height if necessary */}
 
       <div className="flex flex-1">
+        {/* Main Content */}
         <main className="flex p-6 mx-60">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
