@@ -126,10 +126,10 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const data = req.body;
-
+    console.log(data.email);
     const user = await userExist(data.email);
     // console.log(user);
-    if (!user.success) return res.status(401).json({ message: user.message });
+    if (!user.success) return res.status(402).json({ message: user.message });
 
     if (user.response[0].email !== data.email)
       return res.status(401).json({ message: "Bad Credentials" });
@@ -193,7 +193,7 @@ router.get("/logout", async (req, res) => {
   // also i havent added a function that'll generate a token in the login route (should i also add in the sign up route?)
   // i stil think that they arent needed yet sooo.....
   req.session.destroy;
-  res.clearCookie("connect.sid");
+  res.clearCookie("mySessionId");
   res.status(200).json({ message: "you are logged out" });
 });
 

@@ -38,6 +38,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
         "http://localhost:3000/api/lawyers/active-lawyers"
       );
       setLawyers(response.data);
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -199,7 +200,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
             </option>
             {lawyers.map((lawyer) => (
               <option key={lawyer.lawyer_id} value={lawyer.lawyer_id}>
-                {lawyer.full_name}
+                {lawyer.user_full_name}
               </option>
             ))}
           </select>

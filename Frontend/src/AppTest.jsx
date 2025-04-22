@@ -9,6 +9,7 @@ import {
   LoginPage,
   ClientDashboard,
   RegistrationPage,
+  ForgotPass,
 } from "./pages";
 import ClientsPage from "./pages/ClientsPage";
 import AccountsPage from "./pages/AccountsPage";
@@ -23,7 +24,7 @@ function AppTest() {
         {/* Main Content */}
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<AdminDashboard />} />
+            <Route path="/" element={<LoginPage />} />
             <Route path="/AdminDashboard" element={<AdminDashboard />} />
             <Route path="/ClientDashboard" element={<ClientDashboard />} />
             <Route path="/calendar" element={<CalendarPage />} />
@@ -31,6 +32,8 @@ function AppTest() {
             <Route path="/cases" element={<CasesPage />} />
             <Route path="/clients" element={<ClientsPage />} />
             <Route path="/accounts" element={<AccountsPage />} />
+            <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/forgotpass" element={<ForgotPass />} />
           </Routes>
         </main>
       </div>

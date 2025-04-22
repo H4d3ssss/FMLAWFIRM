@@ -4,6 +4,8 @@ import {
   fetchLawyers,
   ifLawyerExist,
   fetchActiveLawyers,
+  updateLawyer,
+  archiveLawyer,
 } from "../db/adminSide/lawyers.js";
 import bcrypt from "bcrypt";
 
@@ -14,17 +16,20 @@ router.post("/", async (req, res) => {
     const data = req.body;
 
     if (
-      !data.firstName.trim() ||
-      !data.lastName.trim() ||
+      // !data.firstName.trim() ||
+      // !data.lastName.trim() ||
       !data.email.trim() ||
       !data.password.trim() ||
       !data.confirmPassword.trim() ||
-      !data.address.trim() ||
-      !data.sex.trim() ||
-      !data.dateOfBirth.trim() ||
-      !data.contactNumber.trim() ||
-      !data.barNumber.trim() ||
-      !data.specialization.trim()
+      !data.fullName.trim() ||
+      !data.accountStatus.trim() ||
+      !data.position.trim()
+      // !data.address.trim() ||
+      // !data.sex.trim() ||
+      // !data.dateOfBirth.trim() ||
+      // !data.contactNumber.trim() ||
+      // !data.barNumber.trim() ||
+      // !data.specialization.trim()
     ) {
       return res.status(400).json({ error: "Please fill in all fields" });
     }
@@ -55,6 +60,29 @@ router.post("/", async (req, res) => {
   } catch (err) {
     console.log(err.stack);
     res.status(500).json({ message: "Server error while adding lawyer" });
+  }
+});
+
+router.patch("/archive-lawyer", async (req, res) => {
+  try {
+    const { lawyerId } = req.body;
+    const response = await archiveLawyer(lawyerId);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.patch("/update-lawyer", async (req, res) => {
+  try {
+    const data = req.body;
+    const response = await updateLawyer(data);
+    console.log(response);
+    if (!response.success) return res.status(500).json(response.message);
+
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 

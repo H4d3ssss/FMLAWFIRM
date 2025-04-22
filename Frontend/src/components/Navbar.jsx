@@ -3,7 +3,7 @@ import { Search, LogOut } from "lucide-react"; // Import the LogOut icon
 import { GoLaw } from "react-icons/go";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import LogoutModal from "./LogoutModal"; // Import LogoutModal
-
+import axios from "axios";
 const Navbar = ({ clients, cases, lawyers }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to control dropdown visibility
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
@@ -42,10 +42,16 @@ const Navbar = ({ clients, cases, lawyers }) => {
   };
 
   // Confirm Logout
-  const handleConfirmLogout = () => {
+  const handleConfirmLogout = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/auth/logout");
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
     console.log("Logging out...");
     // Add your logout logic here (e.g., clearing tokens, redirecting to login page)
-    navigate("/login"); // Redirect to the login page
+    navigate("/"); // Redirect to the login page
   };
 
   // Close dropdown when clicking outside
@@ -140,7 +146,10 @@ const Navbar = ({ clients, cases, lawyers }) => {
                 {searchResults.length > 0 ? (
                   <>
                     {searchResults
-                      .slice(0, showAllResults ? searchResults.length : MAX_RESULTS)
+                      .slice(
+                        0,
+                        showAllResults ? searchResults.length : MAX_RESULTS
+                      )
                       .map((result, index) => (
                         <div
                           key={index}
@@ -151,7 +160,9 @@ const Navbar = ({ clients, cases, lawyers }) => {
                             {result.name} ({result.type})
                           </p>
                           <p className="text-xs text-gray-500">
-                            {result.email || result.status || result.specialization}
+                            {result.email ||
+                              result.status ||
+                              result.specialization}
                           </p>
                         </div>
                       ))}
@@ -210,7 +221,8 @@ const Navbar = ({ clients, cases, lawyers }) => {
                     className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-[#e68900] rounded-lg"
                     onClick={handleLogout}
                   >
-                    <LogOut className="w-4 h-4 mr-2 text-black" /> {/* Logout Icon */}
+                    <LogOut className="w-4 h-4 mr-2 text-black" />{" "}
+                    {/* Logout Icon */}
                     Logout
                   </button>
                 </div>

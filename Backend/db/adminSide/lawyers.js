@@ -11,6 +11,47 @@ const fetchLawyers = async () => {
   }
 };
 
+const updateLawyer = async (data) => {
+  try {
+    const response = await pool.query(
+      `UPDATE users
+       SET full_name = $1
+       WHERE user_id = $2;`,
+      [data.userFullName, data.userId]
+    );
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "No rows updated in users table" };
+
+    const response1 = await pool.query(
+      `UPDATE lawyers
+       SET account_status = $1,
+           position = $2
+       WHERE user_id = $3;`,
+      [data.accountStatus, data.position, data.userId]
+    );
+
+    if (response1.rowCount <= 0)
+      return { success: false, message: "No rows updated in lawyers table" };
+
+    return { success: true, message: "Successfully updated lawyer" };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+const archiveLawyer = async (lawyerId) => {
+  try {
+    const response = await pool.query(
+      `UPDATE lawyers SET account_status = 'Archived' WHERE lawyer_id = $1`,
+      [lawyerId]
+    );
+    return { response };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const ifLawyerExist = async (email) => {
   try {
     const response = await pool.query(
@@ -27,27 +68,22 @@ const ifLawyerExist = async (email) => {
 const insertLawyer = async (data) => {
   const query = `WITH new_user AS (
     INSERT INTO users (
-      first_name, last_name, email, password, address, sex, date_of_birth, contact_number, role
+      full_name, email, password, role
     )
     VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, 'Lawyer'
+      $1, $2, $3, 'Lawyer'
     )
     RETURNING user_id, role
   )
-  INSERT INTO lawyers (user_id, bar_number, specialization, account_status)
-  SELECT user_id, $9, $10, 'Active' FROM new_user WHERE role = 'Lawyer';`;
+  INSERT INTO lawyers (user_id, account_status, position)
+  SELECT user_id, $4, $5 FROM new_user WHERE role = 'Lawyer';`;
   try {
     const response = await pool.query(query, [
-      data.firstName,
-      data.lastName,
+      data.fullName,
       data.email,
       data.password, // hash natin to
-      data.address,
-      data.sex,
-      data.dateOfBirth,
-      data.contactNumber,
-      data.barNumber,
-      data.specialization,
+      data.accountStatus,
+      data.position,
     ]);
     return { success: response.rowCount > 0 };
   } catch (err) {
@@ -59,7 +95,7 @@ const insertLawyer = async (data) => {
 const fetchActiveLawyers = async () => {
   try {
     const response = await pool.query(
-      `SELECT lawyer_id, full_name FROM "viewLawyers" WHERE account_status = 'Active'`
+      `SELECT * FROM "viewLawyers" WHERE account_status = 'Active'`
     );
 
     if (response.rowCount > 0) {
@@ -72,4 +108,11 @@ const fetchActiveLawyers = async () => {
   }
 };
 
-export { insertLawyer, fetchLawyers, ifLawyerExist, fetchActiveLawyers };
+export {
+  insertLawyer,
+  fetchLawyers,
+  ifLawyerExist,
+  fetchActiveLawyers,
+  updateLawyer,
+  archiveLawyer,
+};

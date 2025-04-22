@@ -105,7 +105,7 @@ function ForgotPasswordForm() {
       <div className="mt-4 text-center">
         <div>
           <Link
-            to="/LoginPage"
+            to="/"
             className="text-blue-500 hover:underline focus:outline-none"
           >
             Back to Login

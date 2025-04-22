@@ -6,7 +6,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
   const [useLink, setUseLink] = useState(false); // Toggle between file upload and link input
   const [approvedClients, setApprovedClients] = useState([]);
   const [lawyers, setLawyers] = useState([]);
-
+  const [count, setCount] = useState(0);
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -45,6 +45,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
       console.log("its not working");
       console.log(error); // This will log the error if something goes wrong
     }
+    setCount((prev) => prev + 1);
   };
 
   const getApprovedClients = async () => {
@@ -71,8 +72,8 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
   useEffect(() => {
     getApprovedClients();
     getLawyers();
-  }, []);
-
+    getApprovedClients();
+  }); // TANGGALIN TO MAMAYA, FOR PRESENTATION PURPOSES LANG
   if (!showModal) return null;
 
   return (
@@ -218,7 +219,7 @@ const AddCaseModal = ({ showModal, closeModal, handleAddCase }) => {
                 </option>
                 {lawyers.map((lawyer, index) => (
                   <option key={index} value={lawyer.lawyer_id}>
-                    {lawyer.full_name}
+                    {lawyer.user_full_name}
                   </option>
                 ))}
               </select>
