@@ -35,7 +35,7 @@ function AppTest() {
             <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/forgotpass" element={<ForgotPass />} />
-            <Route path="/archives" element={<ArchivePage />} />
+            <Route path="/archive" element={<ArchivePage />} />
           </Routes>
         </main>
       </div>
