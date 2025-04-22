@@ -179,21 +179,24 @@ function RegisterForm() {
       barangay: formData.barangay,
     };
 
+    // Dynamic logic: Send registration data to the backend (commented out for now)
+    /*
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/signup",
-        payload
-      );
-      setServerMessage(
-        response.status === 202
-          ? "Wait for admin's approval"
-          : "Successfully signed up!"
-      );
+        const response = await axios.post(
+            "http://localhost:3000/api/auth/signup", // Backend endpoint for registration
+            payload
+        );
+        setServerMessage(
+            response.status === 202
+                ? "Your account is waiting for admin approval."
+                : "Successfully signed up!"
+        );
     } catch (err) {
-      setServerMessage(err.response?.data?.error || "Signup failed.");
+        setServerMessage(err.response?.data?.error || "Signup failed.");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
+    */
   };
 
   return (
@@ -551,8 +554,8 @@ function RegisterForm() {
         {serverMessage && (
           <p
             className={`text-sm text-center ${serverMessage.includes("success")
-                ? "text-green-600"
-                : "text-red-600"
+              ? "text-green-600"
+              : "text-red-600"
               }`}
           >
             {serverMessage}
@@ -562,8 +565,8 @@ function RegisterForm() {
         <button
           type="submit"
           className={`w-full py-2 rounded-md transition ${isLoading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-indigo-600 text-white hover:bg-indigo-700"
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-indigo-600 text-white hover:bg-indigo-700"
             }`}
           disabled={isLoading}
         >

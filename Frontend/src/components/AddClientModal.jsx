@@ -141,7 +141,7 @@ const AddClientModal = ({
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative overflow-y-auto max-h-[90vh]">
         {/* Modal Header */}
-        <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-center items-center">
+        <div className="bg-green-400 p-4 rounded-t-lg flex justify-center items-center">
           <h2 className="text-lg font-bold">Add New Client</h2>
         </div>
         <div className="absolute top-4 right-4">
@@ -423,7 +423,7 @@ const AddClientModal = ({
 
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full mt-4"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full mt-4"
             >
               Add Client
             </button>

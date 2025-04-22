@@ -1,5 +1,5 @@
 import React from "react";
-import { LoginForm } from "../components";
+import { LoginForm, } from "../components";
 import bgImage from "../assets/bg.jpeg"; // Import the image
 
 function LoginPage() {

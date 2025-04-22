@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react"; // Import icons for show/hide password
+
 function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
@@ -8,11 +10,12 @@ function LoginForm() {
     rememberMe: false,
   });
 
-  axios.defaults.withCredentials = true; // TANGINA LAGI DAPAT TO NAKA SEET KAPAG MAG AAUTHENTICATE TAYO
-
   const [errors, setErrors] = useState({});
   const [response, setResponse] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const navigate = useNavigate();
+
+  axios.defaults.withCredentials = true;
 
   const validate = () => {
     const newErrors = {};
@@ -31,17 +34,6 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log("Login attempt:", formData);
-    // Proceed with login logic
-
-    // try {
-    //   const response = await axios.get("http://localhost:3000/api/auth/getme", {
-    //     withCredentials: true,
-    //   });
-    //   console.log(response.data);
-    // } catch (error) {
-    //   console.log(error);
-    // }
 
     try {
       const response = await axios.post(
@@ -60,13 +52,10 @@ function LoginForm() {
       navigate("/");
       console.log(error);
       if (error.status === 401) {
-        console.log(error.response.data.message);
         setResponse(error.response.data.message);
       } else if (error.status === 409) {
-        console.log(error.response.data.message);
         setResponse(error.response.data.message);
       } else if (error.status === 400) {
-        console.log(error.response.data.message);
         setResponse(error.response.data.message);
       }
     }
@@ -104,6 +93,7 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+      <h1 className="text-3xl font-extrabold text-center mb-6">F&M Law Firm</h1>
       <h1 className="text-2xl font-bold text-center mb-6">Log in</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -115,9 +105,8 @@ function LoginForm() {
           <input
             name="email"
             type="email"
-            className={`w-full px-3 py-2 border ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
+            className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500`}
             value={formData.email}
             onChange={handleChange}
           />
@@ -129,15 +118,23 @@ function LoginForm() {
         {/* Password Field */}
         <div>
           <h2 className="text-sm font-medium text-gray-700 mb-2">Password</h2>
-          <input
-            name="password"
-            type="password"
-            className={`w-full px-3 py-2 border ${
-              errors.password ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500`}
-            value={formData.password}
-            onChange={handleChange}
-          />
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"} // Toggle input type
+              className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500`}
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-2.5 text-gray-500"
+              onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
           {errors.password && (
             <p className="mt-1 text-sm text-red-600">{errors.password}</p>
           )}
@@ -167,7 +164,7 @@ function LoginForm() {
         {/* Login Button */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full bg-[#FFB600] text-black py-2 px-4 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
         >
           Log in
         </button>

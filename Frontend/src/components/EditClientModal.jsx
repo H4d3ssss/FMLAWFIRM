@@ -114,7 +114,7 @@ const EditClientModal = ({
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative overflow-y-auto max-h-[90vh]">
-        <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-between items-center">
+        <div className="bg-blue-400 p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-lg font-bold">Edit Client</h2>
           <button onClick={closeModal} className="text-black text-xl font-bold">
             <X size={24} />
