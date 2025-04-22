@@ -50,6 +50,7 @@ import ArchiveAdminModal from "./ArchiveAdminModal";
 
 // Miscellaneous Components
 import Todo from "./Todo";
+import LogoutModal from "./LogoutModal";
 
 export {
     // Layout Components
@@ -76,6 +77,7 @@ export {
     ArchiveAdminModal,
     AddClientAccount,
     ArchiveClientAccount,
+    LogoutModal,
 
     // Tables
     AdminCaseTable,
