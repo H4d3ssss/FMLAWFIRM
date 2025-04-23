@@ -80,8 +80,8 @@ router.get("/fetch-unfinished-tasks", async (req, res) => {
 
 router.patch("/mark-finished-task", async (req, res) => {
   try {
-    const { taskId } = req.body;
-    const response = await markAsFinishedTask(taskId);
+    const { taskId, adminId } = req.body;
+    const response = await markAsFinishedTask(taskId, adminId);
 
     if (response.success) {
       res.status(200).json(response.response);
@@ -98,8 +98,8 @@ router.patch("/mark-finished-task", async (req, res) => {
 
 router.patch("/mark-deleted-task", async (req, res) => {
   try {
-    const { taskId } = req.body;
-    const response = await markAsDeletedTask(taskId);
+    const { taskId, adminId } = req.body;
+    const response = await markAsDeletedTask(taskId, adminId);
 
     if (response.success) {
       res.status(200).json(response.response);
@@ -137,7 +137,7 @@ router.get("/tasks-due-today", async (req, res) => {
     const response = await fetchTasksDueDateToday();
     if (!response.success)
       return res.status(200).json({ response: "No tasks for today" });
-    console.log(response.response);
+    // console.log(response.response);
     res.status(200).json(response.response);
   } catch (error) {
     res.status(500).json(error);

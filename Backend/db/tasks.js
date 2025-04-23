@@ -1,3 +1,4 @@
+import { createActivityLog } from "./activities.js";
 import pool from "./index.js";
 
 const insertTask = async (data) => {
@@ -8,7 +9,30 @@ const insertTask = async (data) => {
 )`,
       [data.taskDescription, data.dueDate, data.day, data.dateCreated]
     );
-    return { success: true, response: response };
+
+    if (response.rowCount <= 0)
+      return { success: false, response: "Hindi nakapagset ng task huy" };
+
+    const data1 = {
+      adminId: data.adminId,
+      action: "CREATED TASK",
+      description: "Created a task: " + data.taskDescription,
+      targetTable: "tasks",
+      target_id: null,
+    };
+
+    const response1 = await createActivityLog(data1);
+    // console.log(response1);
+    if (!response1.success)
+      return {
+        success: false,
+        message: "may mali sa pag create ng activity log",
+      };
+
+    return {
+      success: true,
+      response: "nakapag create ng task at create ng activity log",
+    };
   } catch (error) {
     console.log(error);
     return { success: false, error };
@@ -62,26 +86,87 @@ WHERE task_status = 'Unfinished'`);
   }
 };
 
-const markAsFinishedTask = async (task_id) => {
+const markAsFinishedTask = async (task_id, adminId) => {
   try {
+    const response2 = await pool.query(
+      `SELECT * FROM tasks WHERE task_id = $1`,
+      [task_id]
+    );
+
     const response = await pool.query(
       `UPDATE tasks SET task_status = 'Finished' WHERE task_id = $1`,
       [task_id]
     );
-    console.log(response);
+    if (response.rowCount <= 0)
+      return {
+        success: false,
+        message: "may error sa pag mark as finished task",
+      };
+    console.log(adminId);
+    const data1 = {
+      adminId: adminId,
+      action: "UPDATED TASK",
+      // description:
+      //   "Marked as finished task: " + response2.rows[0].task_description,
+      description:
+        response2.rows[0].task_status === "Unfinished"
+          ? "Unfinished task marked as finished task: " +
+            response2.rows[0].task_description
+          : "Marked as finished task: " + response2.rows[0].task_description,
+      targetTable: "tasks",
+      target_id: null,
+    };
+
+    const response1 = await createActivityLog(data1);
+
+    if (!response1.success)
+      return {
+        success: false,
+        message:
+          "May error sa pag create ng activity log sa mark as finished  ",
+      };
+
     return { success: response.rowCount > 0, response };
   } catch (error) {
     return { success: fakse, error };
   }
 };
 
-const markAsDeletedTask = async (task_id) => {
+const markAsDeletedTask = async (task_id, adminId) => {
   try {
+    const response2 = await pool.query(
+      `SELECT * FROM tasks WHERE task_id = $1`,
+      [task_id]
+    );
+
     const response = await pool.query(
       `UPDATE tasks SET task_status = 'Deleted' WHERE task_id = $1`,
       [task_id]
     );
-    console.log(response);
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "May error sa pag delete ng task" };
+
+    const data1 = {
+      adminId: adminId,
+      action: "DELETED TASK",
+      // description: "Deleted a task: " + response2.rows[0].task_description,
+      description:
+        response2.rows[0].task_status === "Unfinished"
+          ? "Deleted an unfinished task: " + response2.rows[0].task_description
+          : "Deleted a task: " + response2.rows[0].task_description,
+      targetTable: "tasks",
+      target_id: null,
+    };
+
+    const response1 = await createActivityLog(data1);
+    console.log(response1);
+    if (!response1.success)
+      return {
+        success: false,
+        message: "May error sa pag create ng activity log sa delete task",
+      };
+    // console.log(response);
     return { success: response.rowCount > 0, response };
   } catch (error) {
     return { success: fakse, error };
@@ -94,7 +179,7 @@ const markAsUnfinishedTask = async (task_id) => {
       `UPDATE tasks SET task_status = 'Unfinished' WHERE task_id = $1`,
       [task_id]
     );
-    console.log(response);
+    // console.log(response);
     return { success: response.rowCount > 0, response };
   } catch (error) {
     return { success: fakse, error };

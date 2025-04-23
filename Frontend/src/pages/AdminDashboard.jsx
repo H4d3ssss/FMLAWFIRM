@@ -50,7 +50,7 @@ const AdminDashboard = () => {
           "http://localhost:3000/api/auth/authenticate-user"
         );
 
-        console.log(response.data);
+        // console.log(response.data);
         if (response.data.role === "Lawyer") {
           navigate("/admindashboard");
         } else if (response.data.role === "Client") {
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
         const response = await axios.get(
           "http://localhost:3000/api/appointments/soonest-appointment"
         );
-        console.log(response.data);
+        // console.log(response.data);
         setUpcomingEvents(response.data);
       } catch (error) {
         console.log(error);
@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         const response = await axios.get(
           "http://localhost:3000/api/cases/active"
         );
-        console.log(response.data);
+        // console.log(response.data);
         setActiveCases(response.data);
       } catch (error) {
         console.log(error);
@@ -115,7 +115,6 @@ const AdminDashboard = () => {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
       {/* Ensure Navbar has a fixed height */}
       <Navbar className="h-16" /> {/* Adjust height if necessary */}
-
       <div className="flex flex-1">
         {/* Main Content */}
         <main className="flex p-6 mx-60">
@@ -149,7 +148,6 @@ const AdminDashboard = () => {
           </div>
         </main>
       </div>
-
       <Footer />
     </div>
   );

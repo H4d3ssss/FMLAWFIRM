@@ -6,6 +6,7 @@ const ArchiveCaseModal = ({
   closeModal,
   caseDetails,
   handleArchive,
+  adminId,
 }) => {
   if (!showModal || !caseDetails) return null; // Do not render the modal if it's not visible or caseDetails is missing
 
@@ -13,7 +14,7 @@ const ArchiveCaseModal = ({
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/cases/archived-case",
-        { caseId }
+        { caseId, adminId }
       );
       console.log(response);
     } catch (error) {

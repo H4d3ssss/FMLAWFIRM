@@ -235,7 +235,7 @@ router.post("/new-case", upload.single("file"), async (req, res) => {
   }
   try {
     // console.log(req.file.originalname);
-    const { caseTitle, clientId, lawyerId, status, link } = req.body;
+    const { caseTitle, clientId, lawyerId, status, link, adminId } = req.body;
 
     const filePath = req.file ? req.file.path : link;
     const fileName = req.file ? req.file.originalname : "Link Provided";
@@ -246,7 +246,8 @@ router.post("/new-case", upload.single("file"), async (req, res) => {
       lawyerId,
       status,
       fileName,
-      filePath
+      filePath,
+      adminId
     );
     if (response.success) {
       res.status(200).json(response);
@@ -276,8 +277,8 @@ router.get("/", async (req, res) => {
 router.patch("/edit-case", upload.single("file"), async (req, res) => {
   try {
     // Log the incoming file and data
-    console.log("Uploaded file:", req.file);
-    console.log("Body data:", req.body);
+    // console.log("Uploaded file:", req.file);
+    // console.log("Body data:", req.body);
 
     const data = req.body;
 
@@ -288,7 +289,7 @@ router.patch("/edit-case", upload.single("file"), async (req, res) => {
     }
 
     // Log the data being sent for the case update
-    console.log("Data to update:", data);
+    // console.log("Data to update:", data);
 
     // Call the update function
     const response = await updateCase(data);
@@ -306,8 +307,8 @@ router.patch("/edit-case", upload.single("file"), async (req, res) => {
 
 router.patch("/archived-case", async (req, res) => {
   try {
-    const { caseId } = req.body;
-    const response = await archiveCase(caseId);
+    const { caseId, adminId } = req.body;
+    const response = await archiveCase(caseId, adminId);
 
     if (!response.success)
       return res.status(404).json({ message: response.message });

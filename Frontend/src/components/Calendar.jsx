@@ -17,7 +17,7 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [count, setCount] = useState(0);
-
+  const [adminId, setAdminId] = useState(null);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
@@ -30,6 +30,7 @@ const Calendar = () => {
 
         console.log(response.data);
         if (response.data.role === "Lawyer") {
+          setAdminId(response.data.lawyerId); // for activtiy log
           navigate("/calendar");
         } else if (response.data.role === "Client") {
           navigate("/clientdashboard");
@@ -50,7 +51,7 @@ const Calendar = () => {
         const response = await axios.get(
           "http://localhost:3000/api/appointments"
         );
-        console.log(response.data);
+        // console.log(response.data);
         const formatted = response.data.map((event) => ({
           id: event.appointmend_id,
           title: event.event_title,
@@ -68,7 +69,7 @@ const Calendar = () => {
             endTime: event.end_time,
           },
         }));
-        console.log(formatted);
+        // console.log(formatted);
         setEvents(formatted); // Set the events in state
       } catch (err) {
         console.error("Failed to fetch events:", err);
@@ -125,21 +126,21 @@ const Calendar = () => {
     const updatedEvents = events.map((event) =>
       event.id === updatedEvent.id
         ? {
-          ...event,
-          title: updatedEvent.title,
-          start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
-          end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
-          extendedProps: {
-            ...event.extendedProps,
-            type: updatedEvent.type,
-            location: updatedEvent.location,
-            notes: updatedEvent.notes,
-            startTime: updatedEvent.startTime,
-            endTime: updatedEvent.endTime,
-            lawyerId: updatedEvent.lawyerId, // Include lawyerId
-            clientId: updatedEvent.clientId, // Include clientId
-          },
-        }
+            ...event,
+            title: updatedEvent.title,
+            start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
+            end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
+            extendedProps: {
+              ...event.extendedProps,
+              type: updatedEvent.type,
+              location: updatedEvent.location,
+              notes: updatedEvent.notes,
+              startTime: updatedEvent.startTime,
+              endTime: updatedEvent.endTime,
+              lawyerId: updatedEvent.lawyerId, // Include lawyerId
+              clientId: updatedEvent.clientId, // Include clientId
+            },
+          }
         : event
     );
     setEvents(updatedEvents);
@@ -179,6 +180,7 @@ const Calendar = () => {
         onSubmit={handleAddEvent}
         date={selectedDate}
         events={events} // Pass existing events
+        adminId={adminId}
       />
 
       {/* Event View Modal */}

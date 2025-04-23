@@ -11,7 +11,7 @@ const TaskListCard = () => {
           "http://localhost:3000/api/tasks/tasks-due-today"
         );
         setTasks(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -20,25 +20,25 @@ const TaskListCard = () => {
     getDueTodayTasks();
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
+  // // useEffect(() => {
+  // //   const timer = setInterval(() => {
+  // //     const now = new Date();
 
-      // Filter out tasks that are completed and should be deleted
-      const updatedTasks = tasks.filter((task) => {
-        return !(
-          task.completed &&
-          task.autoDeleteTime &&
-          now >= new Date(task.autoDeleteTime)
-        );
-      });
+  // //     // Filter out tasks that are completed and should be deleted
+  // //     const updatedTasks = tasks.filter((task) => {
+  // //       return !(
+  // //         task.completed &&
+  // //         task.autoDeleteTime &&
+  // //         now >= new Date(task.autoDeleteTime)
+  // //       );
+  // //     });
 
-      setTasks(updatedTasks); // Update the state to remove deleted tasks
-    }, 1000);
+  // //     setTasks(updatedTasks); // Update the state to remove deleted tasks
+  // //   }, 1000);
 
-    // Cleanup interval timer on component unmount
-    return () => clearInterval(timer);
-  }, [tasks]);
+  //   // Cleanup interval timer on component unmount
+  //   return () => clearInterval(timer);
+  // }, [tasks]);
 
   // Function to toggle task completion
   const toggleTaskCompletion = (index) => {

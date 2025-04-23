@@ -16,11 +16,12 @@ const AdminCaseTable = () => {
   const [showArchiveModal, setShowArchiveModal] = useState(false); // Control ArchiveCaseModal visibility
   const [currentCase, setCurrentCase] = useState(null); // Store the current case for editing/viewing/archiving
   const [count, setCount] = useState(0);
+  const [adminId, setAdminId] = useState(null);
   const fetchAllCases = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/cases");
       setCases(response.data.response);
-      console.log(response.data.response);
+      // console.log(response.data.response);
       // console.log(response.data.response);
     } catch (error) {
       console.log(error);
@@ -39,6 +40,7 @@ const AdminCaseTable = () => {
 
         console.log(response.data);
         if (response.data.role === "Lawyer") {
+          setAdminId(response.data.lawyerId);
           navigate("/cases");
         } else if (response.data.role === "Client") {
           navigate("/clientdashboard");
@@ -85,7 +87,7 @@ const AdminCaseTable = () => {
   const handleArchiveButtonClick = (caseItem) => {
     setCurrentCase(caseItem); // Set the current case for archiving
     setShowArchiveModal(true); // Show the ArchiveCaseModal
-    console.log(caseItem);
+    // console.log(caseItem);
   };
 
   // Filtering Cases
@@ -150,6 +152,7 @@ const AdminCaseTable = () => {
               <th className="p-3">Time & Date Added</th>
               <th className="p-3">Status</th>
               <th className="p-3">Last Update</th>
+              <th className="p-3">Updated by</th>
               <th className="p-3">File</th>
               <th className="p-3">Lawyer</th>
               <th className="p-3">Action</th>
@@ -170,6 +173,9 @@ const AdminCaseTable = () => {
                   <td className="p-3">{caseValue.case_status}</td>
                   <td className="p-3">
                     {caseValue.last_time_only} | {caseValue.last_date_only}
+                  </td>
+                  <td className="p-3">
+                    {caseValue.updated_by_fname} {caseValue.updated_by_lname}
                   </td>
                   <td className="p-3">
                     <a
@@ -221,6 +227,7 @@ const AdminCaseTable = () => {
         closeModal={() => setShowAddModal(false)}
         count={count} // Close AddCaseModal
         setCount={setCount}
+        adminId={adminId}
       />
 
       {/* EditCaseModal */}
@@ -229,6 +236,7 @@ const AdminCaseTable = () => {
         closeModal={() => setShowEditModal(false)} // Close EditCaseModal
         handleEditCase={handleEditCase} // Handle editing a case
         existingCase={currentCase} // Pass the selected case to be edited
+        adminId={adminId}
       />
 
       {/* ViewCaseModal */}
@@ -243,7 +251,8 @@ const AdminCaseTable = () => {
         showModal={showArchiveModal}
         closeModal={() => setShowArchiveModal(false)} // Close ArchiveCaseModal
         caseDetails={currentCase} // Pass the selected case to be archived
-        handleArchive={handleArchiveCase} // Handle archiving a case
+        handleArchive={handleArchiveCase}
+        adminId={adminId} // Handle archiving a case
       />
     </div>
   );

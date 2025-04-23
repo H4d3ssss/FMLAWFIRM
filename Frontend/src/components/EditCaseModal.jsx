@@ -6,6 +6,7 @@ const EditCaseModal = ({
   closeModal,
   handleEditCase,
   existingCase,
+  adminId,
 }) => {
   const [useLink, setUseLink] = useState(!existingCase?.fileOrLink?.file); // Determine whether to use link or file based on existing case data
   const [caseToEdit, setCaseToEdit] = useState([]);
@@ -19,7 +20,7 @@ const EditCaseModal = ({
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log(response);
+      // console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -27,12 +28,13 @@ const EditCaseModal = ({
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // console.log(adminId);
     const formData = new FormData();
 
     formData.append("caseId", event.target.caseNo.value);
     formData.append("caseTitle", event.target.title.value);
     formData.append("caseStatus", event.target.status.value);
-    formData.append("lawyerid", 1); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
+    formData.append("lawyerId", adminId); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
     if (useLink) {
       formData.append("fileName", event.target.link.value);
       formData.append("filePath", event.target.link.value);
@@ -58,7 +60,7 @@ const EditCaseModal = ({
     //     : event.target.file.files[0] || null,
     // };
 
-    console.log(formData);
+    // console.log(formData);
     handleUpdateCase(formData);
 
     // handleEditCase(updatedCase); // Pass the updated case back to parent component
@@ -71,7 +73,7 @@ const EditCaseModal = ({
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative">
         {/* Modal Header */}
-        {console.log(existingCase)}
+        {/* {console.log(existingCase)} */}
         <div className="bg-blue-400 p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-lg font-bold">Edit Case</h2>
           <button
@@ -101,8 +103,8 @@ const EditCaseModal = ({
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium">
                 Title
-                {console.log(existingCase.case_id)}
-                {console.log(JSON.stringify(existingCase))}
+                {/* {console.log(existingCase.case_id)} */}
+                {/* {console.log(JSON.stringify(existingCase))} */}
               </label>
               <input
                 type="text"

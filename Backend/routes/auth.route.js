@@ -126,7 +126,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data.email);
+    // console.log(data.email);
     const user = await userExist(data.email);
     // console.log(user);
     if (!user.success) return res.status(402).json({ message: user.message });
@@ -145,12 +145,13 @@ router.post("/login", async (req, res) => {
       );
 
       if (isValid || isValid1) {
-        console.log(user.response[0]);
+        // console.log(user.response[0]);
         // console.log(req.session.user);
         req.session.user = {
           userId: user.response[0].user_id,
           email: user.response[0].email,
           role: user.response[0].role,
+          clientId: user.response[0].client_id,
         };
         // console.log(req.session.user);
         res.status(200).json(req.session.user);
@@ -170,8 +171,9 @@ router.post("/login", async (req, res) => {
         userId: user.response[0].user_id,
         email: user.response[0].email,
         role: user.response[0].role,
+        lawyerId: user.response[0].lawyer_id,
       };
-      console.log(req.session.user);
+      // console.log(req.session.user);
       res.status(200).json(req.session.user);
     }
 

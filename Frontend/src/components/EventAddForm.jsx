@@ -18,7 +18,7 @@ const eventTypeColors = {
   Other: "#607D8B", // Gray
 };
 
-const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
+const EventAddForm = ({ isOpen, onClose, onSubmit, date, events, adminId }) => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState(eventTypes[0]);
   const [location, setLocation] = useState("");
@@ -38,7 +38,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
         "http://localhost:3000/api/lawyers/active-lawyers"
       );
       setLawyers(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -114,6 +114,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events }) => {
       lawyerId, // Include lawyerId
       clientId, // Include clientId
       appointmentDate: date,
+      adminId,
     };
 
     try {

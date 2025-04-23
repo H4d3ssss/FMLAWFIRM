@@ -1,3 +1,4 @@
+import { createActivityLog, fetchActivityLogs } from "../activities.js";
 import pool from "../index.js";
 
 const fetchScheduledAppointments = async () => {
@@ -53,7 +54,26 @@ const insertAppointment = async (data) => {
         data.endTime,
       ]
     );
-    return { success: true };
+    // console.log("dito ko sa line 57 sa appointments.js");
+    // console.log(response);
+
+    const data1 = {
+      adminId: data.adminId,
+      action: "CREATED APPOINTMENT",
+      description: "Created an appointment for",
+      targetTable: "appointment",
+      target_id: data.clientId,
+    };
+
+    const response1 = await createActivityLog(data1);
+
+    if (!response1.success)
+      return { success: false, message: "may problema sa response 1" };
+
+    return {
+      success: true,
+      message: "successfully created an appointment and an activity log",
+    };
   } catch (error) {
     return { success: false, error };
   }

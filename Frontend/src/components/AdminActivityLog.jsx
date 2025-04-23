@@ -13,23 +13,22 @@ const AdminActivityLog = () => {
    * Function to fetch activity logs from the backend
    * Integrates with an API to retrieve logs in JSON format
    */
-  const fetchActivityLogs = async () => {
+  const getActivityLogs = async () => {
     try {
       const response = await axios.get(
         "http://localhost:3000/api/activities/fetch-activities"
       ); // Replace with your API endpoint
-      console.log(response.data);
-      //   if (!response.ok) throw new Error("Failed to fetch activity logs"); // Handle unsuccessful HTTP responses
+      // console.log(response.data);
       setActivityLogs(response.data); // Update state with fetched logs
     } catch (error) {
-      console.error("Error fetching activity logs:", error); // Log errors for debugging
+      console.log(error);
     }
     setLoading(false); // Update loading state to false
   };
 
   // useEffect hook to fetch activity logs when the component mounts
   useEffect(() => {
-    fetchActivityLogs(); // Trigger the API call
+    getActivityLogs(); // Trigger the API call
   }, []); // Empty dependency array ensures fetch occurs only once
 
   return (
@@ -74,7 +73,7 @@ const AdminActivityLog = () => {
                 <div>
                   <p className="text-gray-800 font-semibold">{log.action}</p>
                   <p className="text-sm text-gray-600">
-                    • {log.description} {log.user} by {log.admin_name}{" "}
+                    • {log.description} {log.client_name} by {log.admin_name} |{" "}
                     {new Date(log.timestamp).toLocaleString()}
                   </p>
                 </div>

@@ -27,7 +27,9 @@ const TasksDueCard = ({ count, nextTask }) => {
         <h2 className="text-2xl font-bold text-gray-800">Tasks Due</h2>
       </div>
       {/* Count */}
-      <p className="text-4xl font-semibold text-red-600 mb-2">{count1}</p>
+      <p className="text-4xl font-semibold text-red-600 mb-2">
+        {count1 ? count1 : 0}
+      </p>
       {/* Next Task Info */}
       {nextTask && (
         <p className="text-sm text-gray-600 text-center">

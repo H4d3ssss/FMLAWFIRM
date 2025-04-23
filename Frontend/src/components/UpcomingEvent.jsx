@@ -10,7 +10,7 @@ const UpcomingEvent = () => {
         const response = await axios.get(
           "http://localhost:3000/api/appointments/soonest-appointment"
         );
-        console.log(response.data);
+        // console.log(response.data);
         setEventData(response.data);
       } catch (error) {
         console.log(error);
@@ -62,7 +62,7 @@ const UpcomingEvent = () => {
       ? eventData
       : [defaultEvent];
   const event = eventArray[0]; // Use fetched event or fallback to default
-  console.log(event);
+  // console.log(event);
   return (
     <div className="bg-white shadow-md rounded-xl p-4 w-[660px] h-[300px] border border-gray-200">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Upcoming Events</h1>

@@ -72,11 +72,12 @@ router.get("/cancelled", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
+    console.log(data);
     const response = await insertAppointment(data);
     console.log(response);
     if (response.success) {
       res.status(200).json({
-        sucess: true,
+        success: true,
         message: "Successfully scheduled an appointment",
       });
     } else {

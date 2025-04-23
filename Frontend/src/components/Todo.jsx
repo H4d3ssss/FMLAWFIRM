@@ -20,7 +20,7 @@ const Todo = () => {
   const [dayInput, setDayInput] = useState("Today");
   const [assignedDay, setAssignedDay] = useState(""); // For "This Week" tasks
   const [unfinishedTasks, setUnfinishedTasks] = useState([]);
-
+  const [adminId, setAdminId] = useState(null);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
@@ -31,8 +31,9 @@ const Todo = () => {
           "http://localhost:3000/api/auth/authenticate-user"
         );
 
-        console.log(response.data);
+        // console.log(response.data);
         if (response.data.role === "Lawyer") {
+          setAdminId(response.data.lawyerId);
           navigate("/todo");
         } else if (response.data.role === "Client") {
           navigate("/clientdashboard");
@@ -54,7 +55,7 @@ const Todo = () => {
       );
       // console.log(response.data);
       setTasks(response.data);
-      console.log(tasks);
+      // console.log(tasks);
     } catch (error) {
       console.log(error);
     }
@@ -86,11 +87,19 @@ const Todo = () => {
     if (unfinishedTasks.length) {
       fetchUnfinishedTasks();
     }
-    console.log(unfinishedTasks);
-    console.log("rendering");
+    // console.log(unfinishedTasks);
+    // console.log("rendering");
 
     // Cleanup on component unmount
   }, [count]);
+
+  // const activityLog = async (data) => {
+  //   try {
+  //     const response =
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   const addTask = async () => {
     if (taskInput.trim() !== "") {
@@ -111,6 +120,7 @@ const Todo = () => {
       try {
         if (dayInput === "Today") {
           // 📌 INSERT TODAY'S ROUTE HERE
+          // console.log(adminId);
           const response = await axios.post(
             "http://localhost:3000/api/tasks/create-today-task",
             {
@@ -118,6 +128,7 @@ const Todo = () => {
               day: dayNames[new Date().getDay()],
               dueDate: new Date().toISOString().split("T")[0],
               dateCreated: new Date().toISOString().split("T")[0],
+              adminId,
             }
           );
         } else if (dayInput === "Tomorrow") {
@@ -131,6 +142,7 @@ const Todo = () => {
               day: dayNames[new Date().getDay() + 1],
               dueDate: tomorrow.toISOString().split("T")[0],
               dateCreated: new Date().toISOString().split("T")[0],
+              adminId,
             }
           );
         } else if (dayInput === "This Week") {
@@ -154,10 +166,11 @@ const Todo = () => {
             day: assignedDay,
             dueDate: assignedDate.toISOString().split("T")[0],
             dateCreated: new Date().toISOString().split("T")[0],
+            adminId,
           });
         }
 
-        console.log(count);
+        // console.log(count);
       } catch (error) {
         console.log(error);
       }
@@ -175,7 +188,7 @@ const Todo = () => {
         "http://localhost:3000/api/tasks/mark-unfinished-task",
         { taskId }
       );
-      console.log(response);
+      // console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -185,9 +198,10 @@ const Todo = () => {
     try {
       const response = await axios.patch(
         `http://localhost:3000/api/tasks/mark-finished-task`,
-        { taskId }
+        { taskId, adminId }
       );
-      console.log(response);
+      console.log(adminId);
+      // console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -199,7 +213,7 @@ const Todo = () => {
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/tasks/mark-deleted-task",
-        { taskId }
+        { taskId, adminId }
       );
       console.log(response);
     } catch (err) {
@@ -341,13 +355,17 @@ const Todo = () => {
                     }
                     //CHECK IF MAY BUGS PA RIN BUKAS NG UMAGA
                     deadline.setHours(23, 59, 0, 0); // 11:59 PM of the due date
-                    console.log(deadline);
+                    {
+                      /* console.log(deadline); */
+                    }
                     const diff = deadline - now;
                     if (diff <= 0) {
                       setTimeout(() => {
                         handleUnfinishedTask(task.task_id);
                         setCount((count) => count + 1); // this is just to re render */
-                        console.log(" potangina may bug dito ");
+                        {
+                          /* console.log(" potangina may bug dito "); */
+                        }
                       }, 10000);
                       return "Deadline Passed";
                     }
@@ -364,7 +382,7 @@ const Todo = () => {
               <button
                 onClick={() => {
                   deleteTask(task.task_id);
-                  console.log("deleted");
+                  // console.log("deleted");
                 }}
                 className="text-red-500 hover:text-red-700 ml-4"
               >

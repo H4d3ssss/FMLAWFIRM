@@ -8,6 +8,7 @@ const AddCaseModal = ({
   handleAddCase,
   count,
   setCount,
+  adminId,
 }) => {
   const [useLink, setUseLink] = useState(false);
   const [approvedClients, setApprovedClients] = useState([]);
@@ -27,6 +28,7 @@ const AddCaseModal = ({
     formData.append("clientId", clientId);
     formData.append("status", status);
     formData.append("lawyerId", lawyerId);
+    formData.append("adminId", adminId);
 
     if (useLink) {
       const link = event.target.link.value;
@@ -226,7 +228,7 @@ const AddCaseModal = ({
                 <option value="">Select a lawyer</option>
                 {lawyers.map((lawyer, index) => (
                   <option key={index} value={lawyer.lawyer_id}>
-                    {lawyer.user_full_name}
+                    {lawyer.full_name}
                   </option>
                 ))}
               </select>

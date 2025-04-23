@@ -150,7 +150,7 @@ const ifClientExist = async (email) => {
 const fetchApprovedClients = async () => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewClients1" WHERE account_status = 'Approved'`
+      `SELECT * FROM "viewClients1" WHERE account_status = 'Approved' ORDER BY client_id ASC`
     );
     if (response.rowCount <= 0)
       return { success: false, response: "No Approved Clients" };
@@ -211,7 +211,7 @@ const updateClientDetails1 = async (data) => {
         data.user_id,
       ]
     );
-    console.log(response);
+    // console.log(response);
     if (response.rowCount <= 0)
       return { success: false, message: "hindi nakapag update" };
 

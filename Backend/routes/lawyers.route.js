@@ -78,7 +78,7 @@ router.patch("/update-lawyer", async (req, res) => {
   try {
     const data = req.body;
     const response = await updateLawyer(data);
-    console.log(response);
+    // console.log(response);
     if (!response.success) return res.status(500).json(response.message);
 
     res.status(200).json(response.message);
