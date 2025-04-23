@@ -114,24 +114,6 @@ router.patch("/mark-deleted-task", async (req, res) => {
   }
 });
 
-router.patch("/mark-deleted-task", async (req, res) => {
-  try {
-    const { taskId } = req.body;
-    const response = await markAsDeletedTask(taskId);
-
-    if (response.success) {
-      res.status(200).json(response.response);
-    } else {
-      res.status(500).json(response.error);
-    }
-  } catch (error) {
-    res.status(500).json({
-      message: "Error at updating task as finished task",
-      error: error,
-    });
-  }
-});
-
 router.patch("/mark-unfinished-task", async (req, res) => {
   try {
     const { taskId } = req.body;

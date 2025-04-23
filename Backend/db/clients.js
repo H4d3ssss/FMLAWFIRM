@@ -202,9 +202,9 @@ const updateClientDetails1 = async (data) => {
     const response = await pool.query(
       `UPDATE users SET first_name = $1, last_name = $2, date_of_birth = $3, sex = $4, contact_number = $5, address = $6 WHERE user_id = $7`,
       [
-        data.firstName,
-        data.lastName,
-        data.birthDate,
+        data.first_name,
+        data.last_name,
+        data.not_formatted_date_of_birth,
         data.sex,
         data.contact_number,
         data.fullAddress,

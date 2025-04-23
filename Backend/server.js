@@ -7,6 +7,7 @@ import caseRoutes from "./routes/cases.route.js";
 import appointmentRoutes from "./routes/appointments.route.js";
 import authRoutes from "./routes/auth.route.js";
 import taskRoutes from "./routes/tasks.route.js";
+import activityRoutes from "./routes/activities.route.js";
 import sessions from "express-session";
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(
   sessions({
@@ -40,6 +42,7 @@ app.use((req, res, next) => {
 });
 app.use("/uploads", express.static("uploads"));
 
+app.use("/api/activities", activityRoutes);
 app.use("/api/lawyers", lawyerRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/cases", caseRoutes);

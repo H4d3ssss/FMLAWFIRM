@@ -135,7 +135,6 @@ const EditClientModal = ({
     } catch (error) {
       console.log(error);
     }
-    // }
     closeModal();
   };
 
@@ -160,8 +159,8 @@ const EditClientModal = ({
                 </label>
                 <input
                   type="text"
-                  id="clientId"
-                  name="clientId"
+                  id="client_id"
+                  name="client_id"
                   className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
                   value={formData.client_id}
                   readOnly
@@ -266,8 +265,8 @@ const EditClientModal = ({
                 </label>
                 <input
                   type="text"
-                  id="phone"
-                  name="phone"
+                  id="contact_number"
+                  name="contact_number"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   placeholder="+63 999-999-9999"
                   value={formData.contact_number}

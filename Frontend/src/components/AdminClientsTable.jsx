@@ -80,7 +80,6 @@ const AdminClientsTable = () => {
 
   const handleArchiveClient = async () => {
     console.log(archiveClient.client_id);
-
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/clients/archive-client",
