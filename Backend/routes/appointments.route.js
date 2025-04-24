@@ -8,6 +8,8 @@ import {
   fetchAppointments,
   fetchTodayAppointment,
   fetchSoonestAppointment,
+  fetchAppointmentById,
+  updateAppointment,
 } from "../db/adminSide/appointments.js";
 
 const router = express.Router();
@@ -120,6 +122,31 @@ router.get("/soonest-appointment", async (req, res) => {
     res.status(200).json({ response: response1.response });
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+router.post("/appointment-by-id", async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    const response = await fetchAppointmentById(appointmentId);
+
+    if (!response.success) res.status(400).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.patch("/update-appointment", async (req, res) => {
+  try {
+    const data = req.body;
+    console.log(data);
+    const response = await updateAppointment(data);
+
+    if (!response.success) res.status(400).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    console.log(error);
   }
 });
 

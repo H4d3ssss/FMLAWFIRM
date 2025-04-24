@@ -26,6 +26,8 @@ const ArchiveAdminModal = ({
   closeModal,
   adminData,
   handleArchiveAdmin,
+  lawyerId,
+  getLawyers,
 }) => {
   if (!showModal) return null;
 
@@ -69,7 +71,7 @@ const ArchiveAdminModal = ({
                   id="name"
                   name="name"
                   className="border border-gray-300 rounded w-full px-3 py-2 bg-gray-100"
-                  value={adminData?.user_full_name || ""}
+                  value={adminData?.full_name || ""}
                   readOnly
                 />
               </div>

@@ -8,9 +8,12 @@ import {
   updateArchiveClient,
   updateClientDetails,
   updateClientDetails1,
+  approveClient,
+  cancelClient,
 } from "../db/clients.js";
 
 import { fetchClientsForApproval } from "../db/adminSide/clients.js";
+import { createActivityLog } from "../db/activities.js";
 
 const router = express.Router();
 
@@ -25,6 +28,7 @@ router.patch("/update-lawyer", async (req, res) => {
 router.get("/clientsforapproval", async (req, res) => {
   try {
     const response = await fetchClientsForApproval();
+    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ error });
@@ -63,6 +67,28 @@ router.post("/one", async (req, res) => {
   }
 });
 
+router.patch("/to-approve", async (req, res) => {
+  try {
+    const { clientId, lawyerId } = req.body;
+    const response = await approveClient(clientId, lawyerId);
+    if (!response.success) return res.status(400).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.send(500).json(error);
+  }
+});
+
+router.patch("/to-cancel", async (req, res) => {
+  try {
+    const { clientId, lawyerId } = req.body;
+    const response = await cancelClient(clientId, lawyerId);
+    if (!response.success) return res.status(400).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.send(500).json(error);
+  }
+});
+
 router.get("/approved-clients", async (req, res) => {
   try {
     const response = await fetchApprovedClients();
@@ -80,8 +106,10 @@ router.get("/approved-clients", async (req, res) => {
 
 router.patch("/archive-client", async (req, res) => {
   try {
-    const { client_id } = req.body;
-    const response = await updateArchiveClient(client_id);
+    const { client_id, adminId } = req.body;
+    console.log("im here");
+    console.log(adminId);
+    const response = await updateArchiveClient(client_id, adminId);
     if (!response.success) return res.status(401).json(response.response);
     return res.status(200).json(response.response);
   } catch (error) {
@@ -92,8 +120,11 @@ router.patch("/archive-client", async (req, res) => {
 router.patch("/update-client", async (req, res) => {
   try {
     const data = req.body;
+    const { adminId } = req.body;
+    // console.log(data);
+    // console.log(adminId);
     const response = await updateClientDetails(data);
-    console.log(response);
+    // console.log(response);
     if (!response.success)
       return res.status(400).json({ message: response.message });
 

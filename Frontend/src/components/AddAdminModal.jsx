@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 
-const AddAdminModal = ({ showModal, closeModal, handleAddAdmin }) => {
+const AddAdminModal = ({
+  showModal,
+  closeModal,
+  handleAddAdmin,
+  getLawyers,
+}) => {
   // Initial form data
   const initialFormData = {
     firstName: "",
@@ -36,6 +41,7 @@ const AddAdminModal = ({ showModal, closeModal, handleAddAdmin }) => {
     }
 
     // Static logic: Pass admin data to the parent component
+    getLawyers();
     handleAddAdmin(formData);
 
     try {

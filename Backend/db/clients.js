@@ -1,6 +1,7 @@
 import pool from "./index.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { createActivityLog } from "./activities.js";
 const fetchClient = async (clientId) => {
   try {
     const response = await pool.query(
@@ -14,6 +15,19 @@ const fetchClient = async (clientId) => {
   }
 };
 
+const fetchClientsForApproval = async () => {
+  try {
+    const response = await pool.query(`
+SELECT * FROM "viewClients1" WHERE account_status = 'For Approval'`);
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "walang for approval" };
+    return { success: true, response: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const fetchClients = async () => {
   try {
     const response = await pool.query(`SELECT * FROM "viewClients1"
@@ -22,7 +36,8 @@ ORDER BY
   CASE 
     WHEN account_status = 'Approved' THEN 0 
     ELSE 1 
-  END;
+  END,
+  client_id DESC;
 `);
     return { success: true, response: response.rows };
   } catch (err) {
@@ -150,7 +165,7 @@ const ifClientExist = async (email) => {
 const fetchApprovedClients = async () => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewClients1" WHERE account_status = 'Approved' ORDER BY client_id ASC`
+      `SELECT * FROM "viewClients1" WHERE account_status = 'Approved' ORDER BY client_id DESC`
     );
     if (response.rowCount <= 0)
       return { success: false, response: "No Approved Clients" };
@@ -160,7 +175,7 @@ const fetchApprovedClients = async () => {
   }
 };
 
-const updateArchiveClient = async (clientId) => {
+const updateArchiveClient = async (clientId, adminId) => {
   try {
     const response = await pool.query(
       "UPDATE clients SET account_status = 'Archived' WHERE client_id = $1",
@@ -168,6 +183,67 @@ const updateArchiveClient = async (clientId) => {
     );
     if (response.rowCount <= 0)
       return { success: false, response: "Update Failed" };
+
+    const data1 = {
+      adminId,
+      action: "ARCHIVED CLIENT",
+      description: "Archived client: ",
+      targetTable: "clients",
+      target_id: clientId,
+    };
+    // console.log(data1);
+    const response3 = await createActivityLog(data1);
+    console.log(response3);
+    return { success: true, response: "Updated Successfully" };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const approveClient = async (clientId, adminId) => {
+  try {
+    const response = await pool.query(
+      "UPDATE clients SET account_status = 'Approved' WHERE client_id = $1",
+      [clientId]
+    );
+    if (response.rowCount <= 0)
+      return { success: false, response: "Update Failed" };
+
+    const data1 = {
+      adminId,
+      action: "APPROVED CLIENT",
+      description: "Approved client account: ",
+      targetTable: "clients",
+      target_id: clientId,
+    };
+    // console.log(data1);
+    const response3 = await createActivityLog(data1);
+    console.log(response3);
+    return { success: true, response: "Updated Successfully" };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const cancelClient = async (clientId, adminId) => {
+  try {
+    const response = await pool.query(
+      "UPDATE clients SET account_status = 'Cancelled' WHERE client_id = $1",
+      [clientId]
+    );
+    if (response.rowCount <= 0)
+      return { success: false, response: "Update Failed" };
+
+    const data1 = {
+      adminId,
+      action: "CANCELLED CLIENT",
+      description: "Cancelled account approval: ",
+      targetTable: "clients",
+      target_id: clientId,
+    };
+    // console.log(data1);
+    const response3 = await createActivityLog(data1);
+    console.log(response3);
     return { success: true, response: "Updated Successfully" };
   } catch (error) {
     console.log(error);
@@ -191,6 +267,18 @@ const updateClientDetails = async (data) => {
 
     if (response1.rowCount <= 0)
       return { success: false, message: "error sa response 2" };
+
+    const data1 = {
+      adminId: data.adminId,
+      action: "UPDATED CLIENT",
+      description: "Updated client: ",
+      targetTable: "clients",
+      target_id: data.client_id,
+    };
+    console.log(data1);
+    const response3 = await createActivityLog(data1);
+    console.log(response3);
+
     return { success: true, message: "NAKAPAGUPDATE KA NG CLIENTS HIHIHI" };
   } catch (error) {
     return { error };
@@ -235,4 +323,7 @@ export {
   updateArchiveClient,
   updateClientDetails,
   updateClientDetails1,
+  fetchClientsForApproval,
+  approveClient,
+  cancelClient,
 };

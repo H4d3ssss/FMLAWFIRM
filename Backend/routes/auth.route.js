@@ -10,6 +10,7 @@ import {
 } from "../db/clients.js";
 import bcrypt from "bcrypt";
 import { userExist } from "../db/users.js";
+import { createActivityLog } from "../db/activities.js";
 
 const router = express.Router();
 
@@ -61,6 +62,16 @@ router.post("/signup", async (req, res) => {
     const response = await insertClient(data);
 
     if (response.success) {
+      const data1 = {
+        adminId: data.adminId,
+        action: "CREATED CLIENT",
+        description: "Created client: " + data.email,
+        targetTable: "clients",
+        target_id: null,
+      };
+
+      const response1 = await createActivityLog(data1);
+      // console.log(response1);
       return res.status(200).json({ message: "Wait for admin's approval" });
     } else {
       res
@@ -130,9 +141,8 @@ router.post("/login", async (req, res) => {
     const user = await userExist(data.email);
     // console.log(user);
     if (!user.success) return res.status(402).json({ message: user.message });
-
     if (user.response[0].email !== data.email)
-      return res.status(401).json({ message: "Bad Credentials" });
+      return res.status(401).json({ message: "Wrong email" });
 
     if (user.response[0].role === "Client") {
       const isValid = await bcrypt.compare(

@@ -17,7 +17,7 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [count, setCount] = useState(0);
-  const [adminId, setAdminId] = useState(null);
+
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
@@ -28,7 +28,6 @@ const Calendar = () => {
           "http://localhost:3000/api/auth/authenticate-user"
         );
         if (response.data.role === "Lawyer") {
-          setAdminId(response.data.lawyerId); // for activtiy log
           navigate("/calendar");
         } else if (response.data.role === "Client") {
           navigate("/clientdashboard");
@@ -50,9 +49,12 @@ const Calendar = () => {
           "http://localhost:3000/api/appointments"
         );
         console.log(response.data);
-        // console.log(response.data);
         const formatted = response.data.map((event) => ({
-          appointmentId: event.appointment_id,
+          client: event.client,
+          lawyer: event.lawyer,
+          clientId: event.client_id,
+          lawyerId: event.lawyer_id,
+          id: event.appointment_id, // corrected field
           title: event.event_title,
           start: `${event.appointment_date}T${event.start_time}`,
           end: `${event.appointment_date}T${event.end_time}`,
@@ -68,9 +70,7 @@ const Calendar = () => {
             endTime: event.end_time,
           },
         }));
-
-        console.log(formatted);
-        setEvents(formatted); // Set the events in state
+        setEvents(formatted);
       } catch (err) {
         console.error("Failed to fetch events:", err);
       }
@@ -88,6 +88,7 @@ const Calendar = () => {
       (event) => String(event.id) === info.event.id
     );
     if (!eventData) return;
+    console.log(eventData);
     setSelectedEvent(eventData);
     setViewModalOpen(true);
   };
@@ -108,6 +109,7 @@ const Calendar = () => {
     }
 
     const newEvent = {
+      id: Date.now(),
       title: data.title,
       start: `${selectedDate}T${data.startTime}`,
       end: `${selectedDate}T${data.endTime}`,
@@ -124,43 +126,6 @@ const Calendar = () => {
       },
     };
 
-    //   setCreateModalOpen(false);
-    // };
-
-    // const handleEditEvent = (updatedEvent) => {
-    //   setCount((prev) => prev + 1);
-
-    //   const updatedEvents = events.map((event) =>
-    //     event.id === updatedEvent.id
-    //       ? {
-    //           ...event,
-    //           title: updatedEvent.title,
-    //           start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
-    //           end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
-    //           extendedProps: {
-    //             ...event.extendedProps,
-    //             type: updatedEvent.type,
-    //             location: updatedEvent.location,
-    //             notes: updatedEvent.notes,
-    //             startTime: updatedEvent.startTime,
-    //             endTime: updatedEvent.endTime,
-    //             lawyerId: updatedEvent.lawyerId, // Include lawyerId
-    //             clientId: updatedEvent.clientId, // Include clientId
-    //           },
-    //         }
-    //       : event
-    //   );
-    //   setEvents(updatedEvents);
-    //   setEditModalOpen(false); // Close the edit modal after saving changes
-    // };
-
-    // const handleDeleteEvent = (eventId) => {
-    //   setCount((prev) => prev + 1);
-
-    //   const updatedEvents = events.filter((event) => event.id !== eventId);
-    //   setEvents(updatedEvents);
-    //   setViewModalOpen(false); // Close the view modal after deletion
-    // };
     setEvents((prev) => [...prev, newEvent]);
     setCount((prev) => prev + 1);
     setCreateModalOpen(false);
@@ -220,8 +185,7 @@ const Calendar = () => {
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleAddEvent}
         date={selectedDate}
-        events={events} // Pass existing events
-        adminId={adminId}
+        events={events}
         setCount={setCount}
       />
 

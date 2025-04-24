@@ -132,6 +132,52 @@ LIMIT 1;  `);
   }
 };
 
+const fetchAppointmentById = async (appointmentId) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM appointments WHERE appointmend_id = $1`,
+      [appointmentId]
+    );
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "walang na fetch na appointment" };
+    return { success: true, message: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
+const updateAppointment = async (data) => {
+  try {
+    const response = await pool.query(
+      `UPDATE appointments SET event_title = $1, type_of_event = $2, client_id = $3, lawyer_id = $4, location = $5, notes = $6, start_time = $7, end_time = $8 WHERE appointment_id = $9`,
+      [
+        data.title,
+        data.type,
+        data.clientId,
+        data.lawyerId,
+        data.location,
+        data.notes,
+        data.startTime,
+        data.endTime,
+        data.appointmentId,
+      ]
+    );
+    if (response.rowCount <= 0)
+      return {
+        success: false,
+        message: "something is wrong in updating appointment",
+      };
+
+    return {
+      success: true,
+      message: "successfully updated appointment",
+    };
+  } catch (error) {
+    return { error };
+  }
+};
+
 export {
   fetchScheduledAppointments,
   fetchCompletedAppointments,
@@ -140,4 +186,6 @@ export {
   fetchAppointments,
   fetchTodayAppointment,
   fetchSoonestAppointment,
+  fetchAppointmentById,
+  updateAppointment,
 };

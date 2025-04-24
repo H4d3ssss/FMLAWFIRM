@@ -228,6 +228,7 @@ const AdminCaseTable = () => {
         count={count} // Close AddCaseModal
         setCount={setCount}
         adminId={adminId}
+        fetchAllCases={fetchAllCases}
       />
 
       {/* EditCaseModal */}
@@ -237,6 +238,7 @@ const AdminCaseTable = () => {
         handleEditCase={handleEditCase} // Handle editing a case
         existingCase={currentCase} // Pass the selected case to be edited
         adminId={adminId}
+        fetchAllCases={fetchAllCases}
       />
 
       {/* ViewCaseModal */}
@@ -244,6 +246,7 @@ const AdminCaseTable = () => {
         showModal={showViewModal}
         closeModal={() => setShowViewModal(false)} // Close ViewCaseModal
         caseDetails={currentCase} // Pass the selected case to be viewed
+        fetchAllCases={fetchAllCases}
       />
 
       {/* ArchiveCaseModal */}
@@ -253,6 +256,7 @@ const AdminCaseTable = () => {
         caseDetails={currentCase} // Pass the selected case to be archived
         handleArchive={handleArchiveCase}
         adminId={adminId} // Handle archiving a case
+        fetchAllCases={fetchAllCases}
       />
     </div>
   );

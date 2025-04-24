@@ -7,6 +7,7 @@ const EditCaseModal = ({
   handleEditCase,
   existingCase,
   adminId,
+  fetchAllCases,
 }) => {
   const [useLink, setUseLink] = useState(!existingCase?.fileOrLink?.file); // Determine whether to use link or file based on existing case data
   const [caseToEdit, setCaseToEdit] = useState([]);
@@ -63,6 +64,7 @@ const EditCaseModal = ({
 
     // console.log(formData);
     handleUpdateCase(formData);
+    fetchAllCases();
 
     // handleEditCase(updatedCase); // Pass the updated case back to parent component
     closeModal(); // Close the modal

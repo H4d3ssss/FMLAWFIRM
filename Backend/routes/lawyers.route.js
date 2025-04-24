@@ -8,6 +8,7 @@ import {
   archiveLawyer,
 } from "../db/adminSide/lawyers.js";
 import bcrypt from "bcrypt";
+import { createActivityLog } from "../db/activities.js";
 
 const router = express.Router();
 
@@ -49,6 +50,15 @@ router.post("/", async (req, res) => {
     const response = await insertLawyer(data);
 
     if (response.success) {
+      const data1 = {
+        adminId: data.adminId,
+        action: "CREATED AN ADMIN",
+        description: "Created an admin: " + data.email,
+        targetTable: "lawyers",
+        target_id: null,
+      };
+      const response1 = await createActivityLog(data1);
+      console.log(response1);
       res.status(201).json({
         message: "successfully added lawyer",
       });
@@ -66,8 +76,19 @@ router.post("/", async (req, res) => {
 
 router.patch("/archive-lawyer", async (req, res) => {
   try {
-    const { lawyerId } = req.body;
+    const { lawyerId, adminId } = req.body;
     const response = await archiveLawyer(lawyerId);
+
+    const data1 = {
+      adminId,
+      action: "ARCHIVED AN ADMIN",
+      description: "Archived Admin ID: " + lawyerId,
+      targetTable: "lawyers",
+      target_id: lawyerId,
+    };
+    const response1 = await createActivityLog(data1);
+    console.log(response1);
+
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json(error);
@@ -80,6 +101,16 @@ router.patch("/update-lawyer", async (req, res) => {
     const response = await updateLawyer(data);
     // console.log(response);
     if (!response.success) return res.status(500).json(response.message);
+
+    const data1 = {
+      adminId: data.adminId,
+      action: "UPDATED AN ADMIN",
+      description: "Updated an admin: " + data.email,
+      targetTable: "lawyers",
+      target_id: data.userId,
+    };
+    const response1 = await createActivityLog(data1);
+    console.log(response1);
 
     res.status(200).json(response.message);
   } catch (error) {

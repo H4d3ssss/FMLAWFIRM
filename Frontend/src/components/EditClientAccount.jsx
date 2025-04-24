@@ -6,8 +6,12 @@ const EditClientAccount = ({
   closeModal,
   clientDetails,
   handleUpdateClient,
+  adminId,
+  getClients,
 }) => {
+  // console.log(adminId);
   const [formData, setFormData] = useState({
+    adminId: adminId,
     user_id: "",
     first_name: "",
     last_name: "",
@@ -58,8 +62,11 @@ const EditClientAccount = ({
   };
 
   useEffect(() => {
-    // console.log(formData);
-  });
+    if (adminId) {
+      setFormData((prev) => ({ ...prev, adminId }));
+    }
+    console.log(formData);
+  }, [adminId]);
 
   // Handle form submission
   const handleSubmit = (e) => {
@@ -69,15 +76,21 @@ const EditClientAccount = ({
 
     const editClientDetails = async () => {
       try {
+        const payload = {
+          ...formData,
+          adminId: adminId, // Include adminId in the actual data body
+        };
         const response = await axios.patch(
           "http://localhost:3000/api/clients/update-client",
-          formData
+          payload
         );
-        console.log(response);
+        // console.log(response);
       } catch (error) {
         console.log(error);
       }
     };
+    getClients();
+
     editClientDetails();
     closeModal(); // Close the modal after updating
   };

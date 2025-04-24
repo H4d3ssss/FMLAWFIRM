@@ -16,9 +16,9 @@ const AdminAccountTable = ({ admins }) => {
         const response = await axios.get(
           "http://localhost:3000/api/auth/authenticate-user"
         );
-
         console.log(response.data);
         if (response.data.role === "Lawyer") {
+          setAdminId(response.data.lawyerId);
           navigate("/accounts");
         } else if (response.data.role === "Client") {
           navigate("/clientdashboard");
@@ -34,18 +34,20 @@ const AdminAccountTable = ({ admins }) => {
   }, []);
 
   const [lawyers, setLawyers] = useState([]);
+  const getLawyers = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/lawyers");
+      setLawyers(response.data);
+      // console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const getLawyers = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/lawyers");
-        setLawyers(response.data);
-        // console.log(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     getLawyers();
   }, []);
+
+  const [adminId, setAdminId] = useState("");
 
   // State for search input
   const [searchTerm, setSearchTerm] = useState("");
@@ -113,7 +115,9 @@ const AdminAccountTable = ({ admins }) => {
     setAdminData((prev) => [...prev, { id: prev.length + 1, ...newAdmin }]);
     console.log(newAdmin);
     try {
+      console.log(adminId);
       const response = await axios.post("http://localhost:3000/api/lawyers", {
+        adminId,
         firstName: newAdmin.firstName,
         lastName: newAdmin.lastName,
         email: newAdmin.email,
@@ -126,6 +130,7 @@ const AdminAccountTable = ({ admins }) => {
     } catch (error) {
       console.log(error);
     }
+    getLawyers();
   };
 
   // Static logic: Handle editing an admin
@@ -155,11 +160,13 @@ const AdminAccountTable = ({ admins }) => {
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/lawyers/archive-lawyer",
-        { lawyerId: admin.lawyer_id }
+        { lawyerId: admin.lawyer_id, adminId: adminId }
       );
     } catch (error) {
       console.log(error);
     }
+    getLawyers();
+
     setShowArchiveAdminModal(false); // Close the modal
   };
 
@@ -262,6 +269,7 @@ const AdminAccountTable = ({ admins }) => {
         showModal={showAddAdminModal}
         closeModal={() => setShowAddAdminModal(false)}
         handleAddAdmin={handleAddAdmin}
+        getLawyers={getLawyers}
       />
 
       {/* EditAdminModal */}
@@ -270,6 +278,8 @@ const AdminAccountTable = ({ admins }) => {
         closeModal={() => setShowEditAdminModal(false)}
         adminDetails={selectedAdmin}
         handleEditAdmin={handleEditAdmin}
+        lawyerId={adminId}
+        getLawyers={getLawyers}
       />
 
       {/* ArchiveAdminModal */}
@@ -278,6 +288,8 @@ const AdminAccountTable = ({ admins }) => {
         closeModal={() => setShowArchiveAdminModal(false)}
         adminData={selectedAdmin}
         handleArchiveAdmin={handleArchiveAdmin}
+        lawyerId={adminId}
+        getLawyers={getLawyers}
       />
 
       {/* Toolbar */}
@@ -371,7 +383,7 @@ const AdminAccountTable = ({ admins }) => {
                 <td className="p-3 text-center">{lawyer.lawyer_id}</td>{" "}
                 {/* Display Admin ID */}
                 <td className="p-3 text-center">
-                  {lawyer.user_full_name || lawyer.full_name}
+                  {lawyer.full_name || lawyer.user_full_name}
                 </td>
                 <td className="p-3 text-center">{lawyer.email}</td>
                 <td className="p-3 text-center">************</td>

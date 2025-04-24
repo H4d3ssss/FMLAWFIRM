@@ -4,7 +4,7 @@ import AddClientAccount from "./AddClientAccount"; // Import AddClientAccount
 import EditClientAccount from "./EditClientAccount"; // Import EditClientAccount
 import ArchiveClientAccount from "./ArchiveClientAccount"; // Import ArchiveClientAccount
 import axios from "axios";
-const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
+const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,16 +16,18 @@ const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
   const [clients1, setClient1] = useState([]);
   const itemsPerPage = 5;
 
+  const getClients = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/clients/approved-clients"
+      );
+      console.log(lawyerId);
+      setClient1(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const getClients = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/clients/");
-        console.log(response.data.response);
-        setClient1(response.data.response);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     getClients();
   }, []);
 
@@ -126,14 +128,14 @@ const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
   // Handle update client
   const handleUpdateClient = (updatedClient) => {
     // Update the client data in the table
-    setClientData((prevData) =>
-      prevData.map((client) =>
-        client.id === updatedClient.clientId
-          ? { ...client, ...updatedClient }
-          : client
-      )
-    );
-    console.log("Client updated:", updatedClient); // Log for testing
+    // setClientData((prevData) =>
+    //   prevData.map((client) =>
+    //     client.id === updatedClient.clientId
+    //       ? { ...client, ...updatedClient }
+    //       : client
+    //   )
+    // );
+    // console.log("Client updated:", updatedClient); // Log for testing
   };
 
   // Handle archive client
@@ -142,20 +144,21 @@ const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/clients/archive-client",
-        { client_id: archivedClient.client_id }
+        { client_id: archivedClient.client_id, lawyerId }
       );
       console.log(response);
     } catch (error) {
       console.log(error);
     }
     console.log(archivedClient);
+    getClients();
+
     // setClientData((prevData) =>
     //   prevData.filter((client) => client.id !== archivedClient.id)
     // );
     console.log("Client archived:", archivedClient); // Log for testing
     setShowArchiveModal(false); // Close the ArchiveClientAccount modal
   };
-
   return (
     <div className="bg-[#FFB600] justify-center mx-60 my-20 rounded-2xl shadow-lg">
       {/* AddClientAccount Modal */}
@@ -163,13 +166,8 @@ const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
         showModal={showAddModal}
         closeModal={() => setShowAddModal(false)}
         refreshTables={refreshTable}
-        getNextClientId={() => {
-          // Generate the next Client ID based on the current data
-          const lastClientId = clientData.length
-            ? parseInt(clientData[clientData.length - 1].id.split("-")[1])
-            : 100;
-          return `CLI-${lastClientId + 1}`;
-        }}
+        adminId={lawyerId}
+        getClients={getClients}
       />
 
       {/* EditClientAccount Modal */}
@@ -178,6 +176,8 @@ const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
         closeModal={() => setShowEditModal(false)}
         clientDetails={selectedClient}
         handleUpdateClient={handleUpdateClient}
+        adminId={lawyerId}
+        getClients={getClients}
       />
 
       {/* ArchiveClientAccount Modal */}
@@ -186,6 +186,8 @@ const ClientAccountTable = ({ clients, onEdit, onArchive }) => {
         closeModal={() => setShowArchiveModal(false)}
         clientData={selectedClient}
         handleArchiveClient={handleArchiveClient}
+        adminId={lawyerId}
+        getClients={getClients}
       />
 
       {/* Toolbar */}

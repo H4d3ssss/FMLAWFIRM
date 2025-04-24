@@ -7,6 +7,7 @@ const ArchiveCaseModal = ({
   caseDetails,
   handleArchive,
   adminId,
+  fetchAllCases,
 }) => {
   if (!showModal || !caseDetails) return null; // Do not render the modal if it's not visible or caseDetails is missing
 
@@ -25,10 +26,11 @@ const ArchiveCaseModal = ({
   const onArchive = () => {
     console.log(caseDetails.case_id);
     archiveCase(caseDetails.case_id);
+    fetchAllCases();
     closeModal(); // Close the modal
   };
 
-  useEffect(() => { }, [caseDetails]);
+  useEffect(() => {}, [caseDetails]);
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">

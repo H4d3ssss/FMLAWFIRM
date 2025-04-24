@@ -1,7 +1,7 @@
 import pool from "../index.js";
 
 const fetchLawyers = async () => {
-  const query = `SELECT * FROM "viewLawyers" ORDER BY account_status ASC`;
+  const query = `SELECT * FROM "viewLawyers" WHERE account_status = 'Active' ORDER BY lawyer_id ASC`;
   try {
     const response = await pool.query(query);
     return { success: true, response: response.rows };

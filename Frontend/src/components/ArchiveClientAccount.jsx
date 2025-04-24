@@ -6,11 +6,15 @@ const ArchiveClientAccount = ({
   closeModal,
   clientData,
   handleArchiveClient,
+  adminId,
+  getClients,
 }) => {
   const [password, setPassword] = useState(""); // State for password input
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [clientDetails, setClientDetails] = useState("");
-
+  useEffect(() => {
+    console.log(adminId);
+  });
   //   useEffect(() => {
   //     console.log(clientData);
   //     const getSpecificClient = async () => {
@@ -32,15 +36,18 @@ const ArchiveClientAccount = ({
   //   }, []);
 
   const handleSubmit = async () => {
+    console.log(adminId);
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/clients/archive-client",
-        { client_id: clientData.client_id }
+        { client_id: clientData.client_id, adminId }
       );
       console.log(response);
+      closeModal();
     } catch (error) {
       console.log(error);
     }
+    getClients();
   };
 
   if (!showModal) return null;
@@ -160,7 +167,7 @@ const ArchiveClientAccount = ({
               <button
                 type="button"
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
-                onClick={() => handleArchiveClient({ ...clientData, password })}
+                onClick={handleSubmit}
               >
                 Archive
               </button>

@@ -1,225 +1,266 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 const eventTypes = [
-    'Consultation',
-    'Meeting',
-    'Case Hearing',
-    'Filing',
-    'Follow-up',
-    'Other',
+  "Consultation",
+  "Meeting",
+  "Case Hearing",
+  "Filing",
+  "Follow-up",
+  "Other",
 ];
 const eventTypeColors = {
-    Consultation: '#4CAF50', // Green
-    Meeting: '#2196F3', // Blue
-    'Case Hearing': '#FF9800', // Orange
-    Filing: '#9C27B0', // Purple
-    'Follow-up': '#FFC107', // Yellow
-    Other: '#607D8B', // Gray
+  Consultation: "#4CAF50", // Green
+  Meeting: "#2196F3", // Blue
+  "Case Hearing": "#FF9800", // Orange
+  Filing: "#9C27B0", // Purple
+  "Follow-up": "#FFC107", // Yellow
+  Other: "#607D8B", // Gray
 };
 
 const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
-    const [title, setTitle] = useState('');
-    const [type, setType] = useState(eventTypes[0]);
-    const [location, setLocation] = useState('');
-    const [notes, setNotes] = useState('');
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
-    const [lawyerId, setLawyerId] = useState('');
-    const [clientId, setClientId] = useState('');
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState(eventTypes[0]);
+  const [location, setLocation] = useState("");
+  const [notes, setNotes] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [lawyerId, setLawyerId] = useState("");
+  const [clientId, setClientId] = useState("");
 
-    // Example data for lawyers and clients
-    const lawyers = [
-        { id: 1, name: 'Atty. John Doe' },
-        { id: 2, name: 'Atty. Jane Smith' },
-        { id: 3, name: 'Atty. Robert Brown' },
-    ];
+  // Example data for lawyers and clients
+  const [lawyers, setLawyers] = useState([]);
+  const [clients, setClients] = useState([]);
+  const fetchActiveLawyers = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/lawyers/active-lawyers"
+      );
+      setLawyers(response.data);
+      // console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const clients = [
-        { id: 1, name: 'Client Alice Johnson' },
-        { id: 2, name: 'Client Bob Williams' },
-        { id: 3, name: 'Client Charlie Davis' },
-    ];
+  const fetchApprovedClients = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/clients/approved-clients`
+      );
+      setClients(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    useEffect(() => {
-        if (isOpen && eventData) {
-            // Pre-fill form fields with current event data
-            setTitle(eventData.title);
-            setType(eventData.extendedProps?.type || eventTypes[0]);
-            setLocation(eventData.extendedProps?.location || '');
-            setNotes(eventData.extendedProps?.notes || '');
-            setStartTime(eventData.extendedProps?.startTime || '');
-            setEndTime(eventData.extendedProps?.endTime || '');
-            setLawyerId(eventData.extendedProps?.lawyerId || '');
-            setClientId(eventData.extendedProps?.clientId || '');
-        } else {
-            // Reset form fields when the form is reopened
-            setTitle('');
-            setType(eventTypes[0]);
-            setLocation('');
-            setNotes('');
-            setStartTime('');
-            setEndTime('');
-            setLawyerId('');
-            setClientId('');
-        }
-    }, [isOpen, eventData]);
+  useEffect(() => {
+    fetchActiveLawyers();
+    fetchApprovedClients();
+  }, []);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!title.trim()) return alert('Please enter a title.');
-        if (!startTime || !endTime) return alert('Please select start and end times.');
-        if (startTime >= endTime) return alert('End time must be after start time.');
-        if (!lawyerId) return alert('Please select a lawyer.');
-        if (!clientId) return alert('Please select a client.');
+  useEffect(() => {
+    // console.log(JSON.stringify(eventData));
+    if (isOpen && eventData) {
+      // Pre-fill form fields with current event data
+      setTitle(eventData.title);
+      setType(eventData.extendedProps?.type || eventTypes[0]);
+      setLocation(eventData.extendedProps?.location || "");
+      setNotes(eventData.extendedProps?.notes || "");
+      setStartTime(eventData.extendedProps?.startTime || "");
+      setEndTime(eventData.extendedProps?.endTime || "");
+      setLawyerId(eventData?.lawyerId || "");
+      setClientId(eventData?.clientId || "");
+    } else {
+      // Reset form fields when the form is reopened
+      setTitle("");
+      setType(eventTypes[0]);
+      setLocation("");
+      setNotes("");
+      setStartTime("");
+      setEndTime("");
+      setLawyerId("");
+      setClientId("");
+    }
+  }, [isOpen, eventData]);
 
-        const color = eventTypeColors[type]; // Automatically set color based on event type
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) return alert("Please enter a title.");
+    if (!startTime || !endTime)
+      return alert("Please select start and end times.");
+    if (startTime >= endTime)
+      return alert("End time must be after start time.");
+    if (!lawyerId) return alert("Please select a lawyer.");
+    if (!clientId) return alert("Please select a client.");
 
-        onSubmit({
-            id: eventData.id,
-            title,
-            type,
-            location,
-            notes,
-            startTime,
-            endTime,
-            lawyerId, // Include lawyerId
-            clientId, // Include clientId
-            color, // Include the color in the updated event data
-        });
-        onClose();
+    const color = eventTypeColors[type]; // Automatically set color based on event type
+
+    const data = {
+      appointmentId: eventData.id,
+      title,
+      type,
+      location,
+      notes,
+      startTime,
+      endTime,
+      lawyerId, // Include lawyerId
+      clientId, // Include clientId
     };
+    console.log(data);
+    try {
+      const response = await axios.patch(
+        "http://localhost:3000/api/appointments/update-appointment",
+        data
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
 
-    if (!isOpen) return null;
+    onClose();
+  };
 
-    return (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative space-y-4 border"
-            >
-                <button
-                    onClick={onClose}
-                    type="button"
-                    className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
-                >
-                    ✕
-                </button>
+  if (!isOpen) return null;
 
-                <h3 className="text-lg font-bold">Edit Event</h3>
+  return (
+    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative space-y-4 border"
+      >
+        <button
+          onClick={onClose}
+          type="button"
+          className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
+        >
+          ✕
+        </button>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1">Event Title</label>
-                    <input
-                        type="text"
-                        name="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)} // Editable title
-                        placeholder="Enter title"
-                        className="w-full p-2 border rounded"
-                        required
-                    />
-                </div>
+        <h3 className="text-lg font-bold">Edit Event</h3>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1">Type of Event</label>
-                    <select
-                        value={type}
-                        onChange={(e) => setType(e.target.value)}
-                        className="w-full p-2 border rounded"
-                    >
-                        {eventTypes.map((t) => (
-                            <option key={t} value={t}>
-                                {t}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Assign Lawyer</label>
-                    <select
-                        value={lawyerId}
-                        onChange={(e) => setLawyerId(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        required
-                    >
-                        <option value="" disabled>Select a lawyer</option>
-                        {lawyers.map((lawyer) => (
-                            <option key={lawyer.id} value={lawyer.id}>
-                                {lawyer.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Assign Client</label>
-                    <select
-                        value={clientId}
-                        onChange={(e) => setClientId(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        required
-                    >
-                        <option value="" disabled>Select a client</option>
-                        {clients.map((client) => (
-                            <option key={client.id} value={client.id}>
-                                {client.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Location</label>
-                    <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g. RTC Branch 12"
-                        className="w-full p-2 border rounded"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Notes</label>
-                    <textarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Additional details"
-                        className="w-full p-2 border rounded resize-none"
-                        rows={3}
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Start Time</label>
-                    <input
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full p-2 border rounded"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">End Time</label>
-                    <input
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="w-full p-2 border rounded"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full bg-[#FFB600] text-black py-2 rounded hover:bg-[#e0a800]"
-                >
-                    Save Changes
-                </button>
-            </form>
+        <div>
+          <label className="block text-sm font-medium mb-1">Event Title</label>
+          <input
+            type="text"
+            name="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)} // Editable title
+            placeholder="Enter title"
+            className="w-full p-2 border rounded"
+            required
+          />
         </div>
-    );
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Type of Event
+          </label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full p-2 border rounded"
+          >
+            {eventTypes.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Assign Lawyer
+          </label>
+          <select
+            value={lawyerId}
+            onChange={(e) => setLawyerId(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="" disabled>
+              Select a lawyer
+            </option>
+            {lawyers.map((lawyer) => (
+              <option key={lawyer.lawyer_id} value={lawyer.lawyer_id}>
+                {lawyer.full_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Assign Client
+          </label>
+          <select
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="" disabled>
+              Select a client
+            </option>
+            {clients.map((client) => (
+              <option key={client.client_id} value={client.client_id}>
+                {client.full_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Location</label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g. RTC Branch 12"
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Notes</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Additional details"
+            className="w-full p-2 border rounded resize-none"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Start Time</label>
+          <input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">End Time</label>
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#FFB600] text-black py-2 rounded hover:bg-[#e0a800]"
+        >
+          Save Changes
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default EventEditForm;

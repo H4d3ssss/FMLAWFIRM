@@ -6,6 +6,8 @@ const EditAdminModal = ({
   closeModal,
   adminDetails,
   handleEditAdmin,
+  lawyerId,
+  getLawyers,
 }) => {
   const [formData, setFormData] = useState({
     userId: "",
@@ -28,6 +30,7 @@ const EditAdminModal = ({
     console.log(adminDetails);
     if (adminDetails) {
       setFormData({
+        adminId: lawyerId,
         userId: adminDetails.user_id,
         firstName: adminDetails.first_name,
         lastName: adminDetails.last_name,
@@ -58,6 +61,7 @@ const EditAdminModal = ({
     } catch (error) {
       console.log(error);
     }
+    getLawyers();
 
     closeModal();
 

@@ -9,6 +9,7 @@ const AddCaseModal = ({
   count,
   setCount,
   adminId,
+  fetchAllCases,
 }) => {
   const [useLink, setUseLink] = useState(false);
   const [approvedClients, setApprovedClients] = useState([]);
@@ -53,6 +54,7 @@ const AddCaseModal = ({
       );
       // console.log("Case submitted:", response.data);
       setCount((prev) => prev + 1);
+      fetchAllCases();
       closeModal(); // Only close if successful
     } catch (error) {
       console.error("Failed to submit case:", error);
@@ -85,6 +87,7 @@ const AddCaseModal = ({
   useEffect(() => {
     getApprovedClients();
     getLawyers();
+    fetchAllCases();
   }, [count]);
 
   if (!showModal) return null;
