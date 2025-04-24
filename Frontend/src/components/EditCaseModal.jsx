@@ -40,7 +40,7 @@ const EditCaseModal = ({
       formData.append("fileLink", event.target.link.value);
     } else {
       const file = event.target.file.files[0];
-      console.log(event.target.file.files[0]);
+      // console.log(event.target.file.files[0]);
       if (file) {
         formData.append("file", file);
       }

@@ -164,7 +164,7 @@ const fetchAllCases = async () => {
 const fetchCaseByCaseId = async (case_id) => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewAllCases" WHERE case_id = $1`,
+      `SELECT * FROM "viewAllCases2" WHERE case_id = $1`,
       [case_id]
     );
 

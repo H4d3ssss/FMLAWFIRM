@@ -279,8 +279,12 @@ router.patch("/edit-case", upload.single("file"), async (req, res) => {
     // Log the incoming file and data
     // console.log("Uploaded file:", req.file);
     // console.log("Body data:", req.body);
-
     const data = req.body;
+
+    const response2 = await fetchCaseByCaseId(data.caseId);
+
+    data.fileName = response2.response[0].file_name;
+    data.filePath = response2.response[0].file_path;
 
     if (req.file) {
       // File was uploaded
@@ -294,6 +298,10 @@ router.patch("/edit-case", upload.single("file"), async (req, res) => {
       data.fileName = linkName || "Link Provided";
       data.filePath = link;
     }
+
+    // console.log(response2.response[0].file_name);
+    // console.log(response2.response[0].file_path);
+
     // console.log(data);
     // Log the data being sent for the case update
     // console.log("Data to update:", data);
