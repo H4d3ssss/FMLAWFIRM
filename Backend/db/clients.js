@@ -122,7 +122,7 @@ const generateTemporaryClientPassword = async (email) => {
         [hashedPassword, email]
       );
       return {
-        message: "Temporary password has been set",
+        message: "Temporary password has been sent",
         temporaryPassword: unhashedTemporaryPassword,
         fullName: isExist.response[0].full_name,
       };
