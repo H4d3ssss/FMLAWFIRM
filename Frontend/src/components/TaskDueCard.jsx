@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ClipboardList } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-const TasksDueCard = ({ count, nextTask }) => {
+const TaskDueCard = ({ count, nextTask }) => {
   const [count1, setCount1] = useState(0);
 
   useEffect(() => {
@@ -40,4 +40,4 @@ const TasksDueCard = ({ count, nextTask }) => {
   );
 };
 
-export default TasksDueCard;
+export default TaskDueCard;
