@@ -10,7 +10,7 @@ const UpcomingEvent = () => {
         const response = await axios.get(
           "http://localhost:3000/api/appointments/soonest-appointment"
         );
-        // console.log(response.data);
+        console.log(response.data);
         setEventData(response.data);
       } catch (error) {
         console.log(error);
@@ -79,6 +79,9 @@ const UpcomingEvent = () => {
           </p>
           <p>
             <strong>Notes:</strong> {event.notes || "N/A"}
+          </p>
+          <p>
+            <strong>When:</strong> {event.formatted_date || "N/A"}
           </p>
           <p>
             <strong>Start Time:</strong> {event.formatted_start_time}

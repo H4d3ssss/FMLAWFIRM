@@ -38,7 +38,7 @@ const AdminCaseTable = () => {
           "http://localhost:3000/api/auth/authenticate-user"
         );
 
-        console.log(response.data);
+        // console.log(response.data);
         if (response.data.role === "Lawyer") {
           setAdminId(response.data.lawyerId);
           navigate("/cases");

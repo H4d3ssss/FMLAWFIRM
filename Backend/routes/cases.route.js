@@ -282,12 +282,19 @@ router.patch("/edit-case", upload.single("file"), async (req, res) => {
 
     const data = req.body;
 
-    // If a file was uploaded
     if (req.file) {
+      // File was uploaded
       data.fileName = req.file.originalname;
-      data.filePath = `/uploads/${req.file.filename}`; // Path for the file stored in the DB
-    }
+      data.filePath = req.file.path;
+    } else if (req.body.file) {
+      // Link was used instead
+      const link = req.body.file;
+      const linkName = link.split("/").pop(); // get the filename from the URL
 
+      data.fileName = linkName || "Link Provided";
+      data.filePath = link;
+    }
+    // console.log(data);
     // Log the data being sent for the case update
     // console.log("Data to update:", data);
 

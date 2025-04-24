@@ -91,10 +91,11 @@ const fetchAppointments = async () => {
 
 const fetchTodayAppointment = async () => {
   try {
-    const response =
-      await pool.query(`SELECT *, TO_CHAR(start_time, 'HH12:MI AM') as formatted_start_time,TO_CHAR(end_time, 'HH12:MI AM') as formatted_end_time
+    const response = await pool.query(`
+SELECT *, TO_CHAR(start_time, 'HH12:MI AM') as formatted_start_time,TO_CHAR(end_time, 'HH12:MI AM') as formatted_end_time,
+TO_CHAR(appointment_date, 'Month DD, YYYY') AS formatted_date
 FROM appointments
-WHERE appointment_date = CURRENT_DATE;`);
+WHERE appointment_date = CURRENT_DATE`);
 
     if (response.rowCount <= 0) return { success: false };
     return { success: true, response: response.rows };
@@ -106,6 +107,7 @@ WHERE appointment_date = CURRENT_DATE;`);
 const fetchSoonestAppointment = async () => {
   try {
     const response = await pool.query(`SELECT *
+, TO_CHAR(appointment_date, 'Month DD, YYYY') AS formatted_date
 FROM appointments
 WHERE appointment_date > CURRENT_TIMESTAMP
 ORDER BY appointment_date ASC

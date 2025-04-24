@@ -42,6 +42,7 @@ const AddCaseModal = ({
         return;
       }
     }
+    // console.log(event.target.file.files[0]);
 
     try {
       setLoading(true);
@@ -50,7 +51,7 @@ const AddCaseModal = ({
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      console.log("Case submitted:", response.data);
+      // console.log("Case submitted:", response.data);
       setCount((prev) => prev + 1);
       closeModal(); // Only close if successful
     } catch (error) {

@@ -239,7 +239,7 @@ WHERE case_id = $3;`;
         oldFileName +
         " TO " +
         data.fileName +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     } else if (
@@ -255,7 +255,7 @@ WHERE case_id = $3;`;
         oldCaseStatus +
         " TO " +
         data.caseStatus +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     } else if (
@@ -271,7 +271,7 @@ WHERE case_id = $3;`;
         oldFileName +
         " TO " +
         data.fileName +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     } else if (
@@ -287,7 +287,7 @@ WHERE case_id = $3;`;
         oldFileName +
         " TO " +
         data.fileName +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     } else if (oldCaseTitle !== data.caseTitle) {
@@ -296,7 +296,7 @@ WHERE case_id = $3;`;
         oldCaseTitle +
         " TO " +
         data.caseTitle +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     } else if (oldCaseStatus !== data.caseStatus) {
@@ -305,7 +305,7 @@ WHERE case_id = $3;`;
         oldCaseStatus +
         " TO " +
         data.caseStatus +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     } else if (oldFileName !== data.fileName) {
@@ -314,7 +314,7 @@ WHERE case_id = $3;`;
         oldFileName +
         " TO " +
         data.fileName +
-        " , (Case ID: " +
+        ", (Case ID: " +
         data.caseId +
         ")";
     }

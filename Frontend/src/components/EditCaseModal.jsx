@@ -36,15 +36,16 @@ const EditCaseModal = ({
     formData.append("caseStatus", event.target.status.value);
     formData.append("lawyerId", adminId); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
     if (useLink) {
-      formData.append("fileName", event.target.link.value);
-      formData.append("filePath", event.target.link.value);
+      formData.append("file", event.target.link.value);
+      formData.append("fileLink", event.target.link.value);
     } else {
       const file = event.target.file.files[0];
+      console.log(event.target.file.files[0]);
       if (file) {
-        formData.append("fileName", file.name);
-        formData.append("filePath", file); // You will upload the file as part of the FormData
+        formData.append("file", file);
       }
     }
+    // console.log(file);
 
     // const updatedCase = {
     //   ...existingCase, // Keep the existing case details intact
