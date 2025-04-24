@@ -27,8 +27,8 @@ function AppTest() {
         {/* Main Content */}
         <main className="flex-grow">
           <Routes>
-            {/* <Route path="/" element={<LoginPage />} /> */}
-            <Route path="/" element={<AdminDashboard />} />
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/admindashboard" element={<AdminDashboard />} />
             <Route path="/ClientDashboard" element={<ClientDashboard />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/todo" element={<TodoPage />} />
