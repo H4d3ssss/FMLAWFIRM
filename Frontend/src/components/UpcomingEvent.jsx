@@ -69,10 +69,13 @@ const UpcomingEvent = () => {
       <div className="text-gray-600 text-sm space-y-2">
         <div className="border border-gray-300 rounded-md p-3 h-50">
           <p>
-            <strong>Title:</strong> {event.event_title}
+            <strong>Title: </strong> {event.event_title}
           </p>
           <p>
             <strong>Type:</strong> {event.type_of_event}
+          </p>
+          <p>
+            <strong>Client:</strong> {event.client_name}
           </p>
           <p>
             <strong>Location:</strong> {event.location || "N/A"}

@@ -56,8 +56,8 @@ const Calendar = () => {
         const formatted = response.data.map((event) => ({
           appointmentId: event.appointment_id,
           title: event.event_title,
-          start: event.appointment_date,
-          end: event.appointment_date,
+          start: `${event.appointment_date}T${event.start_time}`,
+          end: `${event.appointment_date}T${event.end_time}`,
           backgroundColor:
             event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
           borderColor:
@@ -70,7 +70,8 @@ const Calendar = () => {
             endTime: event.end_time,
           },
         }));
-        // console.log(formatted);
+
+        console.log(formatted);
         setEvents(formatted); // Set the events in state
       } catch (err) {
         console.error("Failed to fetch events:", err);

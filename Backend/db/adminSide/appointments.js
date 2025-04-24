@@ -92,10 +92,22 @@ const fetchAppointments = async () => {
 const fetchTodayAppointment = async () => {
   try {
     const response = await pool.query(`
-SELECT *, TO_CHAR(start_time, 'HH12:MI AM') as formatted_start_time,TO_CHAR(end_time, 'HH12:MI AM') as formatted_end_time,
-TO_CHAR(appointment_date, 'Month DD, YYYY') AS formatted_date
-FROM appointments
-WHERE appointment_date = CURRENT_DATE`);
+SELECT 
+  a.*,
+  TO_CHAR(a.start_time, 'HH12:MI AM') AS formatted_start_time,
+  TO_CHAR(a.end_time, 'HH12:MI AM') AS formatted_end_time,
+  TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
+  ul.first_name AS lawyer_name,
+  uc.first_name AS client_name
+FROM appointments a
+JOIN lawyers l ON a.lawyer_id = l.lawyer_id
+JOIN users ul ON l.user_id = ul.user_id
+JOIN clients c ON a.client_id = c.client_id
+JOIN users uc ON c.user_id = uc.user_id
+WHERE a.appointment_date = CURRENT_DATE
+  AND a.end_time > CURRENT_TIME
+ORDER BY a.start_time ASC
+LIMIT 1;;`); // if ever related din yung mga clients sa outside events, magagamit tuh
 
     if (response.rowCount <= 0) return { success: false };
     return { success: true, response: response.rows };

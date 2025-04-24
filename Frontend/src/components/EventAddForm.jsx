@@ -102,6 +102,14 @@ const EventAddForm = ({
       return alert("Please select start and end times.");
     if (startTime >= endTime)
       return alert("End time must be after start time.");
+    const start = new Date(`${date}T${startTime}`);
+    const end = new Date(`${date}T${endTime}`);
+    const diffMs = end - start;
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    if (diffHours > 2) {
+      return alert("Appointment must not exceed 2 hours.");
+    }
     if (!lawyerId) return alert("Please select a lawyer.");
     if (!clientId) return alert("Please select a client.");
 
@@ -209,7 +217,7 @@ const EventAddForm = ({
             </option>
             {lawyers.map((lawyer) => (
               <option key={lawyer.lawyer_id} value={lawyer.lawyer_id}>
-                {lawyer.user_full_name}
+                {lawyer.full_name}
               </option>
             ))}
           </select>
@@ -266,6 +274,8 @@ const EventAddForm = ({
             onChange={(e) => setStartTime(e.target.value)}
             className="w-full p-2 border rounded"
             required
+            min="08:00"
+            max="20:00"
           />
         </div>
 
@@ -277,6 +287,8 @@ const EventAddForm = ({
             onChange={(e) => setEndTime(e.target.value)}
             className="w-full p-2 border rounded"
             required
+            min="08:00"
+            max="20:00"
           />
         </div>
 
