@@ -18,7 +18,15 @@ const eventTypeColors = {
   Other: "#607D8B", // Gray
 };
 
-const EventAddForm = ({ isOpen, onClose, onSubmit, date, events, adminId }) => {
+const EventAddForm = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  date,
+  events,
+  adminId,
+  setCount,
+}) => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState(eventTypes[0]);
   const [location, setLocation] = useState("");
@@ -131,7 +139,7 @@ const EventAddForm = ({ isOpen, onClose, onSubmit, date, events, adminId }) => {
     } catch (error) {
       console.log(error);
     }
-
+    setCount((prev) => prev + 1);
     onClose();
   };
 

@@ -51,9 +51,10 @@ const Calendar = () => {
         const response = await axios.get(
           "http://localhost:3000/api/appointments"
         );
+        console.log(response.data);
         // console.log(response.data);
         const formatted = response.data.map((event) => ({
-          id: event.appointmend_id,
+          appointmentId: event.appointment_id,
           title: event.event_title,
           start: event.appointment_date,
           end: event.appointment_date,
@@ -98,7 +99,6 @@ const Calendar = () => {
 
   const handleAddEvent = (data) => {
     const newEvent = {
-      id: Date.now(),
       title: data.title,
       start: `${selectedDate}T${data.startTime}`,
       end: `${selectedDate}T${data.endTime}`,
@@ -116,44 +116,43 @@ const Calendar = () => {
     };
     setCount((prev) => prev + 1);
 
-    setEvents((prev) => [...prev, newEvent]);
     setCreateModalOpen(false);
   };
 
-  const handleEditEvent = (updatedEvent) => {
-    setCount((prev) => prev + 1);
+  // const handleEditEvent = (updatedEvent) => {
+  //   setCount((prev) => prev + 1);
 
-    const updatedEvents = events.map((event) =>
-      event.id === updatedEvent.id
-        ? {
-            ...event,
-            title: updatedEvent.title,
-            start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
-            end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
-            extendedProps: {
-              ...event.extendedProps,
-              type: updatedEvent.type,
-              location: updatedEvent.location,
-              notes: updatedEvent.notes,
-              startTime: updatedEvent.startTime,
-              endTime: updatedEvent.endTime,
-              lawyerId: updatedEvent.lawyerId, // Include lawyerId
-              clientId: updatedEvent.clientId, // Include clientId
-            },
-          }
-        : event
-    );
-    setEvents(updatedEvents);
-    setEditModalOpen(false); // Close the edit modal after saving changes
-  };
+  //   const updatedEvents = events.map((event) =>
+  //     event.id === updatedEvent.id
+  //       ? {
+  //           ...event,
+  //           title: updatedEvent.title,
+  //           start: `${selectedDate}T${updatedEvent.startTime}`, // Update start time
+  //           end: `${selectedDate}T${updatedEvent.endTime}`, // Update end time
+  //           extendedProps: {
+  //             ...event.extendedProps,
+  //             type: updatedEvent.type,
+  //             location: updatedEvent.location,
+  //             notes: updatedEvent.notes,
+  //             startTime: updatedEvent.startTime,
+  //             endTime: updatedEvent.endTime,
+  //             lawyerId: updatedEvent.lawyerId, // Include lawyerId
+  //             clientId: updatedEvent.clientId, // Include clientId
+  //           },
+  //         }
+  //       : event
+  //   );
+  //   setEvents(updatedEvents);
+  //   setEditModalOpen(false); // Close the edit modal after saving changes
+  // };
 
-  const handleDeleteEvent = (eventId) => {
-    setCount((prev) => prev + 1);
+  // const handleDeleteEvent = (eventId) => {
+  //   setCount((prev) => prev + 1);
 
-    const updatedEvents = events.filter((event) => event.id !== eventId);
-    setEvents(updatedEvents);
-    setViewModalOpen(false); // Close the view modal after deletion
-  };
+  //   const updatedEvents = events.filter((event) => event.id !== eventId);
+  //   setEvents(updatedEvents);
+  //   setViewModalOpen(false); // Close the view modal after deletion
+  // };
 
   return (
     <div className="p-4 bg-white rounded-xl shadow-md min-h-screen mx-45 my-20">
@@ -181,6 +180,7 @@ const Calendar = () => {
         date={selectedDate}
         events={events} // Pass existing events
         adminId={adminId}
+        setCount={setCount}
       />
 
       {/* Event View Modal */}

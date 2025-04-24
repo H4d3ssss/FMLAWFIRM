@@ -17,7 +17,7 @@ router.post("/resetpassword", async (req, res) => {
   try {
     const { email } = req.body;
     const response = await generateTemporaryClientPassword(email);
-    // console.log(response);
+    console.log(response);
     res.status(200).json(response);
   } catch (error) {
     console.log(error);

@@ -37,7 +37,9 @@ function ForgotPasswordForm() {
           "https://api.emailjs.com/api/v1.0/email/send",
           payLoad,
           {
-            headers: "application/json",
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
 
