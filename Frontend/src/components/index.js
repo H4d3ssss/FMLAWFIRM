@@ -24,12 +24,14 @@ import AdminActivityLog from "./AdminActivityLog";
 import ActiveCaseCard from "./ActiveCaseCard";
 import PendingCaseCard from "./PendingCaseCard";
 import TaskListCard from "./TaskListCard";
-import TasksDueCard from "./TaskDueCard";
+import TaskDueCard from "./TaskDueCard";
 import AdminCaseTable from "./AdminCaseTable";
 import AddCaseModal from "./AddCaseModal";
 import EditCaseModal from "./EditCaseModal";
 import ViewCaseModal from "./ViewCaseModal";
 import ArchiveCaseModal from "./ArchiveCaseModal";
+import ArchiveCaseTable from "./ArchiveCaseTable";
+import RestoreCaseModal from "./RestoreCaseModal";
 
 // Client Components
 import AdminClientsTable from "./AdminClientsTable";
@@ -39,6 +41,7 @@ import ArchiveClientModal from "./ArchiveClientModal";
 import AddClientAccount from "./AddClientAccount";
 import EditClientAccount from "./EditClientAccount";
 import ArchiveClientAccount from "./ArchiveClientAccount";
+import ArchiveClientTable from "./ArchiveClientTable";
 
 // Admin Components
 import AdminAccountTable from "./AdminAccountTable";
@@ -47,6 +50,8 @@ import AccountApprovalTable from "./AccountApprovalTable";
 import AddAdminModal from "./AddAdminModal";
 import EditAdminModal from "./EditAdminModal";
 import ArchiveAdminModal from "./ArchiveAdminModal";
+import ArchiveAdminTable from "./ArchiveAdminTable";
+import RestoreAdminModal from "./RestoreAdminModal";
 
 // Miscellaneous Components
 import Todo from "./Todo";
@@ -78,6 +83,11 @@ export {
     AddClientAccount,
     ArchiveClientAccount,
     LogoutModal,
+    EventAddForm,
+    EventViewModal,
+    EventEditForm,
+    RestoreCaseModal,
+    RestoreAdminModal,
 
     // Tables
     AdminCaseTable,
@@ -86,13 +96,16 @@ export {
     ClientAccountTable,
     AccountApprovalTable,
     EditClientAccount,
+    ArchiveAdminTable,
+    ArchiveClientTable,
+    ArchiveCaseTable,
 
     // Cards
     ActiveCaseCard,
     PendingCaseCard,
     TaskListCard,
     UpcomingEventCard,
-    TasksDueCard,
+    TaskDueCard,
 
     // Miscellaneous
     Todo,

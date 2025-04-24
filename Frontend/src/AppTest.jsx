@@ -14,6 +14,8 @@ import {
 import ClientsPage from "./pages/ClientsPage";
 import AccountsPage from "./pages/AccountsPage";
 import ArchivePage from "./pages/ArchivePage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 
 function AppTest() {
   return (
@@ -25,8 +27,8 @@ function AppTest() {
         {/* Main Content */}
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/AdminDashboard" element={<AdminDashboard />} />
+            {/* <Route path="/" element={<LoginPage />} /> */}
+            <Route path="/" element={<AdminDashboard />} />
             <Route path="/ClientDashboard" element={<ClientDashboard />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/todo" element={<TodoPage />} />
@@ -36,6 +38,8 @@ function AppTest() {
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/forgotpass" element={<ForgotPass />} />
             <Route path="/archive" element={<ArchivePage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
           </Routes>
         </main>
       </div>

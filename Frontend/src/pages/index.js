@@ -8,6 +8,8 @@ import TodoPage from "./TodoPage";
 import CasesPage from "./CasesPage"
 import ClientsPage from "./ClientsPage";
 import ArchivePage from "./ArchivePage";
+import TermsPage from "./TermsPage";
+import PrivacyPage from "./PrivacyPage";
 export {
     LoginPage,
     AdminDashboard,
@@ -19,4 +21,6 @@ export {
     CasesPage,
     ClientsPage,
     ArchivePage,
+    TermsPage,
+    PrivacyPage,
 };

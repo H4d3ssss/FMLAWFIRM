@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar, Footer, AdminAccountTable, ClientAccountTable, AccountApprovalTable } from '../components';
 
 const AccountsPage = () => {
+    const [activeTab, setActiveTab] = useState('admin'); // Default to admin tab
+
     // Mock data for admins
     const admins = [
         {
@@ -109,26 +111,74 @@ const AccountsPage = () => {
     };
 
     return (
-        <div className="bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
+        <div className="bg-gradient-to-b from-[#F9C545] to-[#FFFFFF] flex flex-col min-h-screen">
+            {/* Navbar stays at the top */}
             <Navbar />
-            <main>
-                <AdminAccountTable
-                    admins={admins}
-                    onView={handleView}
-                    onEdit={handleEdit}
-                    onArchive={handleArchive}
-                />
-                <ClientAccountTable
-                    clients={clients}
-                    onEdit={handleEditClient}
-                    onArchive={handleArchiveClient}
-                />
-                <AccountApprovalTable
-                    approvals={approvals}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                />
-            </main>
+
+            {/* Main content fills remaining space */}
+            <div className="flex-grow p-4 container mx-auto">
+                <h1 className="text-2xl font-bold mb-6 text-center">Account Management</h1>
+
+                {/* Tab Navigation */}
+                <div className="flex justify-center mb-6">
+                    <div className="bg-white rounded-lg shadow-md inline-flex flex-wrap">
+                        <button
+                            className={`px-6 py-3 ${activeTab === 'admin'
+                                ? 'bg-[#FFB600] text-white'
+                                : 'bg-white text-gray-700 hover:bg-gray-100'} ${activeTab === 'admin' ? 'rounded-l-lg' : ''
+                                }`}
+                            onClick={() => setActiveTab('admin')}
+                        >
+                            Admin Accounts
+                        </button>
+                        <button
+                            className={`px-6 py-3 ${activeTab === 'clients'
+                                ? 'bg-[#FFB600] text-white'
+                                : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                            onClick={() => setActiveTab('clients')}
+                        >
+                            Client Accounts
+                        </button>
+                        <button
+                            className={`px-6 py-3 ${activeTab === 'approvals'
+                                ? 'bg-[#FFB600] text-white'
+                                : 'bg-white text-gray-700 hover:bg-gray-100'} ${activeTab === 'approvals' ? 'rounded-r-lg' : ''
+                                }`}
+                            onClick={() => setActiveTab('approvals')}
+                        >
+                            Account Approvals
+                        </button>
+                    </div>
+                </div>
+
+                {/* Conditional Rendering based on active tab */}
+                {activeTab === 'admin' && (
+                    <AdminAccountTable
+                        admins={admins}
+                        onView={handleView}
+                        onEdit={handleEdit}
+                        onArchive={handleArchive}
+                    />
+                )}
+
+                {activeTab === 'clients' && (
+                    <ClientAccountTable
+                        clients={clients}
+                        onEdit={handleEditClient}
+                        onArchive={handleArchiveClient}
+                    />
+                )}
+
+                {activeTab === 'approvals' && (
+                    <AccountApprovalTable
+                        approvals={approvals}
+                        onApprove={handleApprove}
+                        onReject={handleReject}
+                    />
+                )}
+            </div>
+
+            {/* Sticky Footer */}
             <Footer />
         </div>
     );

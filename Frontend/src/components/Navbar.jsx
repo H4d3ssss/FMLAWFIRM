@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Search, LogOut } from "lucide-react"; // Import the LogOut icon
+import { Search, LogOut } from "lucide-react";
 import { GoLaw } from "react-icons/go";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
-import LogoutModal from "./LogoutModal"; // Import LogoutModal
+import { useNavigate } from "react-router-dom";
+import LogoutModal from "./LogoutModal";
 import axios from "axios";
+
 const Navbar = ({ clients, cases, lawyers }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State to control dropdown visibility
-  const [searchQuery, setSearchQuery] = useState(""); // State for search input
-  const [searchResults, setSearchResults] = useState([]); // State for search results
-  const [showAllResults, setShowAllResults] = useState(false); // State to toggle "Show More"
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // State to control LogoutModal visibility
-  const dropdownRef = useRef(null); // Ref to detect clicks outside the dropdown
-  const navigate = useNavigate(); // Hook for navigation
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showAllResults, setShowAllResults] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
-  const MAX_RESULTS = 5; // Limit the number of results displayed
+  const MAX_RESULTS = 5;
 
-  // Format current date
   const formatDate = () => {
     const options = {
       weekday: "long",
@@ -26,7 +26,6 @@ const Navbar = ({ clients, cases, lawyers }) => {
     return new Date().toLocaleDateString("en-US", options);
   };
 
-  // Format current time
   const formatTime = () => {
     const options = {
       hour: "numeric",
@@ -36,12 +35,10 @@ const Navbar = ({ clients, cases, lawyers }) => {
     return new Date().toLocaleTimeString("en-US", options);
   };
 
-  // Handle Logout
   const handleLogout = () => {
-    setShowLogoutModal(true); // Show the logout confirmation modal
+    setShowLogoutModal(true);
   };
 
-  // Confirm Logout
   const handleConfirmLogout = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/auth/logout");
@@ -50,11 +47,9 @@ const Navbar = ({ clients, cases, lawyers }) => {
       console.log(error);
     }
     console.log("Logging out...");
-    // Add your logout logic here (e.g., clearing tokens, redirecting to login page)
-    navigate("/"); // Redirect to the login page
+    navigate("/");
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -68,11 +63,9 @@ const Navbar = ({ clients, cases, lawyers }) => {
     };
   }, []);
 
-  // Handle Search
   const handleSearch = (query) => {
     setSearchQuery(query);
 
-    // Combine all searchable entities
     const allData = [
       ...clients.map((client) => ({
         type: "Client",
@@ -94,7 +87,6 @@ const Navbar = ({ clients, cases, lawyers }) => {
       })),
     ];
 
-    // Filter data based on the query
     const filteredResults = allData.filter((item) =>
       Object.values(item).some((value) =>
         value.toString().toLowerCase().includes(query.toLowerCase())
@@ -102,33 +94,30 @@ const Navbar = ({ clients, cases, lawyers }) => {
     );
 
     setSearchResults(filteredResults);
-    setShowAllResults(false); // Reset "Show More" state when a new search is performed
+    setShowAllResults(false);
   };
 
-  // Handle Result Click
   const handleResultClick = (result) => {
     if (result.type === "Client") {
-      navigate(`/clients/${result.id}`); // Redirect to client details page
+      navigate(`/clients/${result.id}`);
     } else if (result.type === "Case") {
-      navigate(`/cases/${result.id}`); // Redirect to case details page
+      navigate(`/cases/${result.id}`);
     } else if (result.type === "Lawyer") {
-      navigate(`/lawyers/${result.id}`); // Redirect to lawyer details page
+      navigate(`/lawyers/${result.id}`);
     }
   };
 
   return (
     <>
-      <nav className="bg-[#ffb600] shadow-md py-3 flex items-center justify-between px-18 w-full z-50">
+      <nav className="bg-[#ffb600] shadow-md py-3 flex items-center justify-between px-4 md:px-8 lg:px-12 w-full z-50">
         <div className="flex items-center max-w-2xl w-full">
-          {/* Logo/Brand */}
           <div className="flex items-center">
             <div className="w-8 h-8 rounded flex items-center justify-center">
               <GoLaw className="size-12" />
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="w-full mx-8">
+          <div className="w-full mx-4 md:mx-8">
             <div className="relative">
               <input
                 type="text"
@@ -140,9 +129,8 @@ const Navbar = ({ clients, cases, lawyers }) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             </div>
 
-            {/* Search Results */}
             {searchQuery && (
-              <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-[575px] max-h-40 overflow-y-auto">
+              <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-full max-h-40 overflow-y-auto">
                 {searchResults.length > 0 ? (
                   <>
                     {searchResults
@@ -154,7 +142,7 @@ const Navbar = ({ clients, cases, lawyers }) => {
                         <div
                           key={index}
                           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => handleResultClick(result)} // Redirect on click
+                          onClick={() => handleResultClick(result)}
                         >
                           <p className="text-sm font-medium">
                             {result.name} ({result.type})
@@ -193,19 +181,17 @@ const Navbar = ({ clients, cases, lawyers }) => {
           </div>
         </div>
 
-        {/* Date/Time and User Profile */}
         <div className="flex items-center space-x-6 relative">
-          <div className="text-right">
+          <div className="text-right hidden md:block">
             <p className="text-sm text-gray-800">{formatDate()}</p>
             <p className="text-sm font-medium text-gray-900">{formatTime()}</p>
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* User Profile */}
             <div className="relative" ref={dropdownRef}>
               <div
                 className="w-8 h-8 bg-white rounded-full overflow-hidden cursor-pointer"
-                onClick={() => setDropdownOpen(!dropdownOpen)} // Toggle dropdown visibility
+                onClick={() => setDropdownOpen(!dropdownOpen)}
               >
                 <img
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=faces"
@@ -214,15 +200,13 @@ const Navbar = ({ clients, cases, lawyers }) => {
                 />
               </div>
 
-              {/* Dropdown Menu */}
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-[#ffb600] border border-[#e68900] rounded-lg shadow-lg">
                   <button
                     className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-[#e68900] rounded-lg"
                     onClick={handleLogout}
                   >
-                    <LogOut className="w-4 h-4 mr-2 text-black" />{" "}
-                    {/* Logout Icon */}
+                    <LogOut className="w-4 h-4 mr-2 text-black" />
                     Logout
                   </button>
                 </div>
@@ -232,7 +216,6 @@ const Navbar = ({ clients, cases, lawyers }) => {
         </div>
       </nav>
 
-      {/* Logout Modal */}
       <LogoutModal
         showModal={showLogoutModal}
         closeModal={() => setShowLogoutModal(false)}

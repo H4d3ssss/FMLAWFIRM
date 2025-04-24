@@ -1,7 +1,7 @@
 import React from 'react';
 import { ClipboardList } from 'lucide-react';
 
-const TasksDueCard = ({ count, nextTask }) => {
+const TaskDueCard = ({ count, nextTask }) => {
     return (
         <div className="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center justify-center w-[300px] h-[250px] m-0">
             {/* Icon and Title */}
@@ -21,4 +21,4 @@ const TasksDueCard = ({ count, nextTask }) => {
     );
 };
 
-export default TasksDueCard;
+export default TaskDueCard;

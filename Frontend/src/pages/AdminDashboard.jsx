@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
   Navbar,
-  Sidebar,
   Footer,
   ActiveCaseCard,
   PendingCaseCard,
   UpcomingEventCard,
-  TasksDueCard,
+  TaskDueCard,
   TaskListCard,
   UpcomingEvent,
   AdminActivityLog,
@@ -17,7 +16,7 @@ const AdminDashboard = () => {
   const [activeCases, setActiveCases] = useState([]);
   const [pendingCases, setPendingCases] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [tasksDue, setTasksDue] = useState([]);
+  const [taskDue, setTaskDue] = useState([]);
 
   //   useEffect(() => {
   //     // Example: Fetch cases, hearings, and tasks
@@ -42,29 +41,6 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
-
-  useEffect(() => {
-    const authenticateUser = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/auth/authenticate-user"
-        );
-
-        console.log(response.data);
-        if (response.data.role === "Lawyer") {
-          navigate("/admindashboard");
-        } else if (response.data.role === "Client") {
-          navigate("/clientdashboard");
-        } else {
-          navigate("/");
-        }
-      } catch (error) {
-        navigate("/");
-        console.log(error);
-      }
-    };
-    authenticateUser();
-  }, []);
 
   useEffect(() => {
     const soonestAppointments = async () => {
@@ -111,6 +87,29 @@ const AdminDashboard = () => {
     getPendingCases();
   }, []);
 
+  useEffect(() => {
+    const authenticateUser = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/auth/authenticate-user"
+        );
+
+        console.log(response.data);
+        if (response.data.role === "Lawyer") {
+          navigate("/admindashboard");
+        } else if (response.data.role === "Client") {
+          navigate("/clientdashboard");
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        navigate("/");
+        console.log(error);
+      }
+    };
+    authenticateUser();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
       {/* Ensure Navbar has a fixed height */}
@@ -129,7 +128,7 @@ const AdminDashboard = () => {
                 count={upcomingEvents.length}
                 nextEvents={upcomingEvents[0]}
               />
-              <TasksDueCard count={tasksDue.length} nextTask={tasksDue[0]} />
+              <TaskDueCard count={taskDue.length} nextTask={taskDue[0]} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-47">
               {/* Task List Card */}
