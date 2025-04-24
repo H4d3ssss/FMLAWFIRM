@@ -28,7 +28,7 @@ const ArchiveCaseModal = ({
     closeModal(); // Close the modal
   };
 
-  useEffect(() => {}, [caseDetails]);
+  useEffect(() => { }, [caseDetails]);
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">
@@ -44,8 +44,7 @@ const ArchiveCaseModal = ({
         {/* Modal Body */}
         <div className="p-6">
           <p className="mb-4 text-gray-700">
-            Are you sure you want to archive the following case? This action
-            cannot be undone.
+            Are you sure you want to archive the following case?
           </p>
           <div className="mb-4">
             <p className="text-sm font-medium">Case Number:</p>
