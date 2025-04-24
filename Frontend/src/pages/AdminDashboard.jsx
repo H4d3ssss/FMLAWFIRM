@@ -150,7 +150,7 @@ const AdminDashboard = () => {
                 count={upcomingEvents.length}
                 nextEvents={upcomingEvents[0]}
               />
-              <TasksDueCard count={taskDue.length} nextTask={taskDue[0]} />
+              <TaskDueCard count={taskDue.length} nextTask={taskDue[0]} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-47">
               {/* Task List Card */}
