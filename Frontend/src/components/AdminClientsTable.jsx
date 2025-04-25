@@ -174,35 +174,46 @@ const AdminClientsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client, index) => (
-              <tr key={index} className="odd:bg-white even:bg-gray-100">
-                <td className="p-3">CLI - {client.client_id}</td>
-                <td className="p-3">{client.first_name}</td>
-                <td className="p-3">{client.last_name}</td>
-                <td className="p-3">{client.email}</td>
-                <td className="p-3">{client.contact_number}</td>
-                <td className="p-3">{client.sex}</td>
-                <td className="p-3">{client.date_of_birth}</td>
-                <td className="p-3">{client.address}</td>
-                <td className="p-3 flex space-x-2">
-                  <button
-                    className="text-blue-500 hover:bg-blue-100 p-2 rounded"
-                    onClick={() => handleEditButtonClick(client)} // Open EditClientModal
-                  >
-                    <Edit size={18} />
-                  </button>
-                  <button
-                    className="text-red-500 hover:bg-red-100 p-2 rounded"
-                    onClick={() => {
-                      setArchiveClient(client); // Set client to be archived
-                      setShowArchiveModal(true); // Show modal
-                    }}
-                  >
-                    <Trash2 size={18} />
-                  </button>
+            {filteredClients && filteredClients.length > 0 ? (
+              filteredClients.map((client, index) => (
+                <tr key={index} className="odd:bg-white even:bg-gray-100">
+                  <td className="p-3">CLI - {client.client_id}</td>
+                  <td className="p-3">{client.first_name}</td>
+                  <td className="p-3">{client.last_name}</td>
+                  <td className="p-3">{client.email}</td>
+                  <td className="p-3">{client.contact_number}</td>
+                  <td className="p-3">{client.sex}</td>
+                  <td className="p-3">{client.date_of_birth}</td>
+                  <td className="p-3">{client.address}</td>
+                  <td className="p-3 flex space-x-2">
+                    <button
+                      className="text-blue-500 hover:bg-blue-100 p-2 rounded"
+                      onClick={() => handleEditButtonClick(client)}
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:bg-red-100 p-2 rounded"
+                      onClick={() => {
+                        setArchiveClient(client);
+                        setShowArchiveModal(true);
+                      }}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="10"
+                  className="text-center text-gray-500 py-4 bg-white"
+                >
+                  No Clients
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

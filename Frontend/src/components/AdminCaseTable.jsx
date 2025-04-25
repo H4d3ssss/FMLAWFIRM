@@ -214,7 +214,12 @@ const AdminCaseTable = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4">No case</td>
+                <td
+                  colSpan="10"
+                  className="text-center text-gray-500 py-4 bg-white"
+                >
+                  No case
+                </td>
               </tr>
             )}
           </tbody>

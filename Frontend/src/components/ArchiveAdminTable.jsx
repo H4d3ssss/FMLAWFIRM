@@ -251,8 +251,11 @@ const ArchiveAdminTable = ({ handleRestore }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center text-gray-500 py-4">
-                    No data available.
+                  <td
+                    colSpan="6"
+                    className="text-center text-gray-500 py-4 bg-white"
+                  >
+                    No archived admins.
                   </td>
                 </tr>
               )}

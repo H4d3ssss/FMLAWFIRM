@@ -292,35 +292,44 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
             </tr>
           </thead>
           <tbody>
-            {clients1.map((client) => (
-              <tr key={client.id} className="odd:bg-white even:bg-gray-100">
-                <td className="p-3 text-center">CLI - {client.client_id}</td>
-                <td className="p-3 text-center">
-                  {client.first_name} {client.last_name}
-                </td>
-                <td className="p-3 text-center">{client.email}</td>
-                <td className="p-3 text-center">{client.contact_number}</td>
-                <td className="p-3 text-center">
-                  <span
-                    className={`px-2 py-1 rounded ${
-                      client.account_status === "Approved"
-                        ? "bg-green-100 text-green-500"
-                        : "bg-red-100 text-red-500"
-                    }`}
-                  >
-                    {client.account_status}
-                  </span>
-                </td>
-                <td className="p-3 text-center flex justify-center space-x-2">
-                  <button onClick={() => handleEdit(client)}>
-                    <Edit className="w-5 h-5 text-blue-500 hover:text-blue-700" />
-                  </button>
-                  <button onClick={() => handleArchive(client)}>
-                    <ArchiveIcon className="w-5 h-5 text-red-500 hover:text-red-700" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {clients1 ? (
+              clients1.map((client) => (
+                <tr key={client.id} className="odd:bg-white even:bg-gray-100">
+                  <td className="p-3 text-center">CLI - {client.client_id}</td>
+                  <td className="p-3 text-center">
+                    {client.first_name} {client.last_name}
+                  </td>
+                  <td className="p-3 text-center">{client.email}</td>
+                  <td className="p-3 text-center">{client.contact_number}</td>
+                  <td className="p-3 text-center">
+                    <span
+                      className={`px-2 py-1 rounded ${
+                        client.account_status === "Approved"
+                          ? "bg-green-100 text-green-500"
+                          : "bg-red-100 text-red-500"
+                      }`}
+                    >
+                      {client.account_status}
+                    </span>
+                  </td>
+                  <td className="p-3 text-center flex justify-center space-x-2">
+                    <button onClick={() => handleEdit(client)}>
+                      <Edit className="w-5 h-5 text-blue-500 hover:text-blue-700" />
+                    </button>
+                    <button onClick={() => handleArchive(client)}>
+                      <ArchiveIcon className="w-5 h-5 text-red-500 hover:text-red-700" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <td
+                colSpan="10"
+                className="text-center text-gray-500 py-4 bg-white"
+              >
+                No Clients
+              </td>
+            )}
           </tbody>
         </table>
       </div>

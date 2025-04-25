@@ -217,7 +217,7 @@ const ArchiveClientTable = () => {
                     colSpan="10"
                     className="text-center text-gray-500 py-4 bg-white"
                   >
-                    No archived clients found.
+                    No archived clients.
                   </td>
                 </tr>
               )}
