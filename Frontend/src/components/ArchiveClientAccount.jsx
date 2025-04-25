@@ -8,6 +8,7 @@ const ArchiveClientAccount = ({
   handleArchiveClient,
   adminId,
   getClients,
+  toggleRefresh,
 }) => {
   const [password, setPassword] = useState(""); // State for password input
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
@@ -43,6 +44,8 @@ const ArchiveClientAccount = ({
         { client_id: clientData.client_id, adminId }
       );
       console.log(response);
+      toggleRefresh();
+      getClients();
       closeModal();
     } catch (error) {
       console.log(error);

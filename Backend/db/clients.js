@@ -28,6 +28,46 @@ SELECT * FROM "viewClients1" WHERE account_status = 'For Approval'`);
   }
 };
 
+const fetchArchivedClients = async () => {
+  try {
+    const response =
+      await pool.query(`SELECT u.*, C.*, TO_CHAR(u.date_of_birth, 'Month DD, YYYY') as formatted_birthdate
+FROM clients c
+JOIN users u ON c.user_id = u.user_id
+WHERE c.account_status = 'Archived';`);
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "No archived clients" };
+    return { success: true, message: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
+const restoreArchivedClient = async (clientId, adminId) => {
+  try {
+    const response = await pool.query(
+      `UPDATE clients SET account_status = 'Approved' WHERE client_id = $1`,
+      [clientId]
+    );
+    if (response.rowCount <= 0)
+      return { success: false, message: "Failed to restore archived client" };
+
+    const data1 = {
+      adminId,
+      action: "RESTORED CLIENT",
+      description: "Restored client: ",
+      targetTable: "clients",
+      target_id: clientId,
+    };
+    // console.log(data1);
+    const response3 = await createActivityLog(data1);
+    return { success: true, message: "Succcessfully restored archived client" };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const fetchClients = async () => {
   try {
     const response = await pool.query(`SELECT * FROM "viewClients1"
@@ -49,7 +89,15 @@ ORDER BY
 const fetchClientsViaEmail = async (email) => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewClients" WHERE email = $1`,
+      `SELECT 
+  u.*, 
+  c.client_id, 
+  l.lawyer_id
+FROM users u
+LEFT JOIN clients c ON u.user_id = c.user_id
+LEFT JOIN lawyers l ON u.user_id = l.user_id
+WHERE u.email = $1;
+`,
       [email]
     );
     return { success: true, response: response.rows };
@@ -93,7 +141,26 @@ const ifClientExistAndForApproval = async (email) => {
 const ifClientExistAndApproved = async (email) => {
   try {
     const response = await pool.query(
-      `SELECT * FROM "viewClients" WHERE email = $1 AND account_status = 'Approved'`,
+      `SELECT 
+  u.user_id,
+  u.first_name,
+  u.last_name,
+  u.email,
+  COALESCE(vc.client_id::TEXT, l.lawyer_id::TEXT) AS account_id,
+  COALESCE(vc.account_status::TEXT, l.account_status::TEXT) AS account_status,
+  CASE 
+    WHEN vc.client_id IS NOT NULL THEN 'client'
+    WHEN l.lawyer_id IS NOT NULL THEN 'lawyer'
+    ELSE 'unknown'
+  END AS role
+FROM users u
+LEFT JOIN "viewClients1" vc ON u.user_id = vc.user_id
+LEFT JOIN lawyers l ON u.user_id = l.user_id
+WHERE u.email = $1
+  AND (
+    vc.account_status IN ('Approved')
+    OR l.account_status IN ('Active')
+  );`,
       [email]
     );
     return response.rowCount;
@@ -194,6 +261,7 @@ const updateArchiveClient = async (clientId, adminId) => {
     // console.log(data1);
     const response3 = await createActivityLog(data1);
     console.log(response3);
+    console.log("nakapag create ng activity log");
     return { success: true, response: "Updated Successfully" };
   } catch (error) {
     console.log(error);
@@ -295,7 +363,7 @@ const updateClientDetails1 = async (data) => {
         data.not_formatted_date_of_birth,
         data.sex,
         data.contact_number,
-        data.fullAddress,
+        data.address,
         data.user_id,
       ]
     );
@@ -326,4 +394,6 @@ export {
   fetchClientsForApproval,
   approveClient,
   cancelClient,
+  fetchArchivedClients,
+  restoreArchivedClient,
 };

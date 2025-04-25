@@ -71,7 +71,7 @@ const AdminDashboard = () => {
         const response = await axios.get(
           "http://localhost:3000/api/appointments/soonest-appointment"
         );
-        // console.log(response.data);
+        console.log(response.data);
         setUpcomingEvents(response.data);
       } catch (error) {
         console.log(error);

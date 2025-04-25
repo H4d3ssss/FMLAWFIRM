@@ -30,7 +30,9 @@ const ArchiveCaseModal = ({
     closeModal(); // Close the modal
   };
 
-  useEffect(() => {}, [caseDetails]);
+  useEffect(() => {
+    fetchAllCases();
+  }, [caseDetails]);
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-gray-500/30 flex items-center justify-center z-50">

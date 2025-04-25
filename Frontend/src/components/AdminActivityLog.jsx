@@ -73,7 +73,7 @@ const AdminActivityLog = () => {
                 <div>
                   <p className="text-gray-800 font-semibold">{log.action}</p>
                   <p className="text-sm text-gray-600">
-                    • {log.description} {log.client_name} by {log.admin_name} |{" "}
+                    • {log.description} {log.target_name} by {log.admin_name} |{" "}
                     {new Date(log.timestamp).toLocaleString()}
                   </p>
                 </div>

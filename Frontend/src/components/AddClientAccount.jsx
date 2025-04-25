@@ -118,9 +118,12 @@ const AddClientAccount = ({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (["region", "province", "city", "barangay"].includes(name)) {
+    if (["region", "province", "city"].includes(name)) {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      const locationName = selectedOption.text;
+      // console.log(locationName);
       setLocationIds((prev) => ({ ...prev, [name]: value }));
-      setFormData((prev) => ({ ...prev, [name]: value })); // Store the ID
+      setFormData((prev) => ({ ...prev, [name]: locationName })); // Store the ID
       return;
     }
 

@@ -75,6 +75,19 @@ const fetchDismissedCases = async () => {
   }
 };
 
+const fetchArchivedCases1 = async () => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases2" WHERE case_status = 'Archived'`
+    );
+    if (response.rowCount <= 0)
+      return { success: false, message: "No archived cases" };
+    return { success: true, message: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const fetchArchivedCases = async () => {
   try {
     const response = await pool.query(`SELECT * FROM "viewArchivedCases"`);
@@ -335,14 +348,14 @@ WHERE case_id = $3;`;
 const archiveCase = async (caseId, adminId) => {
   try {
     const response = await pool.query(
-      `UPDATE cases SET case_status = 'Archived' WHERE case_id = $1`,
-      [caseId]
+      `UPDATE cases SET case_status = 'Archived', last_update = NOW(), updated_by = $2 WHERE case_id = $1`,
+      [caseId, adminId]
     );
 
     const data1 = {
       adminId,
       action: "ARCHIVED A CASE",
-      description: "Archived case: " + caseId,
+      description: "Archived case ID: " + caseId,
       targetTable: "cases",
       target_id: caseId,
     };
@@ -357,6 +370,33 @@ const archiveCase = async (caseId, adminId) => {
     } else {
       return { success: false, message: "Case id cannot be found" };
     }
+  } catch (error) {
+    return { error };
+  }
+};
+
+const restoreArchivedCase = async (caseId, adminId) => {
+  console.log(caseId);
+  console.log(adminId);
+  try {
+    const response = await pool.query(
+      `UPDATE cases SET case_status = 'Active', last_update = NOW(), updated_by = $2 WHERE case_id = $1`,
+      [caseId, adminId]
+    );
+    console.log(response);
+    if (response.rowCount <= 0)
+      return { success: false, message: "failed to restore archived client" };
+
+    const data1 = {
+      adminId,
+      action: "RESTORED CASE",
+      description: "Restored Case: ",
+      targetTable: "cases",
+      target_id: caseId,
+    };
+    // console.log(data1);
+    const response3 = await createActivityLog(data1);
+    return { success: true, message: "Successfully restored archived client" };
   } catch (error) {
     return { error };
   }
@@ -378,4 +418,6 @@ export {
   fetchCaseByCaseId,
   updateCase,
   archiveCase,
+  fetchArchivedCases1,
+  restoreArchivedCase,
 };

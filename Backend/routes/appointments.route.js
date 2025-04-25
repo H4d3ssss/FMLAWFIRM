@@ -112,11 +112,11 @@ router.get("/soonest-appointment", async (req, res) => {
     if (response.success) {
       return res.status(200).json(response.response);
     }
-
+    console.log(response);
     const response1 = await fetchSoonestAppointment();
-
+    console.log(response1.response[0]);
     if (response1.success) {
-      return res.status(200).json(response.response);
+      return res.status(200).json(response1.response);
     }
 
     res.status(200).json({ response: response1.response });

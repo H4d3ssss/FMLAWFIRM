@@ -6,11 +6,35 @@ import {
   fetchActiveLawyers,
   updateLawyer,
   archiveLawyer,
+  fetchArchivedLawyers,
+  restoreArchivedLawyer,
 } from "../db/adminSide/lawyers.js";
 import bcrypt from "bcrypt";
 import { createActivityLog } from "../db/activities.js";
 
 const router = express.Router();
+
+router.patch("/restore-archived-lawyer", async (req, res) => {
+  try {
+    const { lawyerId } = req.body;
+    const adminId = req.session.user.lawyerId;
+    const response = await restoreArchivedLawyer(lawyerId, adminId);
+    if (!response.success) return res.status(400).json(response.message);
+    return res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.get("/archived-lawyers", async (req, res) => {
+  try {
+    const response = await fetchArchivedLawyers();
+    if (!response.success) res.send(400).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 router.post("/", async (req, res) => {
   try {

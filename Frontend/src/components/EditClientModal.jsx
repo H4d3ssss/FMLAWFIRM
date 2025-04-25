@@ -10,13 +10,54 @@ const EditClientModal = ({
   closeModal,
   clientData,
   handleEditClient,
+  getApprovedClients,
 }) => {
-  const [formData, setFormData] = useState(clientData);
   const [locationIds, setLocationIds] = useState({
     region: "",
     province: "",
     city: "",
   });
+
+  const [formData, setFormData] = useState(clientData);
+  // const [myAddress, setMyAddress] = useState([]);
+  // useEffect(() => {
+  //   if (!clientData) return;
+  //   setMyAddress(clientData.address.split(","));
+  //   console.log(clientData.address);
+  // }, [clientData]);
+
+  const [addressParts, setAddressParts] = useState({
+    houseNumber: "",
+    streetName: "",
+    barangay: "",
+    city: "",
+    province: "",
+    region: "",
+    postalCode: "",
+  });
+
+  // Parse address on component mount or when clientData changes
+  useEffect(() => {
+    if (!clientData?.address) return;
+
+    // Parse the address string
+    const addressString = clientData.address;
+    const parts = addressString.split(",").map((part) => part.trim());
+
+    // Extract the parts based on your expected format
+    // Adjust these indices based on your actual address format
+    setAddressParts({
+      houseNumber: parts[0] || "",
+      streetName: parts[1] || "",
+      barangay: parts[2] || "",
+      city: parts[3] || "",
+      province: parts[4] || "",
+      region: parts[5] || "",
+      postalCode: parts[6] || "",
+    });
+
+    console.log("Address parsed:", parts);
+  }, [clientData]);
 
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
@@ -96,12 +137,49 @@ const EditClientModal = ({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (["region", "province", "city", "barangay"].includes(name)) {
-      setLocationIds((prev) => ({ ...prev, [name]: value }));
-      setFormData((prev) => ({ ...prev, [name]: value }));
+    // Handle address fields - include ALL address fields
+    if (
+      [
+        "houseNumber",
+        "streetName",
+        "barangay",
+        "city",
+        "province",
+        "region",
+        "postalCode",
+      ].includes(name)
+    ) {
+      setAddressParts((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      // Reconstruct the full address and update formData
+      const newAddressParts = {
+        ...addressParts,
+        [name]: value,
+      };
+
+      const fullAddress = [
+        newAddressParts.houseNumber,
+        newAddressParts.streetName,
+        newAddressParts.barangay,
+        newAddressParts.city,
+        newAddressParts.province,
+        newAddressParts.region,
+        newAddressParts.postalCode,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+      setFormData((prev) => ({
+        ...prev,
+        address: fullAddress,
+      }));
       return;
     }
 
+    // Handle other form fields
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -135,6 +213,8 @@ const EditClientModal = ({
     } catch (error) {
       console.log(error);
     }
+    getApprovedClients();
+
     closeModal();
   };
 
@@ -288,7 +368,7 @@ const EditClientModal = ({
                   id="houseNumber"
                   name="houseNumber"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={formData.houseNumber}
+                  value={addressParts.houseNumber}
                   onChange={handleChange}
                   required
                 />
@@ -307,7 +387,7 @@ const EditClientModal = ({
                   id="streetName"
                   name="streetName"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={formData.streetName}
+                  value={addressParts.streetName}
                   onChange={handleChange}
                   required
                 />
@@ -318,44 +398,31 @@ const EditClientModal = ({
                 <label htmlFor="region" className="block text-sm font-medium">
                   Region
                 </label>
-                <select
+                <input
+                  type="text"
                   id="region"
                   name="region"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={locationIds.region}
+                  value={addressParts.region}
                   onChange={handleChange}
                   required
-                >
-                  <option value="">Select Region</option>
-                  {regionsData.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* Province */}
               <div>
-                <label htmlFor="province" className="block text-sm font-medium">
+                <label htmlFor="region" className="block text-sm font-medium">
                   Province
                 </label>
-                <select
+                <input
+                  type="text"
                   id="province"
                   name="province"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={locationIds.province}
+                  value={addressParts.province}
                   onChange={handleChange}
-                  disabled={!filteredProvinces.length}
                   required
-                >
-                  <option value="">Select Province</option>
-                  {filteredProvinces.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* City */}
@@ -363,22 +430,15 @@ const EditClientModal = ({
                 <label htmlFor="city" className="block text-sm font-medium">
                   City/Municipality
                 </label>
-                <select
+                <input
+                  type="text"
                   id="city"
                   name="city"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={locationIds.city}
+                  value={addressParts.city}
                   onChange={handleChange}
-                  disabled={!filteredCities.length}
                   required
-                >
-                  <option value="">Select City</option>
-                  {filteredCities.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* Barangay */}
@@ -386,22 +446,15 @@ const EditClientModal = ({
                 <label htmlFor="barangay" className="block text-sm font-medium">
                   Barangay
                 </label>
-                <select
+                <input
+                  type="text"
                   id="barangay"
                   name="barangay"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={formData.barangay}
+                  value={addressParts.barangay}
                   onChange={handleChange}
-                  disabled={!filteredBarangays.length}
                   required
-                >
-                  <option value="">Select Barangay</option>
-                  {filteredBarangays.map((b) => (
-                    <option key={b.id} value={b.name}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* ZIP Code */}
@@ -411,10 +464,10 @@ const EditClientModal = ({
                 </label>
                 <input
                   type="text"
-                  id="zipCode"
-                  name="zipCode"
+                  id="postalCode"
+                  name="postalCode"
                   className="border border-gray-300 rounded w-full px-3 py-2"
-                  value={formData.zipCode}
+                  value={addressParts.postalCode}
                   onChange={handleChange}
                   required
                 />

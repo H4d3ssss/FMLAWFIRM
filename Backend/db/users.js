@@ -10,7 +10,7 @@ const userExist = async (email) => {
   u.password,
   u.temporary_password,
   l.lawyer_id,
-  c.client_id
+  u.role
 FROM users u
 LEFT JOIN clients c ON u.user_id = c.user_id
 LEFT JOIN lawyers l ON u.user_id = l.user_id
@@ -24,7 +24,7 @@ WHERE u.email = $1
     } else {
       return {
         success: false,
-        message: "Bad Credentials : Email non existing",
+        message: "Wait for admin's approval",
       };
     }
   } catch (error) {

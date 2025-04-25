@@ -66,7 +66,7 @@ const insertAppointment = async (data) => {
     };
 
     const response1 = await createActivityLog(data1);
-
+    console.log(response1);
     if (!response1.success)
       return { success: false, message: "may problema sa response 1" };
 
@@ -107,7 +107,7 @@ JOIN users uc ON c.user_id = uc.user_id
 WHERE a.appointment_date = CURRENT_DATE
   AND a.end_time > CURRENT_TIME
 ORDER BY a.start_time ASC
-LIMIT 1;;`); // if ever related din yung mga clients sa outside events, magagamit tuh
+LIMIT 1;`); // if ever related din yung mga clients sa outside events, magagamit tuh
 
     if (response.rowCount <= 0) return { success: false };
     return { success: true, response: response.rows };
@@ -118,12 +118,20 @@ LIMIT 1;;`); // if ever related din yung mga clients sa outside events, magagami
 
 const fetchSoonestAppointment = async () => {
   try {
-    const response = await pool.query(`SELECT *
-, TO_CHAR(appointment_date, 'Month DD, YYYY') AS formatted_date
-FROM appointments
-WHERE appointment_date > CURRENT_TIMESTAMP
-ORDER BY appointment_date ASC
-LIMIT 1;  `);
+    const response = await pool.query(`  SELECT 
+  a.*, 
+  c.*, 
+  u.first_name || ' ' || u.last_name AS client_name,  
+  u.email AS client_email,
+  TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
+  TO_CHAR(a.start_time, 'HH12:MI PM') AS formatted_start_time,
+  TO_CHAR(a.end_time, 'HH12:MI PM') AS formatted_end_time
+FROM appointments a
+JOIN clients c ON a.client_id = c.client_id  
+JOIN users u ON c.user_id = u.user_id 
+WHERE a.appointment_date > CURRENT_TIMESTAMP
+ORDER BY a.appointment_date ASC
+LIMIT 1;`);
     if (response.rowCount <= 0)
       return { success: false, response: "No upcoming event" };
     return { success: true, response: response.rows };

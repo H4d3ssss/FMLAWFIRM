@@ -3,24 +3,47 @@ import pool from "./index.js";
 const fetchActivityLogs = async () => {
   try {
     const response = await pool.query(`SELECT
-	a.log_id,
-	a.action,
-	a.description,
-	a.target_table,
-	TO_CHAR(a.timestamp, 'YYYY-MM-DD, HH12:MI PM') AS timestamp,
-	u.first_name || ' ' || u.last_name AS client_name,
-	u1.first_name || ' ' || u1.last_name AS admin_name,
-	u.user_id
+  a.log_id,
+  a.action,
+  a.description,
+  a.target_table,
+  TO_CHAR(a.timestamp, 'YYYY-MM-DD, HH12:MI PM') AS timestamp,
+
+  -- target name depending on type of table
+  CASE 
+    WHEN a.target_table = 'clients' THEN u.first_name || ' ' || u.last_name
+    WHEN a.target_table = 'lawyers' THEN u2.first_name || ' ' || u2.last_name
+    WHEN a.target_table = 'cases' THEN cs.case_title
+    ELSE NULL
+  END AS target_name,
+
+  -- admin who made the action
+  u1.first_name || ' ' || u1.last_name AS admin_name,
+
+  -- target's user_id or null if it's a case
+  COALESCE(u.user_id, u2.user_id) AS user_id,
+
+  -- include case title as a separate field
+  cs.case_id
+
 FROM activity_logs a
-LEFT JOIN clients c
-  ON a.target_id = c.client_id
-LEFT JOIN users u
-  ON c.user_id = u.user_id
-JOIN lawyers l
-  ON a.admin_id = l.lawyer_id
-JOIN users u1
-  ON u1.user_id = l.user_id
-ORDER BY a.log_id DESC`);
+
+-- if target is a client
+LEFT JOIN clients c ON a.target_table = 'clients' AND a.target_id = c.client_id
+LEFT JOIN users u ON c.user_id = u.user_id
+
+-- if target is a lawyer
+LEFT JOIN lawyers l2 ON a.target_table = 'lawyers' AND a.target_id = l2.lawyer_id
+LEFT JOIN users u2 ON l2.user_id = u2.user_id
+
+-- if target is a case
+LEFT JOIN cases cs ON a.target_table = 'cases' AND a.target_id = cs.case_id
+
+-- admin who performed the action
+JOIN lawyers l ON a.admin_id = l.lawyer_id
+JOIN users u1 ON l.user_id = u1.user_id
+
+ORDER BY a.log_id DESC;`);
     // console.log(response.rowCount);
     // console.log(response.rowCount);
     if (response.rowCount <= 0)

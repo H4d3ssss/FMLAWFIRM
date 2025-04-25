@@ -6,6 +6,7 @@ const ArchiveClientModal = ({
   closeModal,
   clientData,
   handleArchiveClient,
+  getApprovedClients,
 }) => {
   if (!showModal) return null;
 

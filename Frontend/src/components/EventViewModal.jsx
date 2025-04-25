@@ -43,18 +43,12 @@ const EventViewModal = ({ isOpen, onClose, onEdit, onDelete, event }) => {
           {event.client ? event.client : "Not Assigned"}
         </p>
 
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-end mt-4">
           <button
             onClick={onEdit}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Edit
-          </button>
-          <button
-            onClick={() => onDelete(event.id)}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Delete
           </button>
         </div>
       </div>

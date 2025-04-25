@@ -17,7 +17,7 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [count, setCount] = useState(0);
-
+  const [adminId, setAdminId] = useState(null);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
@@ -28,6 +28,7 @@ const Calendar = () => {
           "http://localhost:3000/api/auth/authenticate-user"
         );
         if (response.data.role === "Lawyer") {
+          setAdminId(response.data.lawyerId);
           navigate("/calendar");
         } else if (response.data.role === "Client") {
           navigate("/clientdashboard");
@@ -156,12 +157,6 @@ const Calendar = () => {
     setCount((prev) => prev + 1);
   };
 
-  const handleDeleteEvent = (eventId) => {
-    setEvents((prev) => prev.filter((event) => event.id !== eventId));
-    setViewModalOpen(false);
-    setCount((prev) => prev + 1);
-  };
-
   return (
     <div className="p-4 bg-white rounded-xl shadow-md min-h-screen mx-45 my-20">
       <h2 className="text-xl font-semibold mb-4">📅 Case Calendar</h2>
@@ -187,6 +182,7 @@ const Calendar = () => {
         date={selectedDate}
         events={events}
         setCount={setCount}
+        adminId={adminId}
       />
 
       {viewModalOpen && selectedEvent && (
@@ -198,6 +194,7 @@ const Calendar = () => {
             setEditModalOpen(true);
           }}
           event={selectedEvent}
+          adminId={adminId}
         />
       )}
 
@@ -207,6 +204,7 @@ const Calendar = () => {
           onClose={() => setEditModalOpen(false)}
           onSubmit={handleEditEvent}
           eventData={selectedEvent}
+          adminId={adminId}
         />
       )}
     </div>

@@ -143,7 +143,6 @@ router.post("/login", async (req, res) => {
     if (!user.success) return res.status(402).json({ message: user.message });
     if (user.response[0].email !== data.email)
       return res.status(401).json({ message: "Wrong email" });
-
     if (user.response[0].role === "Client") {
       const isValid = await bcrypt.compare(
         data.password,
@@ -175,7 +174,13 @@ router.post("/login", async (req, res) => {
         user.response[0].password
       );
 
-      if (!isValid) return res.status(401).json({ message: "Bad Credentials" });
+      const isValid1 = await bcrypt.compare(
+        data.password,
+        user.response[0].temporary_password || ""
+      );
+      console.log(isValid1);
+      if (!isValid && !isValid1)
+        return res.status(401).json({ message: "Bad Credentials" });
       // console.log(user.response[0]);
       req.session.user = {
         userId: user.response[0].user_id,

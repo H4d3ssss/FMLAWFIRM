@@ -45,6 +45,8 @@ function LoginForm() {
         navigate("/admindashboard");
       } else if (response.data.role === "Client") {
         navigate("/clientdashboard");
+      } else if (response.status === 202) {
+        setResponse(response.message);
       } else {
         navigate("/");
       }
@@ -52,6 +54,8 @@ function LoginForm() {
       navigate("/");
       console.log(error);
       if (error.status === 401) {
+        setResponse(error.response.data.message);
+      } else if (error.status === 402) {
         setResponse(error.response.data.message);
       } else if (error.status === 409) {
         setResponse(error.response.data.message);
@@ -105,8 +109,9 @@ function LoginForm() {
           <input
             name="email"
             type="email"
-            className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500`}
+            className={`w-full px-3 py-2 border ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500`}
             value={formData.email}
             onChange={handleChange}
           />
@@ -122,8 +127,9 @@ function LoginForm() {
             <input
               name="password"
               type={showPassword ? "text" : "password"} // Toggle input type
-              className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500`}
+              className={`w-full px-3 py-2 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500`}
               value={formData.password}
               onChange={handleChange}
             />

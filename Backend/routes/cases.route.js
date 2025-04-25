@@ -15,6 +15,8 @@ import {
   fetchCaseByCaseId,
   updateCase,
   archiveCase,
+  fetchArchivedCases1,
+  restoreArchivedCase,
 } from "../db/adminSide/cases.js";
 // import upload from "../middleware/upload.js";
 import multer from "multer";
@@ -174,6 +176,41 @@ router.get("/archived", async (req, res) => {
       messsage:
         "An error has occured in the server while fetching archived cases",
     });
+  }
+});
+
+router.get("/archived-cases", async (req, res) => {
+  try {
+    const response = await fetchArchivedCases1();
+
+    if (response.success) {
+      return res.status(200).json(response.message);
+    } else {
+      return res
+        .status(500)
+        .json({ message: "Fetching in archived cases failed" });
+    }
+  } catch (error) {
+    console.log(error.stack);
+    return res.status(500).json({
+      messsage:
+        "An error has occured in the server while fetching archived cases",
+    });
+  }
+});
+
+router.patch("/restore-archived-case", async (req, res) => {
+  try {
+    const adminId = req.session.user.lawyerId;
+    // console.log(adminId);
+    const { caseId } = req.body;
+    // console.log(caseId);
+    const response = await restoreArchivedCase(caseId, adminId);
+    if (!response.success) return res.status(400).send(response.message);
+    return res.status(200).send(response.message);
+  } catch (error) {
+    console.error("PATCH /restore-archived-case error:", error);
+    res.status(500).send(error);
   }
 });
 

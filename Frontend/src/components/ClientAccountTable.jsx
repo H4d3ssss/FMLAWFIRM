@@ -159,6 +159,11 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
     console.log("Client archived:", archivedClient); // Log for testing
     setShowArchiveModal(false); // Close the ArchiveClientAccount modal
   };
+  const [refreshClients, setRefreshClients] = useState(false);
+
+  const toggleRefresh = () => {
+    setRefreshClients((prev) => !prev);
+  };
   return (
     <div className="bg-[#FFB600] justify-center mx-60 my-20 rounded-2xl shadow-lg">
       {/* AddClientAccount Modal */}
@@ -188,6 +193,7 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
         handleArchiveClient={handleArchiveClient}
         adminId={lawyerId}
         getClients={getClients}
+        toggleRefresh={toggleRefresh}
       />
 
       {/* Toolbar */}

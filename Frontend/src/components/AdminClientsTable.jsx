@@ -39,21 +39,20 @@ const AdminClientsTable = () => {
     authenticateUser();
   }, []);
 
+  const getApprovedClients = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/clients/approved-clients"
+      );
+      setClients(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    if (!clients) return console.log("no more approved clients");
-    const getApprovedClients = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/clients/approved-clients"
-        );
-        setClients(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     getApprovedClients();
+    if (!clients) return console.log("no more approved clients");
   }, [showArchiveModal]);
 
   // Dynamic logic: Fetch approved clients from the backend (commented out for now)
@@ -86,9 +85,12 @@ const AdminClientsTable = () => {
         { client_id: archiveClient.client_id }
       );
       console.log(response.data);
+      getApprovedClients();
     } catch (error) {
       console.log(error);
     }
+    getApprovedClients();
+
     setShowArchiveModal(false);
   };
 
@@ -118,11 +120,14 @@ const AdminClientsTable = () => {
     // }
 
     // console.log(updatedClient);
+    getApprovedClients();
     setShowEditModal(false); // Close the modal after editing
   };
 
   const handleEditButtonClick = (client) => {
     console.log(client);
+    getApprovedClients();
+
     setSelectedClient(client); // Set the client to be edited
     setShowEditModal(true); // Open the EditClientModal
   };
@@ -208,6 +213,7 @@ const AdminClientsTable = () => {
         closeModal={() => setShowAddModal(false)}
         handleAddClient={handleAddClient}
         nextClientId={getNextClientId()}
+        getApprovedClients={getApprovedClients}
       />
 
       {/* EditClientModal */}
@@ -216,12 +222,14 @@ const AdminClientsTable = () => {
         closeModal={() => setShowEditModal(false)}
         clientData={selectedClient} // Pass the selected client to edit
         handleEditClient={handleEditClient} // Pass the edit handler
+        getApprovedClients={getApprovedClients}
       />
       <ArchiveClientModal
         showModal={showArchiveModal}
         closeModal={() => setShowArchiveModal(false)}
         clientData={archiveClient}
         handleArchiveClient={handleArchiveClient}
+        getApprovedClients={getApprovedClients}
       />
     </div>
   );

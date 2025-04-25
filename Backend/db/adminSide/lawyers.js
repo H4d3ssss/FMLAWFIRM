@@ -1,3 +1,4 @@
+import { createActivityLog } from "../activities.js";
 import pool from "../index.js";
 
 const fetchLawyers = async () => {
@@ -8,6 +9,45 @@ const fetchLawyers = async () => {
   } catch (err) {
     console.log(err.stack);
     return { success: false, error: err };
+  }
+};
+
+const restoreArchivedLawyer = async (lawyerId, adminId) => {
+  try {
+    const response = await pool.query(
+      `UPDATE lawyers SET account_status = 'Active' WHERE lawyer_id = $1`,
+      [lawyerId]
+    );
+    if (response.rowCount <= 0)
+      return { success: false, message: "Restore failed" };
+
+    const data1 = {
+      adminId,
+      action: "RESTORED ARCHIVED ADMIN",
+      description: "Restored Admin: ",
+      targetTable: "lawyers",
+      target_id: lawyerId,
+    };
+    console.log(data1);
+    const response1 = await createActivityLog(data1);
+    console.log(response1);
+    return { success: true, message: "Restore success" };
+  } catch (error) {
+    return { error };
+  }
+};
+
+const fetchArchivedLawyers = async () => {
+  try {
+    const response = await pool.query(`SELECT u.*, l.*
+FROM lawyers l
+JOIN users u ON l.user_id = u.user_id
+WHERE l.account_status = 'Archived';`);
+    if (response.rowCount <= 0)
+      return { success: false, message: "None archived lawyers" };
+    return { success: true, message: response.rows };
+  } catch (error) {
+    return { error };
   }
 };
 
@@ -116,4 +156,6 @@ export {
   fetchActiveLawyers,
   updateLawyer,
   archiveLawyer,
+  fetchArchivedLawyers,
+  restoreArchivedLawyer,
 };

@@ -10,6 +10,8 @@ import {
   updateClientDetails1,
   approveClient,
   cancelClient,
+  fetchArchivedClients,
+  restoreArchivedClient,
 } from "../db/clients.js";
 
 import { fetchClientsForApproval } from "../db/adminSide/clients.js";
@@ -104,11 +106,32 @@ router.get("/approved-clients", async (req, res) => {
   }
 });
 
+router.get("/archived-clients", async (req, res) => {
+  try {
+    const response = await fetchArchivedClients();
+    if (!response.success) return res.status(401).json(response.message);
+    return res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.patch("/restore-client", async (req, res) => {
+  try {
+    const { clientId } = req.body;
+    const adminId = req.session.user.lawyerId;
+    const response = await restoreArchivedClient(clientId, adminId);
+    if (!response.success) return res.status(401).json(response.message);
+    return res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 router.patch("/archive-client", async (req, res) => {
   try {
-    const { client_id, adminId } = req.body;
-    console.log("im here");
-    console.log(adminId);
+    const { client_id } = req.body;
+    const adminId = req.session.user.lawyerId;
     const response = await updateArchiveClient(client_id, adminId);
     if (!response.success) return res.status(401).json(response.response);
     return res.status(200).json(response.response);
@@ -137,6 +160,7 @@ router.patch("/update-client", async (req, res) => {
 router.patch("/update-client1", async (req, res) => {
   try {
     const data = req.body;
+    console.log(data);
     const response = await updateClientDetails1(data);
     if (!response.success) return res.status(400).json(response.message);
 
