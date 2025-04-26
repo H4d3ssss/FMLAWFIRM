@@ -17,7 +17,7 @@ const eventTypeColors = {
   Other: "#607D8B", // Gray
 };
 
-const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
+const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState(eventTypes[0]);
   const [location, setLocation] = useState("");
@@ -26,6 +26,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const [endTime, setEndTime] = useState("");
   const [lawyerId, setLawyerId] = useState("");
   const [clientId, setClientId] = useState("");
+  const [date, setDate] = useState("");
 
   // Example data for lawyers and clients
   const [lawyers, setLawyers] = useState([]);
@@ -56,12 +57,12 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   useEffect(() => {
     fetchActiveLawyers();
     fetchApprovedClients();
+
+    console.log(events);
   }, []);
 
   useEffect(() => {
-    // console.log(JSON.stringify(eventData));
     if (isOpen && eventData) {
-      // Pre-fill form fields with current event data
       setTitle(eventData.title);
       setType(eventData.extendedProps?.type || eventTypes[0]);
       setLocation(eventData.extendedProps?.location || "");
@@ -70,8 +71,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       setEndTime(eventData.extendedProps?.endTime || "");
       setLawyerId(eventData?.lawyerId || "");
       setClientId(eventData?.clientId || "");
+      setDate(eventData.start.split("T")[0]); // <-- Add this!
     } else {
-      // Reset form fields when the form is reopened
       setTitle("");
       setType(eventTypes[0]);
       setLocation("");
@@ -80,9 +81,37 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       setEndTime("");
       setLawyerId("");
       setClientId("");
+      setDate(""); // <-- Also reset date when closed
     }
   }, [isOpen, eventData]);
 
+  // ✅ REPLACE your hasTimeConflict with this version
+  const hasTimeConflict = (start, end) => {
+    return events.some((event) => {
+      const eventDate = event.start.split("T")[0]; // Only the date part
+
+      if (eventData && event.id === eventData.id) {
+        return false; // Skip the event you're currently editing
+      }
+
+      if (eventDate !== date) {
+        return false; // Skip events from other days
+      }
+
+      const eventStart = new Date(event.start).getTime();
+      const eventEnd = new Date(event.end).getTime();
+      const newStart = new Date(`${date}T${start}`).getTime();
+      const newEnd = new Date(`${date}T${end}`).getTime();
+
+      return (
+        (newStart >= eventStart && newStart < eventEnd) ||
+        (newEnd > eventStart && newEnd <= eventEnd) ||
+        (newStart <= eventStart && newEnd >= eventEnd)
+      );
+    });
+  };
+
+  // ✅ REPLACE your handleSubmit with this updated version
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return alert("Please enter a title.");
@@ -93,7 +122,12 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     if (!lawyerId) return alert("Please select a lawyer.");
     if (!clientId) return alert("Please select a client.");
 
-    const color = eventTypeColors[type]; // Automatically set color based on event type
+    if (hasTimeConflict(startTime, endTime)) {
+      alert("The selected time conflicts with an existing appointment.");
+      return;
+    }
+
+    const color = eventTypeColors[type];
 
     const data = {
       appointmentId: eventData.id,
@@ -103,10 +137,11 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       notes,
       startTime,
       endTime,
-      lawyerId, // Include lawyerId
-      clientId, // Include clientId
+      lawyerId,
+      clientId,
     };
     console.log(data);
+
     try {
       const response = await axios.patch(
         "http://localhost:3000/api/appointments/update-appointment",

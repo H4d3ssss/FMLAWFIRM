@@ -61,12 +61,13 @@ const insertAppointment = async (data) => {
       adminId: data.adminId,
       action: "CREATED APPOINTMENT",
       description: "Created an appointment for",
-      targetTable: "appointment",
+      targetTable: "clients",
       target_id: data.clientId,
     };
 
     const response1 = await createActivityLog(data1);
-    console.log(response1);
+    console.log(data1);
+    console.log("im here");
     if (!response1.success)
       return { success: false, message: "may problema sa response 1" };
 
@@ -155,7 +156,7 @@ const fetchAppointmentById = async (appointmentId) => {
   }
 };
 
-const updateAppointment = async (data) => {
+const updateAppointment = async (data, adminId) => {
   try {
     const response = await pool.query(
       `UPDATE appointments SET event_title = $1, type_of_event = $2, client_id = $3, lawyer_id = $4, location = $5, notes = $6, start_time = $7, end_time = $8 WHERE appointment_id = $9`,
@@ -176,7 +177,14 @@ const updateAppointment = async (data) => {
         success: false,
         message: "something is wrong in updating appointment",
       };
-
+    const data1 = {
+      adminId,
+      action: "EDITED AN APPOINTMENT",
+      description: "Edited an appointment of: ",
+      targetTable: "clients",
+      target_id: data.clientId,
+    };
+    await createActivityLog(data1);
     return {
       success: true,
       message: "successfully updated appointment",

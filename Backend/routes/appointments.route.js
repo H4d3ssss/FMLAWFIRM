@@ -140,8 +140,9 @@ router.post("/appointment-by-id", async (req, res) => {
 router.patch("/update-appointment", async (req, res) => {
   try {
     const data = req.body;
+    const adminId = req.session.user.lawyerId;
     console.log(data);
-    const response = await updateAppointment(data);
+    const response = await updateAppointment(data, adminId);
 
     if (!response.success) res.status(400).json(response.message);
     res.status(200).json(response.message);

@@ -205,6 +205,7 @@ const Calendar = () => {
           onSubmit={handleEditEvent}
           eventData={selectedEvent}
           adminId={adminId}
+          events={events}
         />
       )}
     </div>
