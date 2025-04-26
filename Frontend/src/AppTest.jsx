@@ -21,8 +21,8 @@ function AppTest() {
   return (
     <Router>
       <div className="flex">
-        {/* Sidebar */}
-        <Sidebar />
+
+        {/* <Sidebar /> */}
 
         {/* Main Content */}
         <main className="flex-grow">
