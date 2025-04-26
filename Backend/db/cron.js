@@ -47,7 +47,7 @@ WHERE DATE(a.appointment_date) = CURRENT_DATE + INTERVAL '1 day';
           appointment.end_time
         }</p>
         <p><strong>Location:</strong> ${
-          appointment.location ? appointment.location : "To be confirmed"
+          appointment.location ? appointment.location : "F&M Law Firm"
         }</p>
       </div>
 
