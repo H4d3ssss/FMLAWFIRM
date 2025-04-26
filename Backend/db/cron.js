@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-cron.schedule("08 18 * * *", async () => {
+cron.schedule("01 21 * * *", async () => {
   console.log("Running daily notification check...");
 
   try {
@@ -31,7 +31,7 @@ WHERE DATE(a.appointment_date) = CURRENT_DATE + INTERVAL '1 day';
     for (const appointment of result.rows) {
       // Example: Send a console log, or integrate email/SMS logic
       const mailOptions = {
-        from: `"F & M Law Firm" bialen.jv.distor@gmail.com`,
+        from: `"F&M Law Firm" bialen.jv.distor@gmail.com`,
         to: appointment.email,
         subject: "Appointment Reminder",
         html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
@@ -53,7 +53,7 @@ WHERE DATE(a.appointment_date) = CURRENT_DATE + INTERVAL '1 day';
 
       <p>Please arrive 10-15 minutes early. If you need to reschedule, feel free to contact us.</p>
 
-      <p>Thank you,<br>Your Law Firm</p>
+      <p>Thank you,<br>F&M Law Firm</p>
       
       <hr style="margin-top: 30px;">
       <small style="color: #888;">This is an automated message. Please do not reply directly to this email.</small>
