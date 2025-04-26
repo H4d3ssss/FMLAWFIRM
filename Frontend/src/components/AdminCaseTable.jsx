@@ -99,6 +99,43 @@ const AdminCaseTable = () => {
   //     return matchesSearch && matchesCaseNo;
   //   });
 
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
+    }
+
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+  const [sortField, setSortField] = useState("case_id");
+
+  const filteredCases = (cases || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+
+  // 🛠 Now sort it using quickSort
+  const sortedCases = quickSort(filteredCases, sortField);
+
   return (
     <div className="bg-transparent justify-center mx-60 my-20 rounded-2xl shadow-lg">
       {/* Toolbar */}
@@ -116,18 +153,15 @@ const AdminCaseTable = () => {
             <Search className="absolute left-3 top-3 text-gray-500" size={20} />
           </div>
           <select
-            value={filterCaseNo}
-            onChange={(e) => setFilterCaseNo(e.target.value)}
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
             className="bg-white border border-gray-300 rounded-2xl px-3 py-2"
           >
-            <option value="">Filter by Case No.</option>
-            {cases
-              ? cases.map((item, index) => (
-                  <option key={index} value={item.caseNo}>
-                    {item.caseNo}
-                  </option>
-                ))
-              : "No cases"}
+            <option value="case_id">Sort by Case No.</option>
+            <option value="case_title">Sort by Case Title</option>
+            <option value="case_status">Sort by Case Status</option>
+            <option value="client_fname">Sort by Client Name</option>
+            <option value="lawyer_fname">Sort by Lawyer Title</option>
           </select>
         </div>
         <button
@@ -159,8 +193,8 @@ const AdminCaseTable = () => {
             </tr>
           </thead>
           <tbody>
-            {cases ? (
-              cases.map((caseValue, index) => (
+            {sortedCases ? (
+              sortedCases.map((caseValue, index) => (
                 <tr key={index} className="odd:bg-white even:bg-gray-100">
                   <td className="p-3">CASE - {caseValue.case_id}</td>
                   <td className="p-3">{caseValue.case_title}</td>
