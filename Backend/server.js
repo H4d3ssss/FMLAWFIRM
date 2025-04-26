@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.route.js";
 import taskRoutes from "./routes/tasks.route.js";
 import activityRoutes from "./routes/activities.route.js";
 import sessions from "express-session";
+import "./db/cron.js";
 dotenv.config();
 
 const app = express();

@@ -323,12 +323,14 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
                 </tr>
               ))
             ) : (
-              <td
-                colSpan="10"
-                className="text-center text-gray-500 py-4 bg-white"
-              >
-                No Clients
-              </td>
+              <tr>
+                <td
+                  colSpan="10"
+                  className="text-center text-gray-500 py-4 bg-white"
+                >
+                  No Clients
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

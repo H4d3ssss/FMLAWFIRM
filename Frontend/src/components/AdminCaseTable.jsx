@@ -257,7 +257,10 @@ const AdminCaseTable = () => {
       {/* ArchiveCaseModal */}
       <ArchiveCaseModal
         showModal={showArchiveModal}
-        closeModal={() => setShowArchiveModal(false)} // Close ArchiveCaseModal
+        closeModal={() => {
+          fetchAllCases();
+          setShowArchiveModal(false);
+        }} // Close ArchiveCaseModal
         caseDetails={currentCase} // Pass the selected case to be archived
         handleArchive={handleArchiveCase}
         adminId={adminId} // Handle archiving a case
