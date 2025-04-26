@@ -42,6 +42,7 @@ import AddClientAccount from "./AddClientAccount";
 import EditClientAccount from "./EditClientAccount";
 import ArchiveClientAccount from "./ArchiveClientAccount";
 import ArchiveClientTable from "./ArchiveClientTable";
+import ClientNavbar from "./ClientNavbar";
 
 // Admin Components
 import AdminAccountTable from "./AdminAccountTable";
@@ -56,6 +57,8 @@ import RestoreAdminModal from "./RestoreAdminModal";
 // Miscellaneous Components
 import Todo from "./Todo";
 import LogoutModal from "./LogoutModal";
+import TermsModal from "./TermsModal";
+import PrivacyModal from "./PrivacyModal";
 
 export {
     // Layout Components
@@ -63,6 +66,7 @@ export {
     Sidebar,
     Footer,
     Calendar,
+    ClientNavbar,
 
     // Authentication Components
     LoginForm,
@@ -88,6 +92,8 @@ export {
     EventEditForm,
     RestoreCaseModal,
     RestoreAdminModal,
+    TermsModal,
+    PrivacyModal,
 
     // Tables
     AdminCaseTable,

@@ -1,10 +1,10 @@
 import React from "react";
-import { LoginForm, } from "../components";
+import { LoginForm, Footer } from "../components";
 import bgImage from "../assets/bg.jpeg"; // Import the image
 
 function LoginPage() {
   return (
-    <div className="relative min-h-screen">
+    <div className=" min-h-screen">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
@@ -22,6 +22,7 @@ function LoginPage() {
           <LoginForm />
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

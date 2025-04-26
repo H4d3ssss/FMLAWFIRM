@@ -5,6 +5,8 @@ import citiesData from "./data/cities.json";
 import barangaysData from "./data/barangays.json";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import TermsModal from "./TermsModal"; // Import the TermsModal component
+import PrivacyModal from "./PrivacyModal"; // Import the PrivacyModal component
 
 function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -44,6 +46,10 @@ function RegisterForm() {
     password: false,
     confirmPassword: false,
   });
+
+  // Add state for controlling the modals
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   useEffect(() => {
     if (formData.birthDate) {
@@ -198,7 +204,7 @@ function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-8">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg space-y-4"
@@ -532,7 +538,7 @@ function RegisterForm() {
           </div>
         </div>
 
-        {/* Terms */}
+        {/* Terms and Privacy */}
         <div className="flex items-start mt-4">
           <input
             name="acceptedTerms"
@@ -542,7 +548,23 @@ function RegisterForm() {
             onChange={handleChange}
           />
           <div className="ml-3 text-sm text-gray-700">
-            I agree to the terms and privacy policy.
+            I agree to the{" "}
+            <button
+              type="button"
+              onClick={() => setShowTermsModal(true)}
+              className="text-indigo-600 hover:text-indigo-500 font-medium cursor-pointer"
+            >
+              terms
+            </button>{" "}
+            and{" "}
+            <button
+              type="button"
+              onClick={() => setShowPrivacyModal(true)}
+              className="text-indigo-600 hover:text-indigo-500 font-medium cursor-pointer"
+            >
+              privacy policy
+            </button>
+            .
             {errors.acceptedTerms && (
               <p className="text-sm text-red-600">{errors.acceptedTerms}</p>
             )}
@@ -551,11 +573,10 @@ function RegisterForm() {
 
         {serverMessage && (
           <p
-            className={`text-sm text-center ${
-              serverMessage.includes("success")
-                ? "text-green-600"
-                : "text-red-600"
-            }`}
+            className={`text-sm text-center ${serverMessage.includes("success")
+              ? "text-green-600"
+              : "text-red-600"
+              }`}
           >
             {serverMessage}
           </p>
@@ -563,11 +584,10 @@ function RegisterForm() {
 
         <button
           type="submit"
-          className={`w-full py-2 rounded-md transition ${
-            isLoading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-indigo-600 text-white hover:bg-indigo-700"
-          }`}
+          className={`w-full py-2 cursor-pointer rounded-md transition ${isLoading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-[#FFB600] text-white hover:bg-yellow-600"
+            }`}
           disabled={isLoading}
         >
           {isLoading ? "Processing..." : "Register"}
@@ -583,6 +603,16 @@ function RegisterForm() {
           </a>
         </p>
       </form>
+
+      {/* Add both modals */}
+      <TermsModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+      <PrivacyModal
+        isOpen={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
     </div>
   );
 }

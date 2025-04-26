@@ -1,11 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Footer } from '../components';
+import ClientNavbar from '../components/ClientNavbar'; // Import the ClientNavbar
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { ArrowLeft } from 'lucide-react';
 
 const TermsPage = () => {
+    const [userRole, setUserRole] = useState(null);
+
+    useEffect(() => {
+        // Check if user is authenticated
+        const checkAuthStatus = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:3000/api/auth/authenticate-user",
+                    { withCredentials: true }
+                );
+                if (response.data && response.data.role) {
+                    setUserRole(response.data.role);
+                } else {
+                    setUserRole(null);
+                }
+            } catch (error) {
+                console.log("Not authenticated:", error);
+                setUserRole(null);
+            }
+        };
+
+        checkAuthStatus();
+    }, []);
+
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
-            {/* Navbar at the top */}
-            <Navbar />
+            {/* Conditional rendering based on user role */}
+            {userRole === "Lawyer" ? (
+                <Navbar />
+            ) : userRole === "Client" ? (
+                <ClientNavbar />
+            ) : (
+                <div className="bg-[#F9C545] p-4 shadow-md">
+                    <Link
+                        to="/"
+                        className="inline-flex items-center px-4 py-2 bg-white text-[#F9C545] font-bold rounded-md shadow hover:bg-gray-100 transition-colors"
+                    >
+                        <ArrowLeft className="h-5 w-5 mr-2" />
+                        Back to Login
+                    </Link>
+                </div>
+            )}
 
             {/* Main content area with left margin to avoid sidebar overlap */}
             <div className="flex flex-1">

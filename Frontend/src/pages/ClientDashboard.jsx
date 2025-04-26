@@ -27,7 +27,9 @@ const ClientDashboard = () => {
     };
     authenticateUser();
   }, []);
-  return <div>ClientDashboard</div>;
+  return <div>ClientDashboard
+    <h1>ClientDashboard</h1>
+  </div>;
 };
 
 export default ClientDashboard;

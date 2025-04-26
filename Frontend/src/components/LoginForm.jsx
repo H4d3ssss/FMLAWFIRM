@@ -97,9 +97,7 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-      <h1 className="text-3xl font-extrabold text-center mb-6">F&M Law Firm</h1>
-      <h1 className="text-2xl font-bold text-center mb-6">Log in</h1>
-
+      <h1 className="text-3xl font-bold text-center mb-6" style={{ fontFamily: '"Jacques Francois", cursive' }}>F&M Law Firm</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email Field */}
         <div>
@@ -170,7 +168,7 @@ function LoginForm() {
         {/* Login Button */}
         <button
           type="submit"
-          className="w-full bg-[#FFB600] text-black py-2 px-4 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+          className="w-full bg-[#FFB600] text-white py-2 px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
         >
           Log in
         </button>
