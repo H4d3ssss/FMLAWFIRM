@@ -94,7 +94,7 @@ function ForgotPasswordForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+          className="w-full bg-[#FFB600] text-white py-2 px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
         >
           {isLoading ? "Sending..." : "Send Reset Link"}
         </button>

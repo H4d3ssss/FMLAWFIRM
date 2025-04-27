@@ -74,12 +74,12 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
   };
 
   // Handle sorting logic
-  const handleSort = (key) => {
-    setSortConfig((prev) => ({
-      key,
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
-    }));
-  };
+  // const handleSort = (key) => {
+  //   setSortConfig((prev) => ({
+  //     key,
+  //     direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+  //   }));
+  // };
 
   // Handle search input changes
   const handleSearch = (e) => {
@@ -87,31 +87,22 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
     setCurrentPage(1);
   };
 
-  // Sort clients based on the selected key and direction
-  const sortedClients = [...clientData].sort((a, b) => {
-    if (!sortConfig.key) return 0;
-    const aValue = a[sortConfig.key];
-    const bValue = b[sortConfig.key];
-    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-    return 0;
-  });
+  // // Sort clients based on the selected key and direction
+  // const sortedClients = [...clientData].sort((a, b) => {
+  //   if (!sortConfig.key) return 0;
+  //   const aValue = a[sortConfig.key];
+  //   const bValue = b[sortConfig.key];
+  //   if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+  //   if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+  //   return 0;
+  // });
 
-  // Filter clients based on the search term
-  const filteredClients = sortedClients.filter((client) =>
-    `${client.id} ${client.name} ${client.email} ${client.phone}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
-  // Paginate the filtered clients
-  const paginatedClients = filteredClients.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+  // // Filter clients based on the search term
+  // const filteredClients = sortedClients.filter((client) =>
+  //   `${client.id} ${client.name} ${client.email} ${client.phone}`
+  //     .toLowerCase()
+  //     .includes(searchTerm.toLowerCase())
+  // );
 
   // Handle edit button click
   const handleEdit = (client) => {
@@ -164,6 +155,54 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
   const toggleRefresh = () => {
     setRefreshClients((prev) => !prev);
   };
+
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
+    }
+
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+
+  const [sortField, setSortField] = useState("client_id");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredClients = (clients1 || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+  // Paginate the filtered clients
+  const paginatedClients = filteredClients.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+
+  // 🛠 Now sort it using quickSort
+  const sortedClients = quickSort(filteredClients, sortField);
+
   return (
     <div className="bg-[#FFB600] justify-center mx-60 my-20 rounded-2xl shadow-lg">
       {/* AddClientAccount Modal */}
@@ -204,36 +243,35 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
           <div className="relative w-full md:w-64">
             <input
               type="text"
-              placeholder="Search by ID, name, email, or phone..."
-              value={searchTerm}
-              onChange={handleSearch}
+              placeholder="Search by..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
             />
             {/* Search Icon */}
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
               <Search className="w-5 h-5" />
             </span>
-            {searchTerm && (
+            {searchQuery && (
               <button
-                onClick={() => setSearchTerm("")}
+                onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 ✕
-              </button>
+              </button> // LAGAY TO SA LAHAT
             )}
           </div>
 
           {/* Sort Dropdown */}
           <div className="relative">
             <select
-              onChange={(e) => handleSort(e.target.value)}
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2"
             >
-              <option value="">Sort By</option>
-              <option value="id">Client ID</option>
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
+              <option value="client_id">Sort by Client ID</option>
+              <option value="full_name">Sort by Full Name</option>
+              <option value="email">Sort by Email</option>
             </select>
           </div>
         </div>
@@ -257,7 +295,7 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
             <tr>
               <th
                 className="p-3 cursor-pointer"
-                onClick={() => handleSort("id")}
+                // onClick={() => handleSort("id")}
               >
                 Client ID{" "}
                 {sortConfig.key === "id" &&
@@ -265,7 +303,7 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
               </th>
               <th
                 className="p-3 cursor-pointer"
-                onClick={() => handleSort("name")}
+                // onClick={() => handleSort("name")}
               >
                 Client Name{" "}
                 {sortConfig.key === "name" &&
@@ -273,7 +311,7 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
               </th>
               <th
                 className="p-3 cursor-pointer"
-                onClick={() => handleSort("email")}
+                // onClick={() => handleSort("email")}
               >
                 Email Address{" "}
                 {sortConfig.key === "email" &&
@@ -281,7 +319,7 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
               </th>
               <th
                 className="p-3 cursor-pointer"
-                onClick={() => handleSort("phone")}
+                // onClick={() => handleSort("phone")}
               >
                 Phone Number{" "}
                 {sortConfig.key === "phone" &&
@@ -292,8 +330,8 @@ const ClientAccountTable = ({ clients, onEdit, onArchive, lawyerId }) => {
             </tr>
           </thead>
           <tbody>
-            {clients1 ? (
-              clients1.map((client) => (
+            {sortedClients ? (
+              sortedClients.map((client) => (
                 <tr key={client.id} className="odd:bg-white even:bg-gray-100">
                   <td className="p-3 text-center">CLI - {client.client_id}</td>
                   <td className="p-3 text-center">

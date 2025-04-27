@@ -132,11 +132,48 @@ const AdminClientsTable = () => {
     setShowEditModal(true); // Open the EditClientModal
   };
 
-  const filteredClients = clients.filter((client) =>
-    `${client.firstName} ${client.lastName}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+  // const filteredClients = clients.filter((client) =>
+  //   `${client.firstName} ${client.lastName}`
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase())
+  // );
+
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
+    }
+
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+
+  const [sortField, setSortField] = useState("client_id");
+
+  const filteredClients = (clients || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+
+  const sortedClients = quickSort(filteredClients, sortField);
 
   return (
     <div className="bg-transparent justify-center mx-60 my-20 rounded-2xl shadow-lg">
@@ -147,13 +184,34 @@ const AdminClientsTable = () => {
           <div className="relative w-full md:w-64">
             <input
               type="text"
-              placeholder="Search by name..."
+              placeholder="Search by..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
             />
             <Search className="absolute left-3 top-3 text-gray-500" size={20} />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button> // LAGAY TO SA LAHAT
+            )}
           </div>
+
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
+            className="bg-white border border-gray-300 rounded-2xl px-3 py-2"
+          >
+            <option value="client_id">Sort by Client ID</option>
+            <option value="full_name">Sort by Full Name</option>
+            <option value="email">Sort by Email</option>
+            <option value="sex">Sort by Sex</option>
+            <option value="date_of_birth">Sort by Date of Birth</option>
+            <option value="address">Sort by Address</option>
+          </select>
         </div>
       </div>
 
@@ -174,8 +232,8 @@ const AdminClientsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredClients && filteredClients.length > 0 ? (
-              filteredClients.map((client, index) => (
+            {sortedClients && sortedClients.length > 0 ? (
+              sortedClients.map((client, index) => (
                 <tr key={index} className="odd:bg-white even:bg-gray-100">
                   <td className="p-3">CLI - {client.client_id}</td>
                   <td className="p-3">{client.first_name}</td>

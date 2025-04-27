@@ -62,86 +62,126 @@ const AccountApprovalTable = ({ lawyerId }) => {
   };
 
   // Handle sorting logic
-  const handleSort = (key) => {
-    setSortConfig((prev) => ({
-      key, // Sort by the selected key (e.g., name, email)
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc", // Toggle direction
-    }));
-  };
+  // const handleSort = (key) => {
+  //   setSortConfig((prev) => ({
+  //     key, // Sort by the selected key (e.g., name, email)
+  //     direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc", // Toggle direction
+  //   }));
+  // };
 
   // Sort approvals based on the selected key and direction
-  const sortedApprovals = [...approvals].sort((a, b) => {
-    if (!sortConfig.key) return 0; // If no sort key, return unsorted
-    const aValue = a[sortConfig.key];
-    const bValue = b[sortConfig.key];
-    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-    return 0;
-  });
+  // const sortedApprovals = [...approvals].sort((a, b) => {
+  //   if (!sortConfig.key) return 0; // If no sort key, return unsorted
+  //   const aValue = a[sortConfig.key];
+  //   const bValue = b[sortConfig.key];
+  //   if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+  //   if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+  //   return 0;
+  // });
 
   // Filter approvals based on the search term
-  const filteredApprovals = sortedApprovals.filter((approval) =>
-    `${approval.name} ${approval.email} ${approval.phone}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // const filteredApprovals = sortedApprovals.filter((approval) =>
+  //   `${approval.name} ${approval.email} ${approval.phone}`
+  //     .toLowerCase()
+  //     .includes(searchTerm.toLowerCase())
+  // );
 
   // Paginate the filtered approvals
-  const paginatedApprovals = filteredApprovals.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(filteredApprovals.length / itemsPerPage);
 
   // Dynamic logic: Fetch pending approvals from the backend (commented out for now)
   /*
-    useEffect(() => {
+  useEffect(() => {
         const fetchPendingApprovals = async () => {
-            try {
+          try {
                 const response = await axios.get(
                     "http://localhost:3000/api/clients/pending" // Backend endpoint for pending approvals
                 );
                 setApprovals(response.data);
             } catch (error) {
-                console.error("Error fetching pending approvals:", error);
-            }
-        };
-
+              console.error("Error fetching pending approvals:", error);
+              }
+              };
+              
         fetchPendingApprovals();
-    }, []);
-    */
+        }, []);
+        */
 
   // Dynamic logic: Approve client registration (commented out for now)
   /*
-    const handleApprove = async (clientId) => {
+       const handleApprove = async (clientId) => {
         try {
             await axios.put(
-                `http://localhost:3000/api/clients/${clientId}/approve` // Backend endpoint for approval
+              `http://localhost:3000/api/clients/${clientId}/approve` // Backend endpoint for approval
             );
             setApprovals((prev) => prev.filter((approval) => approval.id !== clientId));
             alert("Client approved successfully!");
-        } catch (error) {
-            console.error("Error approving client:", error);
-        }
-    };
-    */
+            } catch (error) {
+              console.error("Error approving client:", error);
+              }
+              };
+              */
 
   // Dynamic logic: Reject client registration (commented out for now)
   /*
     const handleReject = async (clientId) => {
-        try {
-            await axios.delete(
-                `http://localhost:3000/api/clients/${clientId}/reject` // Backend endpoint for rejection
-            );
-            setApprovals((prev) => prev.filter((approval) => approval.id !== clientId));
-            alert("Client rejected successfully!");
-        } catch (error) {
+      try {
+        await axios.delete(
+          `http://localhost:3000/api/clients/${clientId}/reject` // Backend endpoint for rejection
+          );
+          setApprovals((prev) => prev.filter((approval) => approval.id !== clientId));
+          alert("Client rejected successfully!");
+          } catch (error) {
             console.error("Error rejecting client:", error);
-        }
-    };
-    */
+            }
+            };
+            */
+
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
+    }
+
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+
+  const [sortField, setSortField] = useState("full_name");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredClients = (clientsForApproval || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+
+  // 🛠 Now sort it using quickSort
+  const sortedClients = quickSort(filteredClients, sortField);
+
+  const paginatedApprovals = filteredClients.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
 
   return (
     <div className="bg-[#FFB600] justify-center mx-60 my-20 rounded-2xl shadow-lg">
@@ -153,35 +193,35 @@ const AccountApprovalTable = ({ lawyerId }) => {
           <div className="relative w-full md:w-64">
             <input
               type="text"
-              placeholder="Search by name, email, or phone..."
-              value={searchTerm}
-              onChange={handleSearch}
+              placeholder="Search by..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
             />
             {/* Search Icon */}
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
               <Search className="w-5 h-5" />
             </span>
-            {searchTerm && (
+            {searchQuery && (
               <button
-                onClick={() => setSearchTerm("")}
+                onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 ✕
-              </button>
+              </button> // LAGAY TO SA LAHAT
             )}
           </div>
 
           {/* Sort Dropdown */}
           <div className="relative">
             <select
-              onChange={(e) => handleSort(e.target.value)}
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2"
             >
-              <option value="">Sort By</option>
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
+              <option value="full_name">Sort by Full Name</option>
+              <option value="email">Sort by Email</option>
+              <option value="contact_number">Sort by Contact Number</option>
             </select>
           </div>
         </div>
@@ -200,7 +240,7 @@ const AccountApprovalTable = ({ lawyerId }) => {
             </tr>
           </thead>
           <tbody>
-            {clientsForApproval.map((client, index) => (
+            {sortedClients.map((client, index) => (
               <tr key={index} className="odd:bg-white even:bg-gray-100">
                 <td className="p-3 text-center">{client.full_name}</td>
                 <td className="p-3 text-center">{client.email}</td>

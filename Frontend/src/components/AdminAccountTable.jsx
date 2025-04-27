@@ -77,38 +77,37 @@ const AdminAccountTable = ({ admins }) => {
   };
 
   // Static logic: Handle sorting logic
-  const handleSort = (key) => {
-    setSortConfig((prev) => ({
-      key, // Sort by the selected key (e.g., name, email)
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc", // Toggle direction
-    }));
-  };
+  // const handleSort = (key) => {
+  //   setSortConfig((prev) => ({
+  //     key, // Sort by the selected key (e.g., name, email)
+  //     direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc", // Toggle direction
+  //   }));
+  // };
 
-  // Static logic: Sort admins based on the selected key and direction
-  const sortedAdmins = [...adminData].sort((a, b) => {
-    if (!sortConfig.key) return 0; // If no sort key, return unsorted
-    const aValue = a[sortConfig.key];
-    const bValue = b[sortConfig.key];
-    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-    return 0;
-  });
+  // // Static logic: Sort admins based on the selected key and direction
+  // const sortedAdmins = [...adminData].sort((a, b) => {
+  //   if (!sortConfig.key) return 0; // If no sort key, return unsorted
+  //   const aValue = a[sortConfig.key];
+  //   const bValue = b[sortConfig.key];
+  //   if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+  //   if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+  //   return 0;
+  // });
 
   // Static logic: Filter admins based on the search term
-  const filteredAdmins = sortedAdmins.filter((admin) =>
-    `${admin.name} ${admin.email} ${admin.position}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // const filteredAdmins = sortedAdmins.filter((admin) =>
+  //   `${admin.name} ${admin.email} ${admin.position}`
+  //     .toLowerCase()
+  //     .includes(searchTerm.toLowerCase())
+  // );
 
   // Static logic: Paginate the filtered admins
-  const paginatedAdmins = filteredAdmins.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // const paginatedAdmins = filteredAdmins.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   // Static logic: Calculate the total number of pages
-  const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage);
 
   // Static logic: Handle adding a new admin
   const handleAddAdmin = async (newAdmin) => {
@@ -172,95 +171,133 @@ const AdminAccountTable = ({ admins }) => {
 
   // Dynamic logic: Fetch admin data from the database (commented out for now)
   /*
-    useEffect(() => {
-        const fetchAdmins = async () => {
-            try {
-                const response = await fetch("/api/admins"); // Replace with your API endpoint
-                if (response.ok) {
-                    const data = await response.json();
-                    setAdminData(data); // Set the fetched data to state
-                } else {
-                    console.error("Failed to fetch admins:", response.statusText);
-                }
-            } catch (error) {
-                console.error("Error fetching admins:", error);
-            }
-        };
-
-        fetchAdmins();
-    }, []);
-    */
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      try {
+        const response = await fetch("/api/admins"); // Replace with your API endpoint
+        if (response.ok) {
+          const data = await response.json();
+          setAdminData(data); // Set the fetched data to state
+          } else {
+            console.error("Failed to fetch admins:", response.statusText);
+        }
+        } catch (error) {
+          console.error("Error fetching admins:", error);
+          }
+          };
+          
+          fetchAdmins();
+          }, []);
+          */
 
   // Dynamic logic: Add admin to the database (commented out for now)
   /*
-    const handleAddAdmin = async (newAdmin) => {
-        try {
+         const handleAddAdmin = async (newAdmin) => {
+          try {
             const response = await fetch("/api/admins", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
                 },
                 body: JSON.stringify(newAdmin),
-            });
-
-            if (response.ok) {
-                const addedAdmin = await response.json();
-                setAdminData((prev) => [...prev, addedAdmin]); // Update state with the new admin
-            } else {
-                console.error("Failed to add admin:", response.statusText);
+                });
+                
+                if (response.ok) {
+                  const addedAdmin = await response.json();
+                  setAdminData((prev) => [...prev, addedAdmin]); // Update state with the new admin
+                  } else {
+                    console.error("Failed to add admin:", response.statusText);
             }
-        } catch (error) {
-            console.error("Error adding admin:", error);
-        }
+            } catch (error) {
+              console.error("Error adding admin:", error);
+              }
     };
     */
 
   // Dynamic logic: Edit admin in the database (commented out for now)
   /*
-    const handleEditAdmin = async (updatedAdmin) => {
-        try {
-            const response = await fetch(`/api/admins/${selectedAdmin.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedAdmin),
-            });
-
-            if (response.ok) {
-                const editedAdmin = await response.json();
-                setAdminData((prev) =>
-                    prev.map((admin) =>
-                        admin.id === selectedAdmin.id ? editedAdmin : admin
-                    )
-                );
+   const handleEditAdmin = async (updatedAdmin) => {
+    try {
+      const response = await fetch(`/api/admins/${selectedAdmin.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedAdmin),
+          });
+          
+          if (response.ok) {
+            const editedAdmin = await response.json();
+            setAdminData((prev) =>
+              prev.map((admin) =>
+                admin.id === selectedAdmin.id ? editedAdmin : admin
+            )
+            );
             } else {
-                console.error("Failed to edit admin:", response.statusText);
-            }
-        } catch (error) {
+              console.error("Failed to edit admin:", response.statusText);
+          }
+          } catch (error) {
             console.error("Error editing admin:", error);
-        }
-    };
-    */
+            }
+            };
+            */
 
   // Dynamic logic: Archive admin in the database (commented out for now)
   /*
-    const handleArchiveAdmin = async (admin) => {
-        try {
-            const response = await fetch(`/api/admins/${admin.id}`, {
+           const handleArchiveAdmin = async (admin) => {
+            try {
+              const response = await fetch(`/api/admins/${admin.id}`, {
                 method: "DELETE",
-            });
-
-            if (response.ok) {
-                setAdminData((prev) => prev.filter((a) => a.id !== admin.id)); // Remove admin from state
-            } else {
-                console.error("Failed to archive admin:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Error archiving admin:", error);
+                });
+                
+                if (response.ok) {
+                  setAdminData((prev) => prev.filter((a) => a.id !== admin.id)); // Remove admin from state
+                  } else {
+                    console.error("Failed to archive admin:", response.statusText);
+                }
+                } catch (error) {
+                  console.error("Error archiving admin:", error);
         }
     };
     */
+
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
+    }
+
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState("lawyer_id");
+
+  const filteredAdmins = (lawyers || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+  const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage);
+
+  const sortedAdmins = quickSort(filteredAdmins, sortField);
 
   return (
     <div className="bg-[#FFB600] justify-center mx-60 my-20 rounded-2xl shadow-lg">
@@ -300,38 +337,36 @@ const AdminAccountTable = ({ admins }) => {
           <div className="relative w-full md:w-64">
             <input
               type="text"
-              placeholder="Search by name, email, or position..."
-              value={searchTerm}
-              onChange={handleSearch}
+              placeholder="Search by..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
             />
             {/* Search Icon */}
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
               <Search className="w-5 h-5" />
             </span>
-            {searchTerm && (
+            {searchQuery && (
               <button
-                onClick={() => setSearchTerm("")}
+                onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 ✕
-              </button>
+              </button> // LAGAY TO SA LAHAT
             )}
           </div>
 
           {/* Sort Dropdown */}
-          <div className="relative">
-            <select
-              onChange={(e) => handleSort(e.target.value)}
-              className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2"
-            >
-              <option value="">Sort By</option>
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-              <option value="status">Status</option>
-              <option value="position">Position</option>
-            </select>
-          </div>
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
+            className="bg-white border border-gray-300 rounded-2xl px-3 py-2"
+          >
+            <option value="lawyer_id">Sort by Admin ID.</option>
+            <option value="full_name">Sort by Full Name</option>
+            <option value="email">Sort by Email</option>
+            <option value="position">Sort by Position</option>
+          </select>
         </div>
 
         {/* Right Section: Add New Admin Button */}
@@ -368,14 +403,13 @@ const AdminAccountTable = ({ admins }) => {
                 {sortConfig.key === "email" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
               </th>
-              <th className="p-3">Password</th>
               <th className="p-3">Status</th>
               <th className="p-3">Position</th>
               <th className="p-3">Action</th>
             </tr>
           </thead>
           <tbody>
-            {lawyers.map((lawyer) => (
+            {sortedAdmins.map((lawyer) => (
               <tr
                 key={lawyer.lawyer_id}
                 className="odd:bg-white even:bg-gray-100"
@@ -386,7 +420,6 @@ const AdminAccountTable = ({ admins }) => {
                   {lawyer.full_name || lawyer.user_full_name}
                 </td>
                 <td className="p-3 text-center">{lawyer.email}</td>
-                <td className="p-3 text-center">************</td>
                 <td className="p-3 text-center">
                   <span
                     className={`px-2 py-1 rounded ${

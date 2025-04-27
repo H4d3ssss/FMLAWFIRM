@@ -120,6 +120,7 @@ const AdminCaseTable = () => {
 
     return [...quickSort(left, field), pivot, ...quickSort(right, field)];
   };
+
   const [sortField, setSortField] = useState("case_id");
 
   const filteredCases = (cases || []).filter((item) => {
@@ -145,12 +146,20 @@ const AdminCaseTable = () => {
           <div className="relative w-full md:w-64">
             <input
               type="text"
-              placeholder="Search by title..."
+              placeholder="Search by..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
             />
             <Search className="absolute left-3 top-3 text-gray-500" size={20} />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button> // LAGAY TO SA LAHAT
+            )}
           </div>
           <select
             value={sortField}
@@ -160,6 +169,7 @@ const AdminCaseTable = () => {
             <option value="case_id">Sort by Case No.</option>
             <option value="case_title">Sort by Case Title</option>
             <option value="case_status">Sort by Case Status</option>
+            <option value="file_name">Sort by File Name</option>
             <option value="client_fname">Sort by Client Name</option>
             <option value="lawyer_fname">Sort by Lawyer Title</option>
           </select>
@@ -206,7 +216,9 @@ const AdminCaseTable = () => {
                   </td>
                   <td className="p-3">{caseValue.case_status}</td>
                   <td className="p-3">
-                    {caseValue.last_time_only} | {caseValue.last_date_only}
+                    {caseValue.last_time_only && caseValue.last_date_only
+                      ? `${caseValue.last_time_only} | ${caseValue.last_date_only}`
+                      : ""}
                   </td>
                   <td className="p-3">
                     {caseValue.updated_by_fname} {caseValue.updated_by_lname}

@@ -84,36 +84,72 @@ const ArchiveClientTable = () => {
   };
 
   // Filter and sort clients
-  const filteredAndSortedClients = archivedClients
-    .filter((client) =>
-      `${client.first_name} ${client.last_name}`
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (!sortKey) return 0; // No sorting if sortKey is empty
+  // const filteredAndSortedClients = archivedClients
+  //   .filter((client) =>
+  //     `${client.first_name} ${client.last_name}`
+  //       .toLowerCase()
+  //       .includes(searchQuery.toLowerCase())
+  //   )
+  //   .sort((a, b) => {
+  //     if (!sortKey) return 0; // No sorting if sortKey is empty
 
-      let valueA, valueB;
+  //     let valueA, valueB;
 
-      // Handle special case for full name
-      if (sortKey === "full_name") {
-        valueA = `${a.first_name} ${a.last_name}`.toLowerCase();
-        valueB = `${b.first_name} ${b.last_name}`.toLowerCase();
+  //     // Handle special case for full name
+  //     if (sortKey === "full_name") {
+  //       valueA = `${a.first_name} ${a.last_name}`.toLowerCase();
+  //       valueB = `${b.first_name} ${b.last_name}`.toLowerCase();
+  //     } else {
+  //       valueA = a[sortKey]?.toString().toLowerCase() || "";
+  //       valueB = b[sortKey]?.toString().toLowerCase() || "";
+  //     }
+
+  //     if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+  //     if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+  //     return 0;
+  //   });
+
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
       } else {
-        valueA = a[sortKey]?.toString().toLowerCase() || "";
-        valueB = b[sortKey]?.toString().toLowerCase() || "";
+        right.push(array[i]);
       }
+    }
 
-      if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-      if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+
+  const [sortField, setSortField] = useState("client_id");
+
+  const filteredClients = (archivedClients || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+
+  // 🛠 Now sort it using quickSort
+  const sortedClients = quickSort(filteredClients, sortField);
 
   // Calculate pagination
-  const totalPages = Math.ceil(
-    filteredAndSortedClients.length / ITEMS_PER_PAGE
-  );
-  const paginatedClients = filteredAndSortedClients.slice(
+  const totalPages = Math.ceil(filteredClients.length / ITEMS_PER_PAGE);
+  const paginatedClients = filteredClients.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -130,7 +166,7 @@ const ArchiveClientTable = () => {
             <div className="relative w-full md:w-64">
               <input
                 type="text"
-                placeholder="Search by name..."
+                placeholder="Search by..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
@@ -144,23 +180,23 @@ const ArchiveClientTable = () => {
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   ✕
-                </button>
+                </button> // LAGAY TO SA LAHAT
               )}
             </div>
 
             {/* Sorting Dropdown - Placed beside search bar */}
             <div className="w-full md:w-64">
               <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value)}
+                value={sortField}
+                onChange={(e) => setSortField(e.target.value)}
                 className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 w-full"
               >
-                <option value="">Sort By</option>
-                <option value="client_id">Client ID</option>
-                <option value="full_name">Name</option>
-                <option value="email">Email</option>
-                <option value="contact_number">Phone</option>
-                <option value="date_of_birth">Birth Date</option>
+                <option value="client_id">Sort by Client ID</option>
+                <option value="first_name">Sort by Name</option>
+                <option value="email">Sort by Email</option>
+                <option value="contact_number">Sort by Contact Number</option>
+                <option value="formatted_birthdate">Sort by Birth Date</option>
+                <option value="address">Sort by Address</option>
               </select>
             </div>
           </div>
@@ -183,8 +219,8 @@ const ArchiveClientTable = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedClients.length > 0 ? (
-                paginatedClients.map((client, index) => (
+              {sortedClients.length > 0 ? (
+                sortedClients.map((client, index) => (
                   <tr key={index} className="odd:bg-white even:bg-gray-100">
                     <td className="p-3 text-center">
                       CLI - {client.client_id}

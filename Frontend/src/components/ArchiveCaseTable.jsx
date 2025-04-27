@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 const ArchiveCaseTable = () => {
   const [archivedCases, setArchivedCases] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [filterCaseNo, setFilterCaseNo] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -128,41 +127,80 @@ const ArchiveCaseTable = () => {
   };
 
   // Filter and sort cases
-  const filteredAndSortedCases = archivedCases
-    .filter((caseItem) => {
-      const matchesSearch = caseItem.case_title
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesCaseNo = filterCaseNo
-        ? caseItem.case_id === parseInt(filterCaseNo)
-        : true;
-      return matchesSearch && matchesCaseNo;
-    })
-    .sort((a, b) => {
-      if (!sortKey) return 0; // No sorting if sortKey is empty
+  // const filteredAndSortedCases = archivedCases
+  //   .filter((caseItem) => {
+  //     const matchesSearch = caseItem.case_title
+  //       ?.toLowerCase()
+  //       .includes(searchQuery.toLowerCase());
+  //     const matchesCaseNo = filterCaseNo
+  //       ? caseItem.case_id === parseInt(filterCaseNo)
+  //       : true;
+  //     return matchesSearch && matchesCaseNo;
+  //   })
+  //   .sort((a, b) => {
+  //     if (!sortKey) return 0; // No sorting if sortKey is empty
 
-      let valueA, valueB;
+  //     let valueA, valueB;
 
-      // Handle special cases for different fields
-      if (sortKey === "client") {
-        valueA = `${a.client_fname} ${a.client_lname}`.toLowerCase();
-        valueB = `${b.client_fname} ${b.client_lname}`.toLowerCase();
-      } else if (sortKey === "lawyer") {
-        valueA = `${a.lawyer_fname} ${a.lawyer_lname}`.toLowerCase();
-        valueB = `${b.lawyer_fname} ${b.lawyer_lname}`.toLowerCase();
+  //     // Handle special cases for different fields
+  //     if (sortKey === "client") {
+  //       valueA = `${a.client_fname} ${a.client_lname}`.toLowerCase();
+  //       valueB = `${b.client_fname} ${b.client_lname}`.toLowerCase();
+  //     } else if (sortKey === "lawyer") {
+  //       valueA = `${a.lawyer_fname} ${a.lawyer_lname}`.toLowerCase();
+  //       valueB = `${b.lawyer_fname} ${b.lawyer_lname}`.toLowerCase();
+  //     } else {
+  //       valueA = a[sortKey]?.toString().toLowerCase() || "";
+  //       valueB = b[sortKey]?.toString().toLowerCase() || "";
+  //     }
+
+  //     if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+  //     if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+  //     return 0;
+  //   });
+
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
+
+    const pivot = array[array.length - 1];
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
       } else {
-        valueA = a[sortKey]?.toString().toLowerCase() || "";
-        valueB = b[sortKey]?.toString().toLowerCase() || "";
+        right.push(array[i]);
       }
+    }
 
-      if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-      if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
+  };
+
+  const [sortField, setSortField] = useState("case_id");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredCases = (archivedCases || []).filter((item) => {
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true; // If no search, show all
+
+    const fieldValue = item[sortField];
+    if (fieldValue === undefined || fieldValue === null) return false;
+
+    return String(fieldValue).toLowerCase().includes(query);
+  });
+
+  // 🛠 Now sort it using quickSort
+  const sortedCases = quickSort(filteredCases, sortField);
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredAndSortedCases.length / ITEMS_PER_PAGE);
-  const paginatedCases = filteredAndSortedCases.slice(
+  const totalPages = Math.ceil(filteredCases.length / ITEMS_PER_PAGE);
+  const paginatedCases = filteredCases.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -179,7 +217,7 @@ const ArchiveCaseTable = () => {
             <div className="relative w-full md:w-64">
               <input
                 type="text"
-                placeholder="Search by title..."
+                placeholder="Search by..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 pl-10 w-full"
@@ -198,34 +236,19 @@ const ArchiveCaseTable = () => {
             </div>
 
             {/* Case Number Filter */}
-            <div className="w-full md:w-64">
-              <select
-                value={filterCaseNo}
-                onChange={(e) => setFilterCaseNo(e.target.value)}
-                className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 w-full"
-              >
-                <option value="">Filter by Case No.</option>
-                {archivedCases.map((item, index) => (
-                  <option key={index} value={item.case_id}>
-                    CASE - {item.case_id}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             {/* Sorting Dropdown */}
             <div className="w-full md:w-64">
               <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value)}
+                value={sortField}
+                onChange={(e) => setSortField(e.target.value)}
                 className="border border-gray-300 bg-white text-black rounded-2xl px-3 py-2 w-full"
               >
-                <option value="">Sort By</option>
-                <option value="case_id">Case No.</option>
-                <option value="case_title">Title</option>
-                <option value="client">Client Name</option>
-                <option value="case_status">Status</option>
-                <option value="lawyer">Lawyer</option>
+                <option value="case_id">Sort by Case ID</option>
+                <option value="case_title">Sort by Title</option>
+                <option value="case_status">Sort by Case Status</option>
+                <option value="client_fname">Sort by Client Name</option>
+                <option value="lawyer_fname">Sort by Lawyer Name</option>
               </select>
             </div>
           </div>
@@ -248,8 +271,8 @@ const ArchiveCaseTable = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedCases.length > 0 ? (
-                paginatedCases.map((caseItem, index) => (
+              {sortedCases.length > 0 ? (
+                sortedCases.map((caseItem, index) => (
                   <tr key={index} className="odd:bg-white even:bg-gray-100">
                     <td className="p-3 text-center">
                       CASE - {caseItem.case_id}
