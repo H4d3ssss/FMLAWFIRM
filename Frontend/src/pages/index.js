@@ -10,6 +10,8 @@ import ClientsPage from "./ClientsPage";
 import ArchivePage from "./ArchivePage";
 import TermsPage from "./TermsPage";
 import PrivacyPage from "./PrivacyPage";
+import ClientAppointment from "./ClientAppointment";
+import ClientCases from "./ClientCases";
 export {
     LoginPage,
     AdminDashboard,
@@ -23,4 +25,6 @@ export {
     ArchivePage,
     TermsPage,
     PrivacyPage,
+    ClientAppointment,
+    ClientCases,
 };

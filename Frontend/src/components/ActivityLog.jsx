@@ -1,46 +1,28 @@
 import React from "react";
-const ActivityLog = () => {
-  const logs = [
-    {
-      message: "Atty. Smith updated case",
-      highlight: "Jackson v. Roberts",
-    },
-    {
-      message: "Added note to case",
-      highlight: "Blair Estate Litigation",
-    },
-    {
-      message: "Sent email to client",
-      highlight: "John Doe",
-    },
-  ];
 
+const ActivityLog = ({ activities }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-md h-full max-h-[400px] overflow-y-auto border border-gray-200 max-w-[1500px] mx-auto">
-      {/* Header Bar */}
-      <div className="bg-[#FFB600] rounded-t-2xl h-10"></div>
-
-      {/* Content */}
-      <div className="p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-800">
-          Activity Log
-        </h2>
-        <ul className="space-y-3 text-sm text-gray-700">
-          {logs.length > 0 ? (
-            logs.map((log, index) => (
-              <li
-                key={index}
-                className="bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition"
-              >
-                {log.message}{" "}
-                <span className="font-medium text-black">{log.highlight}</span>
-              </li>
-            ))
-          ) : (
-            <li className="text-gray-500">No recent activity.</li>
-          )}
+    <div className="bg-white shadow-lg rounded-lg p-4 w-full">
+      <h2 className="text-xl font-bold mb-4 text-center">Activity Log</h2>
+      {activities && activities.length > 0 ? (
+        <ul className="space-y-2">
+          {activities.map((activity, index) => (
+            <li
+              key={index}
+              className="border-b last:border-none pb-2 text-gray-700"
+            >
+              <p className="text-sm">
+                <strong>{activity.title}</strong> - {activity.description}
+              </p>
+              <p className="text-xs text-gray-500">
+                {activity.date} | {activity.time}
+              </p>
+            </li>
+          ))}
         </ul>
-      </div>
+      ) : (
+        <p className="text-center text-gray-500">No recent activities.</p>
+      )}
     </div>
   );
 };

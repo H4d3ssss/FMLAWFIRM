@@ -1,58 +1,66 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage.jsx";
-import AdminDashboard from "./pages/AdminDashboard.jsx";
-import RegistrationPage from "./pages/RegistrationPage.jsx";
-import ForgotPass from "./pages/ForgotPass.jsx";
-import Footer from "./components/Footer.jsx";
-import CalendarPage from "./pages/CalendarPage.jsx";
-import CasesPage from "./pages/CasesPage.jsx";
-
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import ClientDashboard from "./pages/ClientDashboard"; // Import ClientDashboard
+import ClientCases from "./pages/ClientCases"; // Import ClientCases
+import ClientAppointment from "./pages/ClientAppointment"; // Import ClientAppointment
+import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
+import CasesPage from "./pages/CasesPage"; // Import CasesPage
+import ArchivePage from "./pages/ArchivePage"; // Import ArchivePage
+import AccountsPage from "./pages/AccountsPage"; // Import AccountsPage
+import TermsPage from "./pages/TermsPage"; // Import TermsPage
+import PrivacyPage from "./pages/PrivacyPage"; // Import PrivacyPage
+import ForgotPass from "./pages/ForgotPass"; // Import ForgotPass
+import RegistrationPage from "./pages/RegistrationPage"; // Import RegistrationPage
+import ClientsPage from "./pages/ClientsPage"; // Import ClientsPage
+import TodoPage from "./pages/TodoPage"; // Import TodoPage
+import CalendarPage from "./pages/CalendarPage"; // Import CalendarPage
+import LoginPage from "./pages/LoginPage"; // Import LoginPage
+import ClientSidebar from "./components/ClientSidebar"; // Import ClientSidebar
+import Sidebar from "./components/Sidebar"; // Import Sidebar for admin
 
 function App() {
-  const [showFooter, setShowFooter] = useState(false);
+  const location = useLocation(); // Get the current route
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const atBottom =
-        window.innerHeight + window.scrollY >= document.body.scrollHeight - 10;
-      setShowFooter(atBottom);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Define routes where the ClientSidebar and Sidebar should appear
+  const clientRoutes = ["/client-dashboard", "/client-cases", "/client-appointment"];
+  const adminRoutes = [
+    "/admindashboard",
+    "/cases",
+    "/archive",
+    "/accounts",
+    "/clients",
+    "/todo",
+    "/calendar",
+  ];
 
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        {/* Conditionally render Sidebar for specific routes */}
-        {location.pathname.startsWith("/AdminDashboard") && <Sidebar />}
+    <div className="flex">
+      {clientRoutes.includes(location.pathname) && <ClientSidebar />} {/* Conditionally render ClientSidebar */}
+      {adminRoutes.includes(location.pathname) && <Sidebar />} {/* Conditionally render Sidebar for admin */}
+      <div className="flex-1">
+        <Routes>
+          {/* Client Routes */}
+          <Route path="/" element={<LoginPage />} /> {/* Default route */}
+          <Route path="/client-dashboard" element={<ClientDashboard />} />
+          <Route path="/client-cases" element={<ClientCases />} />
+          <Route path="/client-appointment" element={<ClientAppointment />} />
 
-        <main className="flex-grow">
-          <Routes>
-            {/* Default route (LoginPage) */}
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/LoginPage" element={<LoginPage />} />
+          {/* Admin Routes */}
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/cases" element={<CasesPage />} />
+          <Route path="/archive" element={<ArchivePage />} />
+          <Route path="/accounts" element={<AccountsPage />} />
+          <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/todo" element={<TodoPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
 
-            {/* Other pages */}
-            <Route path="/ForgotPass" element={<ForgotPass />} />
-            <Route path="/AdminDashboard" element={<AdminDashboard />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/cases" element={<CasesPage />} />
-            <Route path="/Register" element={<RegistrationPage />} />
-          </Routes>
-
-        </main>
-
-        {/* Footer visibility logic */}
-        {showFooter && (
-          <div>
-            <Footer />
-          </div>
-        )}
+          {/* Shared Routes */}
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/forgotpass" element={<ForgotPass />} />
+          <Route path="/register" element={<RegistrationPage />} />
+        </Routes>
       </div>
-    </Router>
+    </div>
   );
 }
 
