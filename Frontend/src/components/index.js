@@ -32,6 +32,7 @@ import ViewCaseModal from "./ViewCaseModal";
 import ArchiveCaseModal from "./ArchiveCaseModal";
 import ArchiveCaseTable from "./ArchiveCaseTable";
 import RestoreCaseModal from "./RestoreCaseModal";
+import CloseCaseCard from "./CloseCaseCard";
 
 // Client Components
 import AdminClientsTable from "./AdminClientsTable";
@@ -112,6 +113,7 @@ export {
     TaskListCard,
     UpcomingEventCard,
     TaskDueCard,
+    CloseCaseCard,
 
     // Miscellaneous
     Todo,

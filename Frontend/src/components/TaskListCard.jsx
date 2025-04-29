@@ -64,10 +64,10 @@ const TaskListCard = () => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-xl p-4 w-[660px] h-[300px] border border-gray-200">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Task List</h1>
+    <div className="bg-white shadow-md rounded-xl p-4 w-full h-[250px] sm:w-[500px] sm:h-[300px] md:w-[660px] md:h-[350px] border border-gray-200">
+      <h1 className="text-lg font-bold text-gray-800 mb-4 sm:text-xl md:text-2xl">Task List</h1>
       <div className="border border-gray-300 rounded-md">
-        <ul className="m-2 h-50 overflow-y-auto space-y-2 text-sm text-gray-700">
+        <ul className="m-2 h-40 overflow-y-auto space-y-2 text-xs text-gray-700 sm:text-sm md:text-base">
           {tasks.length > 0 ? (
             tasks.map((task, index) => (
               <li key={index} className="flex items-center">

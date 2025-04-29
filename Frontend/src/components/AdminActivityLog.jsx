@@ -8,6 +8,7 @@ const AdminActivityLog = () => {
   const [activityLogs, setActivityLogs] = useState([]);
   // State for managing loading status
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
 
   /**
    * Function to fetch activity logs from the backend
@@ -31,21 +32,34 @@ const AdminActivityLog = () => {
     getActivityLogs(); // Trigger the API call
   }, []); // Empty dependency array ensures fetch occurs only once
 
+  // Filter logs based on the search term
+  const filteredLogs = activityLogs.filter((log) =>
+    log.action.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="w-[1382px] bg-white shadow-md rounded-lg p-6 mt-6">
+    <div className="w-full max-w-4xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6 mt-4 sm:mt-6">
       {/* Header section for the activity log */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
         Admin Activity Log
       </h1>
-      <div className="h-80 overflow-y-auto border border-gray-300 rounded-md">
+      {/* Search bar for filtering logs */}
+      <input
+        type="text"
+        placeholder="Search by action..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full mb-4 p-2 border border-gray-300 rounded-md"
+      />
+      <div className="h-64 sm:h-80 overflow-y-auto border border-gray-300 rounded-md">
         {/* Fixed height and scrollable area for overflow */}
         {loading ? (
           // Display loading state while data is being fetched
           <p className="text-gray-600 text-center">Loading...</p>
-        ) : activityLogs.length > 0 ? (
-          // Render logs if available
+        ) : filteredLogs.length > 0 ? (
+          // Render filtered logs if available
           <ul className="divide-y divide-gray-200">
-            {activityLogs.map((log, index) => (
+            {filteredLogs.map((log, index) => (
               <li
                 key={index} // Unique key for each log item
                 className="flex items-center space-x-4 p-4 hover:bg-gray-50"
@@ -81,8 +95,8 @@ const AdminActivityLog = () => {
             ))}
           </ul>
         ) : (
-          // Display message if no logs exist
-          <p className="text-gray-600 text-center">No activities recorded</p>
+          // Display message if no logs match the search
+          <p className="text-gray-600 text-center">No activities found</p>
         )}
       </div>
     </div>
