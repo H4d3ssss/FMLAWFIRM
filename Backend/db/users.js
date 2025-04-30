@@ -10,6 +10,7 @@ const userExist = async (email) => {
   u.password,
   u.temporary_password,
   l.lawyer_id,
+  c.client_id,
   u.role
 FROM users u
 LEFT JOIN clients c ON u.user_id = c.user_id

@@ -17,11 +17,39 @@ import {
   archiveCase,
   fetchArchivedCases1,
   restoreArchivedCase,
+  fetchActiveCasesByClientId,
+  fetchClosedCasesByClientId,
 } from "../db/adminSide/cases.js";
 // import upload from "../middleware/upload.js";
 import multer from "multer";
 
 const router = express.Router();
+
+router.get("/active-cases-count", async (req, res) => {
+  try {
+    const clientId = req.session.user.clientId;
+    const response = await fetchActiveCasesByClientId(clientId);
+    // console.log(req.session.user);
+    // console.log(response);
+    if (!response.success) return res.status(200).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/closed-cases-count", async (req, res) => {
+  try {
+    const clientId = req.session.user.clientId;
+    const response = await fetchClosedCasesByClientId(clientId);
+    // console.log(req.session.user);
+    // console.log(response);
+    if (!response.success) return res.status(200).json(response.message);
+    res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 router.get("/active", async (req, res) => {
   try {

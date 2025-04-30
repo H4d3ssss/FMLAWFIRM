@@ -10,6 +10,8 @@ import {
   fetchSoonestAppointment,
   fetchAppointmentById,
   updateAppointment,
+  fetchTodayAppointmentByClientId,
+  fetchSoonestAppointmentByClientId,
 } from "../db/adminSide/appointments.js";
 
 const router = express.Router();
@@ -114,6 +116,26 @@ router.get("/soonest-appointment", async (req, res) => {
     }
     console.log(response);
     const response1 = await fetchSoonestAppointment();
+    console.log(response1.response[0]);
+    if (response1.success) {
+      return res.status(200).json(response1.response);
+    }
+
+    res.status(200).json({ response: response1.response });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/soonest-appointment-client", async (req, res) => {
+  try {
+    const clientId = req.session.user.clientId;
+    const response = await fetchTodayAppointmentByClientId(clientId);
+    if (response.success) {
+      return res.status(200).json(response.response);
+    }
+    console.log(response);
+    const response1 = await fetchSoonestAppointmentByClientId(clientId);
     console.log(response1.response[0]);
     if (response1.success) {
       return res.status(200).json(response1.response);

@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import ClientDashboard from "./pages/ClientDashboard"; // Import ClientDashboard
 import ClientCases from "./pages/ClientCases"; // Import ClientCases
 import ClientAppointment from "./pages/ClientAppointment"; // Import ClientAppointment
@@ -21,7 +26,11 @@ function App() {
   const location = useLocation(); // Get the current route
 
   // Define routes where the ClientSidebar and Sidebar should appear
-  const clientRoutes = ["/client-dashboard", "/client-cases", "/client-appointment"];
+  const clientRoutes = [
+    "/client-dashboard",
+    "/client-cases",
+    "/client-appointment",
+  ];
   const adminRoutes = [
     "/admindashboard",
     "/cases",
@@ -34,16 +43,17 @@ function App() {
 
   return (
     <div className="flex">
-      {clientRoutes.includes(location.pathname) && <ClientSidebar />} {/* Conditionally render ClientSidebar */}
-      {adminRoutes.includes(location.pathname) && <Sidebar />} {/* Conditionally render Sidebar for admin */}
+      {clientRoutes.includes(location.pathname) && <ClientSidebar />}{" "}
+      {/* Conditionally render ClientSidebar */}
+      {adminRoutes.includes(location.pathname) && <Sidebar />}{" "}
+      {/* Conditionally render Sidebar for admin */}
       <div className="flex-1">
         <Routes>
           {/* Client Routes */}
           <Route path="/" element={<LoginPage />} /> {/* Default route */}
-          <Route path="/client-dashboard" element={<ClientDashboard />} />
+          <Route path="/clientdashboard" element={<ClientDashboard />} />
           <Route path="/client-cases" element={<ClientCases />} />
           <Route path="/client-appointment" element={<ClientAppointment />} />
-
           {/* Admin Routes */}
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/cases" element={<CasesPage />} />
@@ -52,7 +62,6 @@ function App() {
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/todo" element={<TodoPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
-
           {/* Shared Routes */}
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />

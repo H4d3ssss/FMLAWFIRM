@@ -29,7 +29,7 @@ app.use(
     secret: process.env.SECRET_KEY,
     saveUninitialized: false,
     resave: false,
-    cooke: {
+    cookie: {
       httpOnly: true,
       secure: false,
       expires: 60 * 60 * 24,

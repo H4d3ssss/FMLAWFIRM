@@ -13,6 +13,32 @@ const fetchActiveCases = async () => {
   }
 };
 
+const fetchActiveCasesByClientId = async (clientId) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases2" WHERE case_status = 'Active' AND client_id = $1`,
+      [clientId]
+    );
+    if (response.rowCount <= 0) return { success: false, message: 0 };
+    return { success: true, message: response.rowCount };
+  } catch (error) {
+    return { error };
+  }
+};
+
+const fetchClosedCasesByClientId = async (clientId) => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewAllCases2" WHERE case_status = 'Closed' AND client_id = $1`,
+      [clientId]
+    );
+    if (response.rowCount <= 0) return { success: false, message: 0 };
+    return { success: true, message: response.rowCount };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const fetchClosedCases = async () => {
   try {
     const response = await pool.query(`SELECT * FROM "viewClosedCases"`);
@@ -420,4 +446,6 @@ export {
   archiveCase,
   fetchArchivedCases1,
   restoreArchivedCase,
+  fetchActiveCasesByClientId,
+  fetchClosedCasesByClientId,
 };

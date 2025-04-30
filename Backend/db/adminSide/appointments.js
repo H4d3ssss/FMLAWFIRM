@@ -90,6 +90,35 @@ const fetchAppointments = async () => {
   }
 };
 
+const fetchTodayAppointmentByClientId = async (clientId) => {
+  try {
+    const response = await pool.query(
+      `
+SELECT 
+  a.*,
+  TO_CHAR(a.start_time, 'HH12:MI AM') AS formatted_start_time,
+  TO_CHAR(a.end_time, 'HH12:MI AM') AS formatted_end_time,
+  TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
+  ul.first_name || ' ' || ul.last_name AS lawyer_name,
+  uc.first_name || ' ' || uc.last_name  AS client_name
+FROM appointments a
+JOIN lawyers l ON a.lawyer_id = l.lawyer_id
+JOIN users ul ON l.user_id = ul.user_id
+JOIN clients c ON a.client_id = c.client_id
+JOIN users uc ON c.user_id = uc.user_id
+WHERE a.appointment_date = CURRENT_DATE AND c.client_id = $1
+  AND a.end_time > CURRENT_TIME
+ORDER BY a.start_time ASC
+LIMIT 1;`,
+      [clientId]
+    ); // if ever related din yung mga clients sa outside events, magagamit tuh
+
+    if (response.rowCount <= 0) return { success: false };
+    return { success: true, response: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
 const fetchTodayAppointment = async () => {
   try {
     const response = await pool.query(`
@@ -98,8 +127,8 @@ SELECT
   TO_CHAR(a.start_time, 'HH12:MI AM') AS formatted_start_time,
   TO_CHAR(a.end_time, 'HH12:MI AM') AS formatted_end_time,
   TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
-  ul.first_name AS lawyer_name,
-  uc.first_name AS client_name
+  ul.first_name || ' ' || ul.last_name AS lawyer_name,
+  uc.first_name || ' ' || uc.last_name  AS client_name
 FROM appointments a
 JOIN lawyers l ON a.lawyer_id = l.lawyer_id
 JOIN users ul ON l.user_id = ul.user_id
@@ -117,16 +146,46 @@ LIMIT 1;`); // if ever related din yung mga clients sa outside events, magagamit
   }
 };
 
-const fetchSoonestAppointment = async () => {
+const fetchSoonestAppointmentByClientId = async (clientId) => {
   try {
-    const response = await pool.query(`  SELECT 
+    const response = await pool.query(
+      `SELECT 
   a.*, 
   c.*, 
   u.first_name || ' ' || u.last_name AS client_name,  
   u.email AS client_email,
   TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
   TO_CHAR(a.start_time, 'HH12:MI PM') AS formatted_start_time,
-  TO_CHAR(a.end_time, 'HH12:MI PM') AS formatted_end_time
+  TO_CHAR(a.end_time, 'HH12:MI PM') AS formatted_end_time,
+  ul.first_name || ' ' || ul.last_name AS lawyer_name,
+  uc.first_name || ' ' || uc.last_name  AS client_name
+FROM appointments a
+JOIN clients c ON a.client_id = c.client_id  
+JOIN users u ON c.user_id = u.user_id 
+WHERE a.appointment_date > CURRENT_TIMESTAMP AND c.client_id = $1
+ORDER BY a.appointment_date ASC
+LIMIT 1;`,
+      [clientId]
+    );
+    if (response.rowCount <= 0)
+      return { success: false, response: "No upcoming event" };
+    return { success: true, response: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+const fetchSoonestAppointment = async () => {
+  try {
+    const response = await pool.query(`SELECT 
+  a.*, 
+  c.*, 
+  u.first_name || ' ' || u.last_name AS client_name,  
+  u.email AS client_email,
+  TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
+  TO_CHAR(a.start_time, 'HH12:MI PM') AS formatted_start_time,
+  TO_CHAR(a.end_time, 'HH12:MI PM') AS formatted_end_time,
+  ul.first_name || ' ' || ul.last_name AS lawyer_name,
+  uc.first_name || ' ' || uc.last_name  AS client_name
 FROM appointments a
 JOIN clients c ON a.client_id = c.client_id  
 JOIN users u ON c.user_id = u.user_id 
@@ -204,4 +263,6 @@ export {
   fetchSoonestAppointment,
   fetchAppointmentById,
   updateAppointment,
+  fetchTodayAppointmentByClientId,
+  fetchSoonestAppointmentByClientId,
 };
