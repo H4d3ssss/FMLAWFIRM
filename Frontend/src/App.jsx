@@ -25,6 +25,9 @@ import Sidebar from "./components/Sidebar"; // Import Sidebar for admin
 function App() {
   const location = useLocation(); // Get the current route
 
+  // Normalize the pathname to remove trailing slashes
+  const normalizedPathname = location.pathname.replace(/\/+$/, "");
+
   // Define routes where the ClientSidebar and Sidebar should appear
   const clientRoutes = [
     "/client-dashboard",
@@ -43,15 +46,13 @@ function App() {
 
   return (
     <div className="flex">
-      {clientRoutes.includes(location.pathname) && <ClientSidebar />}{" "}
-      {/* Conditionally render ClientSidebar */}
-      {adminRoutes.includes(location.pathname) && <Sidebar />}{" "}
-      {/* Conditionally render Sidebar for admin */}
+      {clientRoutes.includes(normalizedPathname) && <ClientSidebar />} {/* Conditionally render ClientSidebar */}
+      {adminRoutes.includes(normalizedPathname) && <Sidebar />} {/* Conditionally render Sidebar for admin */}
       <div className="flex-1">
         <Routes>
           {/* Client Routes */}
           <Route path="/" element={<LoginPage />} /> {/* Default route */}
-          <Route path="/clientdashboard" element={<ClientDashboard />} />
+          <Route path="/client-dashboard" element={<ClientDashboard />} />
           <Route path="/client-cases" element={<ClientCases />} />
           <Route path="/client-appointment" element={<ClientAppointment />} />
           {/* Admin Routes */}

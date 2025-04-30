@@ -54,7 +54,7 @@ const TermsPage = () => {
                 <div className="ml-0 sm:mx-48 flex-grow">
                     <div className="container mx-auto px-4 py-8">
                         {/* White card container for better readability */}
-                        <div className="bg-white rounded-lg shadow-md p-8">
+                        <div className="bg-[#FFB600] rounded-lg shadow-md p-8">
                             <h1 className="text-4xl font-extrabold mb-6">Terms of Service</h1>
                             <section className="space-y-6 text-gray-700 leading-relaxed">
                                 <p>
