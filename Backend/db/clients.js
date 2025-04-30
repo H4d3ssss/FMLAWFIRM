@@ -133,6 +133,7 @@ const ifClientExistAndForApproval = async (email) => {
       `SELECT * FROM "viewClients" WHERE email = $1 AND account_status = 'For Approval'`,
       [email]
     );
+    console.log(response.rowCount);
     return response.rowCount;
   } catch (error) {
     console.log(error.stack);

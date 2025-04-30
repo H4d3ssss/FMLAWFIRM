@@ -20,12 +20,13 @@ WHERE u.email = $1
       [email]
     );
     // console.log(response);
+    console.log(response.rowCount);
     if (response.rowCount > 0) {
       return { success: true, response: response.rows };
     } else {
       return {
         success: false,
-        message: "Wait for admin's approval",
+        message: "Email non existing",
       };
     }
   } catch (error) {
