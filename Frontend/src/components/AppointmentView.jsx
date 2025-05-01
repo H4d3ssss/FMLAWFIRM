@@ -29,18 +29,20 @@ const AppointmentView = () => {
       <div className="space-y-4">
         <p className="text-lg font-medium">
           <strong>Preferred Date: </strong>
-          {appointment.formatted_date}
+          {appointment.formatted_date || "N/A"}
           <span className="text-gray-700">{}</span>
         </p>
         <p className="text-lg font-medium">
           <strong>Preferred Time:</strong>{" "}
           <span className="text-gray-700">
-            {appointment.formatted_start_time}
+            {appointment.formatted_start_time || "N/A"}
           </span>
         </p>
         <p className="text-lg font-medium">
           <strong>Service Type:</strong>{" "}
-          <span className="text-gray-700">{appointment.type_of_event}</span>
+          <span className="text-gray-700">
+            {appointment.type_of_event || "N/A"}
+          </span>
         </p>
         <p className="text-lg font-medium">
           <strong>Additional Notes:</strong>{" "}
@@ -48,9 +50,7 @@ const AppointmentView = () => {
         </p>
         <p className="text-lg font-medium">
           <strong>Location:</strong>{" "}
-          <span className="text-gray-700">
-            {appointment.location || "F&M Firm"}
-          </span>
+          <span className="text-gray-700">{appointment.location || "N/A"}</span>
         </p>
       </div>
     </div>

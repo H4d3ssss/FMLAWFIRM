@@ -200,6 +200,22 @@ const fetchAllCases = async () => {
   }
 };
 
+const fetchCaseByClientId = async (clientId) => {
+  try {
+    const response = await pool.query(
+      `
+SELECT * FROM "viewAllCases2" WHERE client_id = $1`,
+      [clientId]
+    );
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "No case for the client" };
+    return { success: true, message: response.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const fetchCaseByCaseId = async (case_id) => {
   try {
     const response = await pool.query(
@@ -448,4 +464,5 @@ export {
   restoreArchivedCase,
   fetchActiveCasesByClientId,
   fetchClosedCasesByClientId,
+  fetchCaseByClientId,
 };

@@ -19,6 +19,7 @@ import {
   restoreArchivedCase,
   fetchActiveCasesByClientId,
   fetchClosedCasesByClientId,
+  fetchCaseByClientId,
 } from "../db/adminSide/cases.js";
 // import upload from "../middleware/upload.js";
 import multer from "multer";
@@ -396,6 +397,17 @@ router.patch("/archived-case", async (req, res) => {
     res.status(200).json({ message: response.message });
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+router.get("/case-by-client-id", async (req, res) => {
+  try {
+    const clientId = req.session.user.clientId;
+    const response = await fetchCaseByClientId(clientId);
+    if (!response.success) return res.status(200).json(response.message);
+    return res.status(200).json(response.message);
+  } catch (error) {
+    res.status(500).json({ error, message: "Internal server error" });
   }
 });
 

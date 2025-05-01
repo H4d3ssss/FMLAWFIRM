@@ -30,7 +30,7 @@ function App() {
 
   // Define routes where the ClientSidebar and Sidebar should appear
   const clientRoutes = [
-    "/client-dashboard",
+    "/clientdashboard",
     "/client-cases",
     "/client-appointment",
   ];
@@ -46,13 +46,15 @@ function App() {
 
   return (
     <div className="flex">
-      {clientRoutes.includes(normalizedPathname) && <ClientSidebar />} {/* Conditionally render ClientSidebar */}
-      {adminRoutes.includes(normalizedPathname) && <Sidebar />} {/* Conditionally render Sidebar for admin */}
+      {clientRoutes.includes(normalizedPathname) && <ClientSidebar />}{" "}
+      {/* Conditionally render ClientSidebar */}
+      {adminRoutes.includes(normalizedPathname) && <Sidebar />}{" "}
+      {/* Conditionally render Sidebar for admin */}
       <div className="flex-1">
         <Routes>
           {/* Client Routes */}
           <Route path="/" element={<LoginPage />} /> {/* Default route */}
-          <Route path="/client-dashboard" element={<ClientDashboard />} />
+          <Route path="/clientdashboard" element={<ClientDashboard />} />
           <Route path="/client-cases" element={<ClientCases />} />
           <Route path="/client-appointment" element={<ClientAppointment />} />
           {/* Admin Routes */}
