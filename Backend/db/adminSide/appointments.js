@@ -157,11 +157,16 @@ const fetchSoonestAppointmentByClientId = async (clientId) => {
   TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
   TO_CHAR(a.start_time, 'HH12:MI PM') AS formatted_start_time,
   TO_CHAR(a.end_time, 'HH12:MI PM') AS formatted_end_time,
-  ul.first_name || ' ' || ul.last_name AS lawyer_name,
-  uc.first_name || ' ' || uc.last_name  AS client_name
+  ul.first_name || ' ' || ul.last_name AS lawyer_name
 FROM appointments a
+
 JOIN clients c ON a.client_id = c.client_id  
 JOIN users u ON c.user_id = u.user_id 
+
+-- join the lawyer table and its corresponding user record
+JOIN lawyers l ON a.lawyer_id = l.lawyer_id
+JOIN users ul ON l.user_id = ul.user_id
+
 WHERE a.appointment_date > CURRENT_TIMESTAMP AND c.client_id = $1
 ORDER BY a.appointment_date ASC
 LIMIT 1;`,
@@ -184,14 +189,20 @@ const fetchSoonestAppointment = async () => {
   TO_CHAR(a.appointment_date, 'Month DD, YYYY') AS formatted_date,
   TO_CHAR(a.start_time, 'HH12:MI PM') AS formatted_start_time,
   TO_CHAR(a.end_time, 'HH12:MI PM') AS formatted_end_time,
-  ul.first_name || ' ' || ul.last_name AS lawyer_name,
-  uc.first_name || ' ' || uc.last_name  AS client_name
+  ul.first_name || ' ' || ul.last_name AS lawyer_name
 FROM appointments a
+
 JOIN clients c ON a.client_id = c.client_id  
 JOIN users u ON c.user_id = u.user_id 
+
+-- join the lawyer table and its corresponding user record
+JOIN lawyers l ON a.lawyer_id = l.lawyer_id
+JOIN users ul ON l.user_id = ul.user_id
+
 WHERE a.appointment_date > CURRENT_TIMESTAMP
 ORDER BY a.appointment_date ASC
-LIMIT 1;`);
+LIMIT 1;
+`);
     if (response.rowCount <= 0)
       return { success: false, response: "No upcoming event" };
     return { success: true, response: response.rows };
