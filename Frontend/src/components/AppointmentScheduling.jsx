@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
 const AppointmentScheduling = () => {
+  // Add start time and end time states
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [availableTimes, setAvailableTimes] = useState([]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -8,6 +13,13 @@ const AppointmentScheduling = () => {
     console.log("Appointment Data:", appointmentData);
     alert("Appointment Scheduled! Check the console for details.");
   };
+
+  useEffect(() => {
+    if (selectedDate) {
+      // Fetch available times for the selected date (mocked for now)
+      setAvailableTimes(["09:00", "10:00", "11:00", "14:00", "15:00"]);
+    }
+  }, [selectedDate]);
 
   return (
     <div className="flex-1 bg-white shadow-md rounded-md p-6 h-full">
@@ -41,6 +53,29 @@ const AppointmentScheduling = () => {
           >
             Preferred Time:
           </label>
+          <select
+            id="time"
+            name="time"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+            required
+          >
+            <option value="">Select a time</option>
+            {availableTimes.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Original time input */}
+        <div className="mb-4">
+          <label
+            htmlFor="time"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Preferred Time:
+          </label>
           <input
             type="time"
             id="time"
@@ -48,6 +83,37 @@ const AppointmentScheduling = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
           />
         </div>
+
+        {/* Start Time */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Start Time</label>
+          <input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+            required
+            min="08:00"
+            max="20:00"
+            name="startTime"
+          />
+        </div>
+
+        {/* End Time */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">End Time</label>
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+            required
+            min="08:00"
+            max="20:00"
+            name="endTime"
+          />
+        </div>
+
         <div className="mb-4">
           <label
             htmlFor="service"

@@ -1,0 +1,8 @@
+.done-event {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.done-event:hover {
+  filter: brightness(0.95) !important;
+}
