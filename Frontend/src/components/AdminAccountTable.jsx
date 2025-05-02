@@ -135,6 +135,7 @@ const AdminAccountTable = ({ admins }) => {
         position: newAdmin.position,
         address: newAdmin.address,
         confirmPassword: newAdmin.confirmPassword,
+        specialization: newAdmin.specialization,
       });
       console.log(response);
       refreshTable(); // Refresh table after adding

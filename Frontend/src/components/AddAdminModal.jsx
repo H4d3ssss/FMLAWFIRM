@@ -16,6 +16,7 @@ const AddAdminModal = ({
     confirmPassword: "",
     address: "",
     position: "",
+    specialization: "",
   };
 
   // State for form data
@@ -233,6 +234,23 @@ const AddAdminModal = ({
                   name="position"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.position}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="specialization"
+                  className="block text-sm font-medium"
+                >
+                  Specialization
+                </label>
+                <input
+                  type="text"
+                  id="specialization"
+                  name="specialization"
+                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  value={formData.specialization}
                   onChange={handleChange}
                   required
                 />

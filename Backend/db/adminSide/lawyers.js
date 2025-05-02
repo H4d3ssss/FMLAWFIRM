@@ -115,8 +115,8 @@ const insertLawyer = async (data) => {
     )
     RETURNING user_id, role
   )
-  INSERT INTO lawyers (user_id, account_status, position)
-  SELECT user_id, 'Active', $6 FROM new_user WHERE role = 'Lawyer';`;
+  INSERT INTO lawyers (user_id, account_status, position, specialization)
+  SELECT user_id, 'Active', $6, $7 FROM new_user WHERE role = 'Lawyer';`;
   try {
     const response = await pool.query(query, [
       data.firstName,
@@ -125,6 +125,7 @@ const insertLawyer = async (data) => {
       data.password, // hash natin to
       data.address,
       data.position,
+      data.specialization,
     ]);
     return { success: response.rowCount > 0 };
   } catch (err) {

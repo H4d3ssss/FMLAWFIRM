@@ -9,7 +9,7 @@ import AddCaseModal from "./AddCaseModal";
 import AdminAppointmentScheduling from "./AdminAppointmentScheduling";
 import axios from "axios";
 
-const Navbar = ({ clients, cases, lawyers }) => {
+const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -22,6 +22,46 @@ const Navbar = ({ clients, cases, lawyers }) => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const [adminData, setAdminData] = useState("");
+
+  const [clients, setClients] = useState([]);
+  const [lawyers, setLawyers] = useState([]);
+  const [cases, setCases] = useState([]);
+
+  const getClients = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/clients/approved-clients"
+      );
+      setClients(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getLawyers = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/lawyers");
+      setLawyers(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAllCases = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/cases");
+      setCases(response.data.response);
+      console.log("Cases refreshed successfully");
+    } catch (error) {
+      console.error("Error fetching cases:", error);
+    }
+  };
+
+  useEffect(() => {
+    getClients();
+    getLawyers();
+    fetchAllCases();
+  }, []);
 
   const MAX_RESULTS = 5;
 
@@ -72,40 +112,6 @@ const Navbar = ({ clients, cases, lawyers }) => {
     };
   }, []);
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-
-    const allData = [
-      ...clients.map((client) => ({
-        type: "Client",
-        id: client.clientId,
-        name: `${client.firstName} ${client.lastName}`,
-        email: client.email,
-      })),
-      ...cases.map((caseItem) => ({
-        type: "Case",
-        id: caseItem.caseId,
-        name: caseItem.caseTitle,
-        status: caseItem.caseStatus,
-      })),
-      ...lawyers.map((lawyer) => ({
-        type: "Lawyer",
-        id: lawyer.lawyerId,
-        name: `${lawyer.firstName} ${lawyer.lastName}`,
-        specialization: lawyer.specialization,
-      })),
-    ];
-
-    const filteredResults = allData.filter((item) =>
-      Object.values(item).some((value) =>
-        value.toString().toLowerCase().includes(query.toLowerCase())
-      )
-    );
-
-    setSearchResults(filteredResults);
-    setShowAllResults(false);
-  };
-
   const handleResultClick = (result) => {
     if (result.type === "Client") {
       navigate(`/clients/${result.id}`);
@@ -138,6 +144,68 @@ const Navbar = ({ clients, cases, lawyers }) => {
     }
   };
 
+  const [sortKey, setSortKey] = useState("name"); // default sort
+
+  const quickSort = (arr, key) => {
+    if (arr.length <= 1) return arr;
+
+    const pivot = arr[0];
+    const left = [];
+    const right = [];
+
+    for (let i = 1; i < arr.length; i++) {
+      const a = arr[i][key]?.toString().toLowerCase() || "";
+      const b = pivot[key]?.toString().toLowerCase() || "";
+
+      if (a < b) left.push(arr[i]);
+      else right.push(arr[i]);
+    }
+
+    return [...quickSort(left, key), pivot, ...quickSort(right, key)];
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+
+    const normalize = (value) =>
+      value?.toString().toLowerCase().replace(/s$/, "") || "";
+
+    const allData = [
+      ...clients.map((client) => ({
+        type: "Client",
+        id: client.client_id,
+        name: `${client.first_name} ${client.last_name}`,
+        email: client.email,
+      })),
+      ...cases.map((caseItem) => ({
+        type: "Case",
+        id: caseItem.case_id,
+        name: caseItem.case_title,
+        status: caseItem.case_status,
+      })),
+      ...lawyers.map((lawyer) => ({
+        type: "Lawyer",
+        id: lawyer.lawyer_id,
+        name: `${lawyer.first_name} ${lawyer.last_name}`,
+        specialization: lawyer.specialization,
+      })),
+    ];
+
+    const filteredResults = allData.filter((item) =>
+      Object.values(item).some((value) =>
+        normalize(value).includes(normalize(query))
+      )
+    );
+
+    const sortedResults = quickSort(filteredResults, sortKey);
+    setSearchResults(sortedResults);
+    setShowAllResults(false);
+  };
+
+  useEffect(() => {
+    if (searchQuery) handleSearch(searchQuery);
+  }, [sortKey]);
+
   return (
     <>
       <nav className="bg-[#ffb600] shadow-md py-3 flex items-center justify-between px-4 md:px-8 lg:px-12 w-full z-50">
@@ -159,7 +227,14 @@ const Navbar = ({ clients, cases, lawyers }) => {
                 className="w-full px-4 py-2 pl-10 pr-4 rounded-lg bg-white border-none focus:outline-none focus:ring-2 focus:ring-white/50"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              )}
               {/* Search Results Dropdown */}
               {searchQuery && (
                 <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-full max-h-40 overflow-y-auto z-50">
@@ -170,6 +245,7 @@ const Navbar = ({ clients, cases, lawyers }) => {
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => handleResultClick(result)}
                       >
+                        {console.log(result)}
                         <p className="text-sm font-medium">{result.name}</p>
                         <p className="text-xs text-gray-500">
                           {result.email ||
