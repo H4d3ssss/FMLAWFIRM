@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
   const [clients, setClients] = useState([]);
   const [staff, setStaff] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
 
   useEffect(() => {
     fetchActiveLawyers();
@@ -172,6 +175,51 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             </select>
           </div>
 
+          {/* <div className="mb-4">
+            <label
+              htmlFor="time"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Preferred Time:
+            </label>
+            <input
+              type="time"
+              id="time"
+              name="time"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+            />
+          </div> */}
+
+          {/* Start Time - Added from EventAddForm.jsx */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Start Time</label>
+            <input
+              type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              className="w-full p-2 border rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
+              min="08:00"
+              max="20:00"
+              name="startTime"
+            />
+          </div>
+
+          {/* End Time - Added from EventAddForm.jsx */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">End Time</label>
+            <input
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              className="w-full p-2 border rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
+              min="08:00"
+              max="20:00"
+              name="endTime"
+            />
+          </div>
+
           {/* Service Type */}
           <div className="mb-4">
             <label
@@ -225,21 +273,6 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             ></textarea>
           </div>
-
-          {/* Notification Email Checkbox */}
-          {/* <div className="mb-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                id="sendEmail"
-                name="sendEmail"
-                className="mr-2"
-              />
-              <span className="text-sm font-medium text-gray-700">
-                Send notification email to the client
-              </span>
-            </label>
-          </div> */}
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2 mt-6">

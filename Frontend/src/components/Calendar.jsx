@@ -8,6 +8,7 @@ import EventAddForm from "../components/EventAddForm";
 import EventEditForm from "../components/EventEditForm";
 import EventViewModal from "../components/EventViewModal";
 import { useNavigate } from "react-router-dom";
+import '../styles/calendar.css';
 
 const Calendar = () => {
   const [events, setEvents] = useState([]);
@@ -46,31 +47,40 @@ const Calendar = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/appointments"
-        );
-        console.log(response.data);
-        const formatted = response.data.map((event) => ({
-          client: event.client,
-          lawyer: event.lawyer,
-          clientId: event.client_id,
-          lawyerId: event.lawyer_id,
-          id: event.appointment_id, // corrected field
-          title: event.event_title,
-          start: `${event.appointment_date}T${event.start_time}`,
-          end: `${event.appointment_date}T${event.end_time}`,
-          backgroundColor:
-            event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
-          borderColor:
-            event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
-          extendedProps: {
-            type: event.type_of_event,
-            location: event.location,
-            notes: event.notes,
-            startTime: event.start_time,
-            endTime: event.end_time,
-          },
-        }));
+        const response = await axios.get("http://localhost:3000/api/appointments");
+        const now = new Date();
+
+        const formatted = response.data.map((event) => {
+          const eventEnd = new Date(`${event.appointment_date}T${event.end_time}`);
+          const isDone = eventEnd < now;
+
+          return {
+            ...event,
+            client: event.client,
+            lawyer: event.lawyer,
+            clientId: event.client_id,
+            lawyerId: event.lawyer_id,
+            id: event.appointment_id,
+            title: isDone ? `✓ ${event.event_title}` : event.event_title,
+            start: `${event.appointment_date}T${event.start_time}`,
+            end: `${event.appointment_date}T${event.end_time}`,
+            backgroundColor: isDone
+              ? '#A9A9A9'
+              : event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
+            borderColor: isDone
+              ? '#A9A9A9'
+              : event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
+            extendedProps: {
+              ...event.extendedProps,
+              type: event.type_of_event,
+              location: event.location,
+              notes: event.notes,
+              startTime: event.start_time,
+              endTime: event.end_time,
+              isDone: isDone
+            },
+          };
+        });
         setEvents(formatted);
       } catch (err) {
         console.error("Failed to fetch events:", err);
@@ -137,24 +147,38 @@ const Calendar = () => {
     const updatedEvents = events.map((event) =>
       event.id === updatedEvent.id
         ? {
-            ...event,
-            title: updatedEvent.title,
-            start: `${date}T${updatedEvent.startTime}`,
-            end: `${date}T${updatedEvent.endTime}`,
-            extendedProps: {
-              ...event.extendedProps,
-              type: updatedEvent.type,
-              location: updatedEvent.location,
-              notes: updatedEvent.notes,
-              startTime: updatedEvent.startTime,
-              endTime: updatedEvent.endTime,
-            },
-          }
+          ...event,
+          title: updatedEvent.title,
+          start: `${date}T${updatedEvent.startTime}`,
+          end: `${date}T${updatedEvent.endTime}`,
+          extendedProps: {
+            ...event.extendedProps,
+            type: updatedEvent.type,
+            location: updatedEvent.location,
+            notes: updatedEvent.notes,
+            startTime: updatedEvent.startTime,
+            endTime: updatedEvent.endTime,
+          },
+        }
         : event
     );
     setEvents(updatedEvents);
     setEditModalOpen(false);
     setCount((prev) => prev + 1);
+  };
+
+  const eventContent = (eventInfo) => {
+    return (
+      <div
+        className={`p-1 ${eventInfo.event.extendedProps.isDone ? 'opacity-75' : ''
+          }`}
+      >
+        <div className="text-sm font-semibold">{eventInfo.event.title}</div>
+        <div className="text-xs">
+          {eventInfo.timeText}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -173,6 +197,10 @@ const Calendar = () => {
         eventClick={handleEventClick}
         height="80vh"
         contentHeight="auto"
+        eventContent={eventContent}
+        eventClassNames={(arg) => [
+          arg.event.extendedProps.isDone ? 'done-event' : ''
+        ]}
       />
 
       <EventAddForm
