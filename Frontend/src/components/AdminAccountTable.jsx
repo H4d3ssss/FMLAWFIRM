@@ -10,6 +10,14 @@ const AdminAccountTable = ({ admins }) => {
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
+  // State for admin data
+  const [lawyers, setLawyers] = useState([]);
+  const [adminId, setAdminId] = useState("");
+
+  // State for refresh trigger
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Authentication check
   useEffect(() => {
     const authenticateUser = async () => {
       try {
@@ -33,21 +41,24 @@ const AdminAccountTable = ({ admins }) => {
     authenticateUser();
   }, []);
 
-  const [lawyers, setLawyers] = useState([]);
+  // Fetch lawyers data with dependency on refreshTrigger
   const getLawyers = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/lawyers");
       setLawyers(response.data);
-      // console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getLawyers();
-  }, []);
+  }, [refreshTrigger]); // Add refreshTrigger as dependency to re-fetch when it changes
 
-  const [adminId, setAdminId] = useState("");
+  // Function to trigger refresh
+  const refreshTable = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   // State for search input
   const [searchTerm, setSearchTerm] = useState("");
@@ -126,10 +137,10 @@ const AdminAccountTable = ({ admins }) => {
         confirmPassword: newAdmin.confirmPassword,
       });
       console.log(response);
+      refreshTable(); // Refresh table after adding
     } catch (error) {
       console.log(error);
     }
-    getLawyers();
   };
 
   // Static logic: Handle editing an admin
@@ -145,6 +156,7 @@ const AdminAccountTable = ({ admins }) => {
         admin.id === selectedAdmin.id ? { ...admin, ...updatedAdmin } : admin
       )
     );
+    refreshTable(); // Refresh table after editing
   };
 
   // Static logic: Handle archiving an admin
@@ -161,10 +173,10 @@ const AdminAccountTable = ({ admins }) => {
         "http://localhost:3000/api/lawyers/archive-lawyer",
         { lawyerId: admin.lawyer_id, adminId: adminId }
       );
+      refreshTable(); // Refresh table after archiving
     } catch (error) {
       console.log(error);
     }
-    getLawyers();
 
     setShowArchiveAdminModal(false); // Close the modal
   };
@@ -282,6 +294,7 @@ const AdminAccountTable = ({ admins }) => {
 
     return [...quickSort(left, field), pivot, ...quickSort(right, field)];
   };
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState("lawyer_id");
 
@@ -295,6 +308,7 @@ const AdminAccountTable = ({ admins }) => {
 
     return String(fieldValue).toLowerCase().includes(query);
   });
+
   const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage);
 
   const sortedAdmins = quickSort(filteredAdmins, sortField);
@@ -306,7 +320,7 @@ const AdminAccountTable = ({ admins }) => {
         showModal={showAddAdminModal}
         closeModal={() => setShowAddAdminModal(false)}
         handleAddAdmin={handleAddAdmin}
-        getLawyers={getLawyers}
+        getLawyers={refreshTable} // Use refreshTable instead
       />
 
       {/* EditAdminModal */}
@@ -316,7 +330,7 @@ const AdminAccountTable = ({ admins }) => {
         adminDetails={selectedAdmin}
         handleEditAdmin={handleEditAdmin}
         lawyerId={adminId}
-        getLawyers={getLawyers}
+        getLawyers={refreshTable} // Use refreshTable instead
       />
 
       {/* ArchiveAdminModal */}
@@ -326,7 +340,7 @@ const AdminAccountTable = ({ admins }) => {
         adminData={selectedAdmin}
         handleArchiveAdmin={handleArchiveAdmin}
         lawyerId={adminId}
-        getLawyers={getLawyers}
+        getLawyers={refreshTable} // Use refreshTable instead
       />
 
       {/* Toolbar */}
@@ -352,7 +366,7 @@ const AdminAccountTable = ({ admins }) => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 ✕
-              </button> // LAGAY TO SA LAHAT
+              </button>
             )}
           </div>
 
@@ -386,7 +400,7 @@ const AdminAccountTable = ({ admins }) => {
         <table className="table-auto border-collapse w-full rounded-b-2xl">
           <thead className="bg-gray-200">
             <tr>
-              <th className="p-3">Admin ID</th> {/* New column for Admin ID */}
+              <th className="p-3">Admin ID</th>
               <th
                 className="p-3 cursor-pointer"
                 onClick={() => handleSort("name")}
@@ -414,19 +428,17 @@ const AdminAccountTable = ({ admins }) => {
                 key={lawyer.lawyer_id}
                 className="odd:bg-white even:bg-gray-100"
               >
-                <td className="p-3 text-center">{lawyer.lawyer_id}</td>{" "}
-                {/* Display Admin ID */}
+                <td className="p-3 text-center">{lawyer.lawyer_id}</td>
                 <td className="p-3 text-center">
                   {lawyer.full_name || lawyer.user_full_name}
                 </td>
                 <td className="p-3 text-center">{lawyer.email}</td>
                 <td className="p-3 text-center">
                   <span
-                    className={`px-2 py-1 rounded ${
-                      lawyer.account_status === "Active"
+                    className={`px-2 py-1 rounded ${lawyer.account_status === "Active"
                         ? "bg-green-100 text-green-500"
                         : "bg-red-100 text-red-500"
-                    }`}
+                      }`}
                   >
                     {lawyer.account_status}
                   </span>

@@ -44,6 +44,9 @@ import EditClientAccount from "./EditClientAccount";
 import ArchiveClientAccount from "./ArchiveClientAccount";
 import ArchiveClientTable from "./ArchiveClientTable";
 import ClientNavbar from "./ClientNavbar";
+import ClientSidebar from "./ClientSidebar";
+import AppointmentView from "./AppointmentView";
+import AppointmentScheduling from "./AppointmentScheduling";
 
 // Admin Components
 import AdminAccountTable from "./AdminAccountTable";
@@ -54,6 +57,7 @@ import EditAdminModal from "./EditAdminModal";
 import ArchiveAdminModal from "./ArchiveAdminModal";
 import ArchiveAdminTable from "./ArchiveAdminTable";
 import RestoreAdminModal from "./RestoreAdminModal";
+import AdminAppointmentScheduling from "./AdminAppointmentScheduling";
 
 // Miscellaneous Components
 import Todo from "./Todo";
@@ -68,6 +72,7 @@ export {
     Footer,
     Calendar,
     ClientNavbar,
+    ClientSidebar,
 
     // Authentication Components
     LoginForm,
@@ -95,6 +100,9 @@ export {
     RestoreAdminModal,
     TermsModal,
     PrivacyModal,
+    AdminAppointmentScheduling,
+    AppointmentScheduling,
+    AppointmentView,
 
     // Tables
     AdminCaseTable,

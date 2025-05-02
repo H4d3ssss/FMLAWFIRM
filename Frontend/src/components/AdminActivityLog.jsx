@@ -38,7 +38,7 @@ const AdminActivityLog = () => {
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6 mt-4 sm:mt-6">
+    <div className="w-full max-w-4xl mx-auto bg-white shadow-lg border border-gray-200 rounded-lg p-4 sm:p-6 mt-4 sm:mt-6">
       {/* Header section for the activity log */}
       <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
         Admin Activity Log

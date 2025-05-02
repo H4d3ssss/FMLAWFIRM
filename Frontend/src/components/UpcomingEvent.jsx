@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+
 const UpcomingEvent = () => {
   // State to hold event data fetched from the backend
   const [eventData, setEventData] = useState("");
@@ -62,36 +63,44 @@ const UpcomingEvent = () => {
       ? eventData
       : [defaultEvent];
   const event = eventArray[0]; // Use fetched event or fallback to default
-  // console.log(event);
+
   return (
-    <div className="bg-white shadow-md rounded-xl p-4 w-[660px] h-[300px] border border-gray-200">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Upcoming Events</h1>
-      <div className="text-gray-600 text-sm space-y-2">
-        <div className="border border-gray-300 rounded-md p-3 h-50">
-          <p>
-            <strong>Title: </strong> {event.event_title}
-          </p>
-          <p>
-            <strong>Type:</strong> {event.type_of_event}
-          </p>
-          <p>
-            <strong>Client:</strong> {event.client_name}
-          </p>
-          <p>
-            <strong>Location:</strong> {event.location || "N/A"}
-          </p>
-          <p>
-            <strong>Notes:</strong> {event.notes || "N/A"}
-          </p>
-          <p>
-            <strong>When:</strong> {event.formatted_date || "N/A"}
-          </p>
-          <p>
-            <strong>Start Time:</strong> {event.formatted_start_time}
-          </p>
-          <p>
-            <strong>End Time:</strong> {event.formatted_end_time}
-          </p>
+    <div className="bg-white rounded-lg shadow-lg border border-gray-200 w-full h-full">
+      <div className="p-4">
+        <h2 className="text-lg font-semibold text-gray-800 mb-3">Next Event</h2>
+
+        <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
+          {event ? (
+            <div className="space-y-2 text-sm">
+              <p className="font-medium text-gray-900">{event.event_title || "No Title Available"}</p>
+
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-gray-600">
+                <p><span className="font-medium">Type:</span></p>
+                <p>{event.type_of_event || "N/A"}</p>
+
+                <p><span className="font-medium">Client:</span></p>
+                <p>{event.client_name || "N/A"}</p>
+
+                <p><span className="font-medium">Location:</span></p>
+                <p>{event.location || "N/A"}</p>
+
+                <p><span className="font-medium">Date:</span></p>
+                <p>{event.formatted_date || "N/A"}</p>
+
+                <p><span className="font-medium">Time:</span></p>
+                <p>{event.formatted_start_time || "N/A"} - {event.formatted_end_time || "N/A"}</p>
+              </div>
+
+              {event.notes && (
+                <div className="mt-2">
+                  <p className="font-medium text-gray-900">Notes:</p>
+                  <p className="text-gray-600 text-sm mt-1">{event.notes}</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-gray-500 italic">No upcoming events scheduled</p>
+          )}
         </div>
       </div>
     </div>

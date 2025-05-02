@@ -6,6 +6,7 @@ import ViewCaseModal from "../components/ViewCaseModal"; // Import ViewCaseModal
 import ArchiveCaseModal from "../components/ArchiveCaseModal"; // Import ArchiveCaseModal
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 const AdminCaseTable = () => {
   const [cases, setCases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,14 +18,15 @@ const AdminCaseTable = () => {
   const [currentCase, setCurrentCase] = useState(null); // Store the current case for editing/viewing/archiving
   const [count, setCount] = useState(0);
   const [adminId, setAdminId] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // State to trigger table refresh
+
   const fetchAllCases = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/cases");
       setCases(response.data.response);
-      // console.log(response.data.response);
-      // console.log(response.data.response);
+      console.log("Cases refreshed successfully");
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching cases:", error);
     }
   };
 
@@ -38,7 +40,6 @@ const AdminCaseTable = () => {
           "http://localhost:3000/api/auth/authenticate-user"
         );
 
-        // console.log(response.data);
         if (response.data.role === "Lawyer") {
           setAdminId(response.data.lawyerId);
           navigate("/cases");
@@ -57,8 +58,7 @@ const AdminCaseTable = () => {
 
   useEffect(() => {
     fetchAllCases();
-    // console.log(cases);
-  }, [showAddModal, showEditModal, showViewModal, showArchiveModal, count]);
+  }, [refreshKey]); // Watches refreshKey for changes
 
   const handleEditCase = (updatedCase) => {
     const updatedCases = cases.map((caseItem) =>
@@ -77,6 +77,7 @@ const AdminCaseTable = () => {
   const handleEditButtonClick = (caseItem) => {
     setCurrentCase(caseItem); // Set the current case for editing
     setShowEditModal(true); // Show the EditCaseModal
+    setRefreshKey((prev) => prev + 1); // Trigger refresh after edit
   };
 
   const handleViewButtonClick = (caseItem) => {
@@ -87,17 +88,14 @@ const AdminCaseTable = () => {
   const handleArchiveButtonClick = (caseItem) => {
     setCurrentCase(caseItem); // Set the current case for archiving
     setShowArchiveModal(true); // Show the ArchiveCaseModal
-    // console.log(caseItem);
+    setRefreshKey((prev) => prev + 1); // Trigger refresh after archive
   };
 
-  // Filtering Cases
-  //   const filteredCases = cases.filter((item) => {
-  //     const matchesSearch = item.title
-  //       .toLowerCase()
-  //       .includes(searchQuery.toLowerCase());
-  //     const matchesCaseNo = filterCaseNo ? item.caseNo === filterCaseNo : true;
-  //     return matchesSearch && matchesCaseNo;
-  //   });
+  const handleModalClose = () => {
+    setShowAddModal(false);
+    setRefreshKey((prev) => prev + 1); // Trigger refresh when modal closes
+    fetchAllCases(); // Fetch fresh data
+  };
 
   const quickSort = (array, field) => {
     if (array.length <= 1) return array;
@@ -158,7 +156,7 @@ const AdminCaseTable = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 ✕
-              </button> // LAGAY TO SA LAHAT
+              </button>
             )}
           </div>
           <select
@@ -275,21 +273,28 @@ const AdminCaseTable = () => {
       {/* AddCaseModal */}
       <AddCaseModal
         showModal={showAddModal}
-        closeModal={() => setShowAddModal(false)}
+        closeModal={() => {
+          handleModalClose(); // Uses enhanced close handler
+          setCount((prev) => prev + 1);
+        }}
         count={count} // Close AddCaseModal
         setCount={setCount}
         adminId={adminId}
-        fetchAllCases={fetchAllCases}
+        fetchAllCases={fetchAllCases} // Pass fetch function
       />
 
       {/* EditCaseModal */}
       <EditCaseModal
         showModal={showEditModal}
-        closeModal={() => setShowEditModal(false)} // Close EditCaseModal
+        closeModal={() => {
+          setShowEditModal(false);
+          setRefreshKey((prev) => prev + 1); // Trigger refresh on edit close
+          fetchAllCases(); // Fetch fresh data
+        }} // Close EditCaseModal
         handleEditCase={handleEditCase} // Handle editing a case
         existingCase={currentCase} // Pass the selected case to be edited
         adminId={adminId}
-        fetchAllCases={fetchAllCases}
+        fetchAllCases={fetchAllCases} // Pass fetch function
       />
 
       {/* ViewCaseModal */}
@@ -297,20 +302,21 @@ const AdminCaseTable = () => {
         showModal={showViewModal}
         closeModal={() => setShowViewModal(false)} // Close ViewCaseModal
         caseDetails={currentCase} // Pass the selected case to be viewed
-        fetchAllCases={fetchAllCases}
+        fetchAllCases={fetchAllCases} // Pass fetch function for consistency
       />
 
       {/* ArchiveCaseModal */}
       <ArchiveCaseModal
         showModal={showArchiveModal}
         closeModal={() => {
-          fetchAllCases();
           setShowArchiveModal(false);
+          setRefreshKey((prev) => prev + 1); // Trigger refresh on archive close
+          fetchAllCases(); // Fetch fresh data
         }} // Close ArchiveCaseModal
         caseDetails={currentCase} // Pass the selected case to be archived
         handleArchive={handleArchiveCase}
         adminId={adminId} // Handle archiving a case
-        fetchAllCases={fetchAllCases}
+        fetchAllCases={fetchAllCases} // Pass fetch function
       />
     </div>
   );

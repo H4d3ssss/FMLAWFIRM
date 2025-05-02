@@ -3,17 +3,14 @@ import { Calendar } from 'lucide-react';
 
 const UpcomingEventCard = ({ count, nextEvent }) => {
     return (
-        <div className="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center justify-center w-full h-[200px] sm:w-[250px] sm:h-[220px] md:w-[300px] md:h-[250px] m-0">
-            {/* Icon and Title */}
-            <div className="flex items-center space-x-2 mb-2">
-                <Calendar className="w-8 h-8 text-blue-600 sm:w-10 sm:h-10 md:w-12 md:h-12" />
-                <h2 className="text-lg font-bold text-gray-800 sm:text-xl md:text-2xl">Upcoming Events</h2>
+        <div className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center justify-center w-full h-full min-h-[180px]">
+            <div className="flex items-center space-x-2 mb-4">
+                <Calendar className="w-10 h-10 text-blue-600" />
+                <h2 className="text-xl font-bold text-gray-800">Upcoming Events</h2>
             </div>
-            {/* Count */}
-            <p className="text-2xl font-semibold text-blue-600 mb-2 sm:text-3xl md:text-4xl">{count}</p>
-            {/* Next Event Info */}
+            <p className="text-3xl font-semibold text-blue-600 mb-2">{count}</p>
             {nextEvent && (
-                <p className="text-xs text-gray-600 text-center sm:text-sm">
+                <p className="text-sm text-gray-600 text-center">
                     Next: {nextEvent.date} - {nextEvent.title}
                 </p>
             )}
@@ -22,6 +19,7 @@ const UpcomingEventCard = ({ count, nextEvent }) => {
 };
 
 export default UpcomingEventCard;
+
 
 /*
  * Backend Integration Comments:
