@@ -3,6 +3,9 @@ import { Search, LogOut, Plus, ChevronDown } from "lucide-react";
 import { GoLaw } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import LogoutModal from "./LogoutModal";
+import AddClientAccount from "./AddClientAccount";
+import AddAdminModal from "./AddAdminModal";
+import AddCaseModal from "./AddCaseModal";
 import AdminAppointmentScheduling from "./AdminAppointmentScheduling";
 import axios from "axios";
 
@@ -13,6 +16,9 @@ const Navbar = ({ clients, cases, lawyers }) => {
   const [showAllResults, setShowAllResults] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State for the appointment modal
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -177,6 +183,39 @@ const Navbar = ({ clients, cases, lawyers }) => {
                     <Plus className="w-4 h-4 mr-2" />
                     Add Appointment
                   </button>
+
+                  <button
+                    onClick={() => {
+                      setIsClientModalOpen(true);
+                      setDropdownOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-green-600"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Client
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsAdminModalOpen(true);
+                      setDropdownOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-green-600"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Admin
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsCaseModalOpen(true);
+                      setDropdownOpen(false);
+                    }}
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-green-600"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Case
+                  </button>
                 </div>
               )}
             </div>
@@ -212,6 +251,32 @@ const Navbar = ({ clients, cases, lawyers }) => {
         showModal={showLogoutModal}
         closeModal={() => setShowLogoutModal(false)}
         handleConfirmLogout={handleConfirmLogout}
+      />
+
+      <AddClientAccount
+        showModal={isClientModalOpen}
+        closeModal={() => setIsClientModalOpen(false)}
+        refreshTables={() => { }}
+        getNextClientId={() => { }}
+        adminId={1}
+        getClients={() => { }}
+      />
+
+      <AddAdminModal
+        showModal={isAdminModalOpen}
+        closeModal={() => setIsAdminModalOpen(false)}
+        handleAddAdmin={() => { }}
+        getLawyers={() => { }}
+      />
+
+      <AddCaseModal
+        showModal={isCaseModalOpen}
+        closeModal={() => setIsCaseModalOpen(false)}
+        handleAddCase={() => { }}
+        count={0}
+        setCount={() => { }}
+        adminId={1}
+        fetchAllCases={() => { }}
       />
     </>
   );
