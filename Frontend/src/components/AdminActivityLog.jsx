@@ -3,12 +3,15 @@ import axios from "axios";
 
 // AdminActivityLog Component
 // Displays an activity log with fixed height and a scrollable area for long lists
-const AdminActivityLog = () => {
+const AdminActivityLog = ({ refreshFlag }) => {
   // State for storing activity logs fetched from the backend
   const [activityLogs, setActivityLogs] = useState([]);
   // State for managing loading status
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  useEffect(() => {
+    getActivityLogs(); // Re-fetch when refreshFlag changes
+  }, [refreshFlag]);
 
   /**
    * Function to fetch activity logs from the backend

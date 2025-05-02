@@ -80,9 +80,10 @@ router.get("/fetch-unfinished-tasks", async (req, res) => {
 
 router.patch("/mark-finished-task", async (req, res) => {
   try {
-    const { taskId, adminId } = req.body;
+    const { taskId } = req.body;
+    const adminId = req.session.user.lawyerId;
     const response = await markAsFinishedTask(taskId, adminId);
-
+    console.log(response);
     if (response.success) {
       res.status(200).json(response.response);
     } else {

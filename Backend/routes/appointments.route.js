@@ -76,9 +76,9 @@ router.get("/cancelled", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
+    // console.log(data);
     const response = await insertAppointment(data);
-    console.log(response);
+    // console.log(response);
     if (response.success) {
       res.status(200).json({
         success: true,
@@ -114,9 +114,9 @@ router.get("/soonest-appointment", async (req, res) => {
     if (response.success) {
       return res.status(200).json(response.response);
     }
-    console.log(response);
+    // console.log(response);
     const response1 = await fetchSoonestAppointment();
-    console.log(response1.response[0]);
+    // console.log(response1.response[0]);
     if (response1.success) {
       return res.status(200).json(response1.response);
     }
@@ -134,9 +134,9 @@ router.get("/soonest-appointment-client", async (req, res) => {
     if (response.success) {
       return res.status(200).json(response.response);
     }
-    console.log(response);
+    // console.log(response);
     const response1 = await fetchSoonestAppointmentByClientId(clientId);
-    console.log(response1.response[0]);
+    // console.log(response1.response[0]);
     if (response1.success) {
       return res.status(200).json(response1.response);
     }
@@ -163,7 +163,7 @@ router.patch("/update-appointment", async (req, res) => {
   try {
     const data = req.body;
     const adminId = req.session.user.lawyerId;
-    console.log(data);
+    // console.log(data);
     const response = await updateAppointment(data, adminId);
 
     if (!response.success) res.status(400).json(response.message);

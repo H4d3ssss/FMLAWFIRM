@@ -8,7 +8,6 @@ const AddCaseModal = ({
   handleAddCase,
   count,
   setCount,
-  adminId,
   fetchAllCases,
 }) => {
   const [useLink, setUseLink] = useState(false);
@@ -29,7 +28,6 @@ const AddCaseModal = ({
     formData.append("clientId", clientId);
     formData.append("status", status);
     formData.append("lawyerId", lawyerId);
-    formData.append("adminId", adminId);
 
     if (useLink) {
       const link = event.target.link.value;

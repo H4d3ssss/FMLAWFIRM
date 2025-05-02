@@ -57,7 +57,7 @@ const AdminAccountTable = ({ admins }) => {
 
   // Function to trigger refresh
   const refreshTable = () => {
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   // State for search input
@@ -127,7 +127,7 @@ const AdminAccountTable = ({ admins }) => {
     try {
       console.log(adminId);
       const response = await axios.post("http://localhost:3000/api/lawyers", {
-        adminId,
+        // adminId,
         firstName: newAdmin.firstName,
         lastName: newAdmin.lastName,
         email: newAdmin.email,
@@ -435,10 +435,11 @@ const AdminAccountTable = ({ admins }) => {
                 <td className="p-3 text-center">{lawyer.email}</td>
                 <td className="p-3 text-center">
                   <span
-                    className={`px-2 py-1 rounded ${lawyer.account_status === "Active"
+                    className={`px-2 py-1 rounded ${
+                      lawyer.account_status === "Active"
                         ? "bg-green-100 text-green-500"
                         : "bg-red-100 text-red-500"
-                      }`}
+                    }`}
                   >
                     {lawyer.account_status}
                   </span>

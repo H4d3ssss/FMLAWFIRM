@@ -301,8 +301,8 @@ router.post("/new-case", upload.single("file"), async (req, res) => {
   }
   try {
     // console.log(req.file.originalname);
-    const { caseTitle, clientId, lawyerId, status, link, adminId } = req.body;
-
+    const { caseTitle, clientId, lawyerId, status, link } = req.body;
+    const adminId = req.session.user.lawyerId;
     const filePath = req.file ? req.file.path : link;
     const fileName = req.file ? req.file.originalname : "Link Provided";
 

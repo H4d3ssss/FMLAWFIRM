@@ -11,7 +11,6 @@ const AddClientAccount = ({
   closeModal,
   refreshTables,
   getNextClientId,
-  adminId,
   getClients,
 }) => {
   const [formData, setFormData] = useState({
@@ -154,7 +153,6 @@ const AddClientAccount = ({
 
     // Prepare data for AdminClientsTable
     const payload = {
-      adminId,
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,

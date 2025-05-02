@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-const TaskListCard = () => {
+const TaskListCard = ({ onTaskUpdate }) => {
   const [tasks, setTasks] = useState([]);
 
   // Automatically delete tasks at midnight when completed
@@ -41,47 +41,77 @@ const TaskListCard = () => {
   // }, [tasks]);
 
   // Function to toggle task completion
-  const toggleTaskCompletion = (index) => {
-    const updatedTasks = tasks.map((task, i) => {
-      if (i === index) {
+  const toggleTaskCompletion = async (taskId) => {
+    console.log(taskId);
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === taskId) {
         const now = new Date();
 
         if (!task.completed) {
-          // Task is marked as completed; set auto-delete time to midnight next day
           const nextMidnight = new Date();
-          nextMidnight.setDate(now.getDate() + 1); // Move to the next day
-          nextMidnight.setHours(0, 0, 0, 0); // Set time to 12:00 AM
-          return { ...task, completed: true, autoDeleteTime: nextMidnight };
+          nextMidnight.setDate(now.getDate() + 1);
+          nextMidnight.setHours(0, 0, 0, 0);
+
+          return {
+            ...task,
+            completed: true,
+            autoDeleteTime: nextMidnight,
+          };
         } else {
-          // Task is marked as incomplete; reset auto-delete time
-          return { ...task, completed: false, autoDeleteTime: null };
+          return {
+            ...task,
+            completed: false,
+            autoDeleteTime: null,
+          };
         }
       }
-      return task; // Return other tasks as is
+      return task;
     });
 
-    setTasks(updatedTasks); // Update the state with new task statuses
+    setTasks(updatedTasks);
+
+    try {
+      await axios.patch("http://localhost:3000/api/tasks/mark-finished-task", {
+        taskId: taskId,
+      });
+      const refreshed = await axios.get(
+        "http://localhost:3000/api/tasks/tasks-due-today"
+      );
+      setTasks(refreshed.data);
+
+      onTaskUpdate?.();
+    } catch (error) {
+      console.error("Failed to update task completion:", error);
+    }
   };
 
   return (
     <div className="bg-white shadow-md rounded-xl p-4 w-full h-[250px] sm:w-[500px] sm:h-[300px] md:w-[660px] md:h-[350px] border border-gray-200">
-      <h1 className="text-lg font-bold text-gray-800 mb-4 sm:text-xl md:text-2xl">Task List</h1>
+      <h1 className="text-lg font-bold text-gray-800 mb-4 sm:text-xl md:text-2xl">
+        Task List
+      </h1>
       <div className="border border-gray-300 rounded-md">
         <ul className="m-2 h-40 overflow-y-auto space-y-2 text-xs text-gray-700 sm:text-sm md:text-base">
           {tasks.length > 0 ? (
             tasks.map((task, index) => (
-              <li key={index} className="flex items-center">
-                {/* Checkbox to toggle task completion */}
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleTaskCompletion(index)}
-                  className="w-4 h-4 rounded border-gray-300 focus:ring-0 cursor-pointer"
-                />
+              <li key={index} className="flex items-center space-x-2">
+                <button
+                  onClick={() => toggleTaskCompletion(task.task_id)}
+                  className={`w-6 h-6 flex items-center justify-center rounded-full border text-white font-bold ${
+                    task.completed
+                      ? "bg-green-500 border-green-500"
+                      : "bg-green-300 border-green-300"
+                  } hover:scale-105 transition`}
+                  title="Mark as complete"
+                >
+                  ✓
+                </button>
                 <span
-                  className={
-                    task.completed ? "line-through text-gray-400 ml-2" : "ml-2"
-                  }
+                  className={`ml-1 ${
+                    task.completed
+                      ? "line-through text-gray-400"
+                      : "text-gray-800"
+                  }`}
                 >
                   {task.task_description}
                 </span>

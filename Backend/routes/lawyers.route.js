@@ -72,10 +72,10 @@ router.post("/", async (req, res) => {
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
     const response = await insertLawyer(data);
-
+    const adminId = req.session.user.lawyerId;
     if (response.success) {
       const data1 = {
-        adminId: data.adminId,
+        adminId,
         action: "CREATED AN ADMIN",
         description: "Created an admin: " + data.email,
         targetTable: "lawyers",

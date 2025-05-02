@@ -196,11 +196,11 @@ const Todo = () => {
 
   const handleTaskCompletion = async (taskId) => {
     try {
+      // console.log(taskId);
       const response = await axios.patch(
         `http://localhost:3000/api/tasks/mark-finished-task`,
-        { taskId, adminId }
+        { taskId }
       );
-      console.log(adminId);
       // console.log(response);
     } catch (error) {
       console.log(error);

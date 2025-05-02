@@ -170,7 +170,7 @@ FROM new_case;`,
       adminId,
       action: "CREATED CASE",
       description: "Created a new case for",
-      targetTable: "cases",
+      targetTable: "clients",
       target_id: clientId,
     };
     const response1 = await createActivityLog(data1);

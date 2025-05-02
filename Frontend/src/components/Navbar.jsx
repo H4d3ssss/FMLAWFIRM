@@ -21,6 +21,7 @@ const Navbar = ({ clients, cases, lawyers }) => {
   const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const [adminData, setAdminData] = useState("");
 
   const MAX_RESULTS = 5;
 
@@ -115,6 +116,28 @@ const Navbar = ({ clients, cases, lawyers }) => {
     }
   };
 
+  const handleAddAdmin = async (newAdmin) => {
+    setAdminData((prev) => [...prev, { id: prev.length + 1, ...newAdmin }]);
+    // console.log(newAdmin);
+    try {
+      // console.log(adminId);
+      const response = await axios.post("http://localhost:3000/api/lawyers", {
+        // adminId,
+        firstName: newAdmin.firstName,
+        lastName: newAdmin.lastName,
+        email: newAdmin.email,
+        password: newAdmin.password,
+        position: newAdmin.position,
+        address: newAdmin.address,
+        confirmPassword: newAdmin.confirmPassword,
+      });
+      console.log(response);
+      // refreshTable(); // Refresh table after adding
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <nav className="bg-[#ffb600] shadow-md py-3 flex items-center justify-between px-4 md:px-8 lg:px-12 w-full z-50">
@@ -149,12 +172,16 @@ const Navbar = ({ clients, cases, lawyers }) => {
                       >
                         <p className="text-sm font-medium">{result.name}</p>
                         <p className="text-xs text-gray-500">
-                          {result.email || result.status || result.specialization}
+                          {result.email ||
+                            result.status ||
+                            result.specialization}
                         </p>
                       </div>
                     ))
                   ) : (
-                    <p className="px-4 py-2 text-sm text-gray-500">No results found.</p>
+                    <p className="px-4 py-2 text-sm text-gray-500">
+                      No results found.
+                    </p>
                   )}
                 </div>
               )}
@@ -256,27 +283,25 @@ const Navbar = ({ clients, cases, lawyers }) => {
       <AddClientAccount
         showModal={isClientModalOpen}
         closeModal={() => setIsClientModalOpen(false)}
-        refreshTables={() => { }}
-        getNextClientId={() => { }}
-        adminId={1}
-        getClients={() => { }}
+        refreshTables={() => {}}
+        getNextClientId={() => {}}
+        getClients={() => {}}
       />
 
       <AddAdminModal
         showModal={isAdminModalOpen}
         closeModal={() => setIsAdminModalOpen(false)}
-        handleAddAdmin={() => { }}
-        getLawyers={() => { }}
+        handleAddAdmin={handleAddAdmin}
+        getLawyers={() => {}}
       />
 
       <AddCaseModal
         showModal={isCaseModalOpen}
         closeModal={() => setIsCaseModalOpen(false)}
-        handleAddCase={() => { }}
+        handleAddCase={() => {}}
         count={0}
-        setCount={() => { }}
-        adminId={1}
-        fetchAllCases={() => { }}
+        setCount={() => {}}
+        fetchAllCases={() => {}}
       />
     </>
   );
