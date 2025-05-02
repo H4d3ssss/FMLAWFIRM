@@ -10,6 +10,16 @@ import EventViewModal from "../components/EventViewModal";
 import { useNavigate } from "react-router-dom";
 import '../styles/calendar.css';
 
+const eventTypeColors = {
+  Consultation: "#4CAF50", // Green
+  Meeting: "#2196F3",     // Blue
+  "Case Hearing": "#FFB600", // Orange
+  Hearing: "#FFB600",     // Orange
+  Filing: "#9C27B0",     // Purple
+  "Follow-up": "#FFC107", // Yellow
+  Other: "#607D8B",      // Gray
+};
+
 const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -124,8 +134,8 @@ const Calendar = () => {
       title: data.title,
       start: `${selectedDate}T${data.startTime}`,
       end: `${selectedDate}T${data.endTime}`,
-      backgroundColor: data.color,
-      borderColor: data.color,
+      backgroundColor: eventTypeColors[data.type] || "#607D8B", // Set color based on event type
+      borderColor: eventTypeColors[data.type] || "#607D8B",    // Set border color to match
       extendedProps: {
         type: data.type,
         location: data.location,
