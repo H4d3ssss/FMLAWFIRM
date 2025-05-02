@@ -30,7 +30,7 @@ router.patch("/update-lawyer", async (req, res) => {
 router.get("/clientsforapproval", async (req, res) => {
   try {
     const response = await fetchClientsForApproval();
-    console.log(response);
+    // console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ error });
@@ -160,7 +160,7 @@ router.patch("/update-client", async (req, res) => {
 router.patch("/update-client1", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
+    // console.log(data);
     const response = await updateClientDetails1(data);
     if (!response.success) return res.status(400).json(response.message);
 
