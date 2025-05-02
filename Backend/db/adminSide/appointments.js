@@ -40,7 +40,7 @@ const fetchCancelledAppointments = async () => {
 const insertAppointment = async (data) => {
   try {
     const response = await pool.query(
-      `CALL insert_appointment($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      `CALL insert_appointment($1, $2, $3, $4, $5, $6, $7, $8, $9, 'Scheduled')`,
       [
         // data.caseId,
         data.clientId,
@@ -82,7 +82,9 @@ const insertAppointment = async (data) => {
 
 const fetchAppointments = async () => {
   try {
-    const response = await pool.query(`SELECT * FROM "viewAppointments"`);
+    const response = await pool.query(
+      `SELECT * FROM "viewAppointments" WHERE appointment_status = 'Scheduled'`
+    );
     return { success: true, response: response.rows };
   } catch (error) {
     console.log(error.stack);
