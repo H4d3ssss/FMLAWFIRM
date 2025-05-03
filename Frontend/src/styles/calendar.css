@@ -6,3 +6,11 @@
 .done-event:hover {
   filter: brightness(0.95) !important;
 }
+
+.fc-event {
+  transition: all 0.2s ease;
+}
+
+.fc-event:hover {
+  transform: scale(1.02);
+}

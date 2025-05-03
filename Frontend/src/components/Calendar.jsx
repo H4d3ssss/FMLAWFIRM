@@ -17,7 +17,7 @@ const eventTypeColors = {
   Hearing: "#FFB600",     // Orange
   Filing: "#9C27B0",     // Purple
   "Follow-up": "#FFC107", // Yellow
-  Other: "#607D8B",      //
+  Other: "#607D8B",      // Gray
 };
 
 const Calendar = () => {
@@ -76,10 +76,10 @@ const Calendar = () => {
             end: `${event.appointment_date}T${event.end_time}`,
             backgroundColor: isDone
               ? '#A9A9A9'
-              : event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
+              : eventTypeColors[event.type_of_event] || "#607D8B",
             borderColor: isDone
               ? '#A9A9A9'
-              : event.type_of_event === "Hearing" ? "#FFB600" : "#4CAF50",
+              : eventTypeColors[event.type_of_event] || "#607D8B",
             extendedProps: {
               ...event.extendedProps,
               type: event.type_of_event,
@@ -161,6 +161,8 @@ const Calendar = () => {
           title: updatedEvent.title,
           start: `${date}T${updatedEvent.startTime}`,
           end: `${date}T${updatedEvent.endTime}`,
+          backgroundColor: eventTypeColors[updatedEvent.type] || "#607D8B",
+          borderColor: eventTypeColors[updatedEvent.type] || "#607D8B",
           extendedProps: {
             ...event.extendedProps,
             type: updatedEvent.type,
