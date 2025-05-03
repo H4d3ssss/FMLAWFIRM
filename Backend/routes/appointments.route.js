@@ -76,7 +76,7 @@ router.get("/cancelled", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
-    // console.log(data);
+    console.log(data);
     const response = await insertAppointment(data);
     // console.log(response);
     if (response.success) {

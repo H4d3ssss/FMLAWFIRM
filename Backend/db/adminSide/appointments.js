@@ -56,9 +56,9 @@ const insertAppointment = async (data) => {
     );
     // console.log("dito ko sa line 57 sa appointments.js");
     // console.log(response);
-
+    const adminId = req.session.user.lawyerId;
     const data1 = {
-      adminId: data.adminId,
+      adminId,
       action: "CREATED APPOINTMENT",
       description: "Created an appointment for",
       targetTable: "clients",
