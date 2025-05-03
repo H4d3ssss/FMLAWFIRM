@@ -17,7 +17,7 @@ const eventTypeColors = {
   Hearing: "#FFB600",     // Orange
   Filing: "#9C27B0",     // Purple
   "Follow-up": "#FFC107", // Yellow
-  Other: "#607D8B",      // Gray
+  Other: "#607D8B",      //
 };
 
 const Calendar = () => {
