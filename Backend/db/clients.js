@@ -285,7 +285,7 @@ const approveClient = async (clientId, adminId) => {
       targetTable: "clients",
       target_id: clientId,
     };
-    // console.log(data1);
+    console.log(data1);
     const response3 = await createActivityLog(data1);
     console.log(response3);
     return { success: true, response: "Updated Successfully" };

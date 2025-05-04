@@ -30,7 +30,7 @@ const ClientNavbar = () => {
         );
         if (response.data && response.data.role === "Client") {
           setClientName(response.data.name || "Client");
-
+          console.log(response);
           // Fetch client cases
           const casesResponse = await axios.get(
             `http://localhost:3000/api/clients/${response.data.clientId}/cases`,

@@ -138,7 +138,7 @@ const AdminDashboard = () => {
               <ActiveCaseCard count={activeCases.length} />
               <PendingCaseCard count={pendingCases.length} />
               <UpcomingEventCard
-                count={upcomingEvents.length}
+                count={upcomingEvents.length || 0}
                 nextEvents={upcomingEvents[0]}
               />
               <TaskDueCard count={taskDue.length} nextTask={taskDue[0]} />
