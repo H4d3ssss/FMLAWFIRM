@@ -130,7 +130,6 @@ const EventAddForm = ({
       lawyerId, // Include lawyerId
       clientId, // Include clientId
       appointmentDate: date,
-      adminId,
     };
 
     try {

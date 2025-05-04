@@ -6,8 +6,14 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
   const [staff, setStaff] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState("");
+  const [location, setLocation] = useState("");
+  const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [lawyerId, setLawyerId] = useState("");
+  const [clientId, setClientId] = useState("");
 
   useEffect(() => {
     fetchActiveLawyers();
@@ -45,15 +51,43 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
     }
   }, [selectedDate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const appointmentData = Object.fromEntries(formData.entries());
-    console.log("Admin Appointment Data:", appointmentData);
+    // const formData = new FormData(e.target);
+    // const appointmentData = Object.fromEntries(formData.entries());
+    // console.log("Admin Appointment Data:", appointmentData);
 
-    if (appointmentData.sendEmail) {
-      console.log("Notification email will be sent to the client.");
+    const payload = {
+      eventTitle: title,
+      typeOfEvent: type,
+      location,
+      notes,
+      startTime,
+      endTime,
+      lawyerId, // Include lawyerId
+      clientId, // Include clientId
+      appointmentDate: selectedDate,
+    };
+
+    console.log(payload);
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/appointments`,
+        payload
+      ); // route dapat to
+      console.log(response);
+      if (response.data.success) {
+        console.log(response.data.message);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
     }
+
+    // if (appointmentData.sendEmail) {
+    //   console.log("Notification email will be sent to the client.");
+    // }
 
     alert("Appointment Scheduled by Admin! Check the console for details.");
     onClose(); // Close the modal after submission
@@ -99,6 +133,8 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             <select
               id="client"
               name="client"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               required
             >
@@ -122,6 +158,8 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             <select
               id="lawyer"
               name="lawyer"
+              value={lawyerId}
+              onChange={(e) => setLawyerId(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               required
             >
@@ -151,44 +189,6 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
               required
             />
           </div>
-
-          {/* Preferred Time */}
-          <div className="mb-4">
-            <label
-              htmlFor="time"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Preferred Time:
-            </label>
-            <select
-              id="time"
-              name="time"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-              required
-            >
-              <option value="">Select a time</option>
-              {availableTimes.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* <div className="mb-4">
-            <label
-              htmlFor="time"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Preferred Time:
-            </label>
-            <input
-              type="time"
-              id="time"
-              name="time"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-            />
-          </div> */}
 
           {/* Start Time - Added from EventAddForm.jsx */}
           <div className="mb-4">
@@ -220,6 +220,23 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             />
           </div>
 
+          <div className="mb-4">
+            <label
+              htmlFor="location"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Event Title:
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              onChange={(e) => setTitle(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              required
+            />
+          </div>
+
           {/* Service Type */}
           <div className="mb-4">
             <label
@@ -231,13 +248,14 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             <select
               id="service"
               name="service"
+              onChange={(e) => setType(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               required
             >
               <option value="">Select a service</option>
-              <option value="consultation">Consultation</option>
-              <option value="follow-up">Follow-up</option>
-              <option value="legal-advice">Legal Advice</option>
+              <option value="Consultation">Consultation</option>
+              <option value="Follow-up">Follow-up</option>
+              <option value="Legal-advice">Legal Advice</option>
             </select>
           </div>
 
@@ -253,6 +271,7 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
               type="text"
               id="location"
               name="location"
+              onChange={(e) => setLocation(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               required
             />
@@ -269,6 +288,7 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             <textarea
               id="notes"
               name="notes"
+              onChange={(e) => setNotes(e.target.value)}
               rows="4"
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             ></textarea>
