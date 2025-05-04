@@ -128,10 +128,10 @@ const AppointmentScheduling = ({ clientId }) => {
 
         <div className="mb-4">
           <label
-            htmlFor="location"
+            htmlFor="title"
             className="block text-sm font-medium text-gray-700"
           >
-            Location:
+            Event Title:
           </label>
           <input
             type="text"

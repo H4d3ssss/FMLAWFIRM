@@ -18,6 +18,8 @@ import {
   cancelAppointment,
 } from "../db/adminSide/appointments.js";
 import { createActivityLog } from "../db/activities.js";
+import pool from "../db/index.js";
+import sendAppointmentStatus from "../db/email.js";
 
 const router = express.Router();
 
@@ -83,6 +85,21 @@ router.post("/", async (req, res) => {
     const data = req.body;
     // console.log(data);
     const response = await insertAppointment(data);
+    const user = await pool.query(
+      `SELECT * FROM "viewClients1" WHERE client_id = $1`,
+      [data.clientId]
+    );
+    const userDetails = user.rows[0];
+    const appointmentDetails = {
+      email: userDetails.email,
+      first_name: userDetails.first_name,
+      last_name: userDetails.last_name,
+      appointment_date: data.appointmentDate,
+      start_time: data.startTime,
+      end_time: data.endTime,
+      location: data.location,
+    };
+    sendAppointmentStatus(appointmentDetails);
     // query here the email of the client so that i can send the email once the admin creates an appointment
     const adminId = req.session.user.lawyerId;
     const data1 = {
@@ -169,6 +186,38 @@ router.patch("/approve-appointment", async (req, res) => {
   try {
     const { appointmentId } = req.body;
     const response = await acceptAppointment(appointmentId);
+    console.log(appointmentId);
+    const user = await pool.query(
+      `SELECT * FROM "viewAppointments" WHERE appointment_id = $1`,
+      [appointmentId]
+    );
+    const userDetails = user.rows[0];
+    // console.log(user.rows[0]);
+    // LAGYAN ACTIVITY LOG PAG INAACCEPT
+    const adminId = req.session.user.lawyerId;
+    const data1 = {
+      adminId,
+      action: "ACCEPTED APPOINTMENT",
+      description: "Accepted an appointment for",
+      targetTable: "clients",
+      target_id: userDetails.client_id,
+    };
+    console.log(data1);
+    const response1 = await createActivityLog(data1);
+    console.log(response1);
+
+    // SEND EMAIL PAG INACCEPT
+    const appointmentDetails = {
+      email: userDetails.email,
+      first_name: userDetails.first_name,
+      last_name: userDetails.last_name,
+      appointment_date: userDetails.appointment_date,
+      start_time: userDetails.start_time,
+      end_time: userDetails.end_time,
+      location: userDetails.location,
+    };
+    await sendAppointmentStatus(appointmentDetails);
+
     if (!response.success) res.status(400).json(response.message);
     res.status(200).json(response.message);
   } catch (error) {
