@@ -10,7 +10,10 @@ const AdminApprovalDashboard = () => {
             const data = await response.json();
             setAppointments(data);
         };
+
         fetchAppointments();
+        const interval = setInterval(fetchAppointments, 10000); // every 10 seconds
+        return () => clearInterval(interval);
     }, []);
 
     const handleApprove = async (id) => {
