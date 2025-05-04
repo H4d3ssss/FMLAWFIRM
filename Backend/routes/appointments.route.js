@@ -81,7 +81,7 @@ router.get("/cancelled", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
+    // console.log(data);
     const response = await insertAppointment(data);
     // query here the email of the client so that i can send the email once the admin creates an appointment
     const adminId = req.session.user.lawyerId;

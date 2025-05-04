@@ -94,6 +94,7 @@ const insertAppointmentForClient = async (data) => {
     );
     console.log(response);
     // console.log("dito ko sa line 57 sa appointments.js");
+    // console.log("im here");
 
     return {
       success: true,
