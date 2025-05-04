@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-
-const AppointmentScheduling = () => {
+import axios from "axios";
+const AppointmentScheduling = ({ clientId }) => {
   // Add state variables
   const [selectedDate, setSelectedDate] = useState("");
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState("");
+  const [location, setLocation] = useState("");
+  const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [availableTimes, setAvailableTimes] = useState([]);
@@ -15,11 +19,11 @@ const AppointmentScheduling = () => {
     }
   }, [selectedDate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const appointmentData = Object.fromEntries(formData.entries());
-    console.log("Appointment Data:", appointmentData);
+    // const formData = new FormData(e.target);
+    // const appointmentData = Object.fromEntries(formData.entries());
+    // console.log("Appointment Data:", appointmentData);
 
     // Validate time range
     if (startTime && endTime && startTime >= endTime) {
@@ -27,7 +31,34 @@ const AppointmentScheduling = () => {
       return;
     }
 
-    alert("Appointment Scheduled! Check the console for details.");
+    const payload = {
+      eventTitle: title,
+      typeOfEvent: type,
+      location,
+      notes,
+      startTime,
+      endTime,
+      clientId, // Include clientId
+      appointmentDate: selectedDate,
+    };
+
+    console.log(payload);
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/appointments/appointment-for-client`,
+        payload
+      ); // route dapat to
+      console.log(response);
+      if (response.data.success) {
+        console.log(response.data.message);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    alert("Appointment Scheduled! Wait for admin's approval.");
   };
 
   return (
@@ -57,7 +88,9 @@ const AppointmentScheduling = () => {
 
         {/* Time Range Section */}
         <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Appointment Time Range:</h3>
+          <h3 className="text-sm font-medium text-gray-700 mb-2">
+            Appointment Time Range:
+          </h3>
 
           {/* Start Time */}
           <div className="mb-4">
@@ -87,8 +120,27 @@ const AppointmentScheduling = () => {
               max="20:00"
               name="endTime"
             />
-            <p className="text-xs text-gray-500 mt-1">Appointments must not exceed 2 hours</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Appointments must not exceed 2 hours
+            </p>
           </div>
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Location:
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            onChange={(e) => setTitle(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+            required
+          />
         </div>
 
         <div className="mb-4">
@@ -101,6 +153,7 @@ const AppointmentScheduling = () => {
           <select
             id="service"
             name="service"
+            onChange={(e) => setType(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
           >
@@ -122,6 +175,7 @@ const AppointmentScheduling = () => {
             type="text"
             id="location"
             name="location"
+            onChange={(e) => setLocation(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
           />
@@ -139,6 +193,7 @@ const AppointmentScheduling = () => {
             id="notes"
             name="notes"
             rows="4"
+            onChange={(e) => setNotes(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
           ></textarea>
         </div>

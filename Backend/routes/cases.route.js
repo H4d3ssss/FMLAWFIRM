@@ -390,7 +390,7 @@ router.patch("/archived-case", async (req, res) => {
   try {
     const { caseId, adminId } = req.body;
     const response = await archiveCase(caseId, adminId);
-
+    console.log(req.body);
     if (!response.success)
       return res.status(404).json({ message: response.message });
 

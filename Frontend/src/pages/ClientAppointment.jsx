@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AppointmentScheduling from "../components/AppointmentScheduling"; // Import the AppointmentScheduling component
 import AppointmentView from "../components/AppointmentView"; // Import AppointmentView
 import ClientNavbar from "../components/ClientNavbar"; // Import ClientNavbar
@@ -10,6 +10,7 @@ const ClientAppointment = () => {
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
 
+  const [clientDetails, setClientDetails] = useState("");
   useEffect(() => {
     const authenticateUser = async () => {
       try {
@@ -21,6 +22,8 @@ const ClientAppointment = () => {
         if (response.data.role === "Lawyer") {
           navigate("/admindashboard");
         } else if (response.data.role === "Client") {
+          console.log(response.data);
+          setClientDetails(response.data);
           navigate("/client-appointment");
         } else {
           navigate("/");
@@ -47,7 +50,7 @@ const ClientAppointment = () => {
               {" "}
               {/* Left side */}
               <div className="flex-1">
-                <AppointmentScheduling />
+                <AppointmentScheduling clientId={clientDetails.clientId} />
               </div>
             </div>
             <div className="flex-1 flex flex-col">

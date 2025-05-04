@@ -40,7 +40,13 @@ const fetchCancelledAppointments = async () => {
 const insertAppointment = async (data) => {
   try {
     const response = await pool.query(
-      `CALL insert_appointment($1, $2, $3, $4, $5, $6, $7, $8, $9, 'Scheduled')`,
+      ` INSERT INTO appointments (
+        client_id, lawyer_id, appointment_date,
+        event_title, type_of_event, notes,
+        location, start_time, end_time, appointment_status
+    ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, 'Scheduled'
+    );`,
       [
         // data.caseId,
         data.clientId,
@@ -55,21 +61,39 @@ const insertAppointment = async (data) => {
       ]
     );
     // console.log("dito ko sa line 57 sa appointments.js");
-    // console.log(response);
-    const adminId = req.session.user.lawyerId;
-    const data1 = {
-      adminId,
-      action: "CREATED APPOINTMENT",
-      description: "Created an appointment for",
-      targetTable: "clients",
-      target_id: data.clientId,
-    };
 
-    const response1 = await createActivityLog(data1);
-    console.log(data1);
-    console.log("im here");
-    if (!response1.success)
-      return { success: false, message: "may problema sa response 1" };
+    return {
+      success: true,
+      message: "successfully created an appointment and an activity log",
+    };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+const insertAppointmentForClient = async (data) => {
+  try {
+    const response = await pool.query(
+      ` INSERT INTO appointments (
+        client_id, appointment_date,
+        event_title, type_of_event, notes,
+        location, start_time, end_time, appointment_status
+    ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, 'For Approval'
+    );`,
+      [
+        // data.caseId,
+        data.clientId,
+        data.appointmentDate,
+        data.eventTitle,
+        data.typeOfEvent,
+        data.notes,
+        data.location,
+        data.startTime,
+        data.endTime,
+      ]
+    );
+    console.log(response);
+    // console.log("dito ko sa line 57 sa appointments.js");
 
     return {
       success: true,
@@ -89,6 +113,47 @@ const fetchAppointments = async () => {
   } catch (error) {
     console.log(error.stack);
     return { success: false, error };
+  }
+};
+
+const fetchAppointmentsForApproval = async () => {
+  try {
+    const response = await pool.query(
+      `SELECT * FROM "viewAppointmentsForApproval"`
+    );
+    return { success: true, response: response.rows };
+  } catch (error) {
+    console.log(error.stack);
+    return { success: false, error };
+  }
+};
+
+const acceptAppointment = async (appointmentId) => {
+  try {
+    const response = await pool.query(
+      `UPDATE appointments SET appointment_status = 'Scheduled' WHERE appointment_id = $1`,
+      [appointmentId]
+    );
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "Hindi nakapag approve" };
+    return { success: true, message: "Approved" };
+  } catch (error) {
+    return { error };
+  }
+};
+const cancelAppointment = async (appointmentId) => {
+  try {
+    const response = await pool.query(
+      `UPDATE appointments SET appointment_status = 'Cancelled' WHERE appointment_id = $1`,
+      [appointmentId]
+    );
+
+    if (response.rowCount <= 0)
+      return { success: false, message: "Hindi nakapag cancel" };
+    return { success: true, message: "Cancelled" };
+  } catch (error) {
+    return { error };
   }
 };
 
@@ -278,4 +343,8 @@ export {
   updateAppointment,
   fetchTodayAppointmentByClientId,
   fetchSoonestAppointmentByClientId,
+  insertAppointmentForClient,
+  fetchAppointmentsForApproval,
+  acceptAppointment,
+  cancelAppointment,
 };

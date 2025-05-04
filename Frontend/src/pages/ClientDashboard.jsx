@@ -48,9 +48,6 @@ const ClientDashboard = () => {
             <CloseCaseCard /> {/* Add CloseCaseCard */}
             <AppointmentView /> {/* Replace UpcomingAppointmentCard */}
           </div>
-          <div className="mt-6">
-            <ActivityLog /> {/* Add ActivityLog */}
-          </div>
         </div>
       </div>
       <Footer /> {/* Add Footer */}
