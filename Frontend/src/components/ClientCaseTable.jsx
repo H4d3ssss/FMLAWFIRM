@@ -54,16 +54,18 @@ const ClientCaseTable = () => {
 
   const [sortField, setSortField] = useState("case_id");
 
-  const filteredCases = (cases || []).filter((item) => {
-    const query = searchQuery.toLowerCase();
+  const filteredCases = Array.isArray(cases)
+    ? cases.filter((item) => {
+        const query = searchQuery.toLowerCase();
 
-    if (!query) return true; // If no search, show all
+        if (!query) return true; // If no search, show all
 
-    const fieldValue = item[sortField];
-    if (fieldValue === undefined || fieldValue === null) return false;
+        const fieldValue = item[sortField];
+        if (fieldValue === undefined || fieldValue === null) return false;
 
-    return String(fieldValue).toLowerCase().includes(query);
-  });
+        return String(fieldValue).toLowerCase().includes(query);
+      })
+    : [];
 
   // 🛠 Now sort it using quickSort
   const sortedCases = quickSort(filteredCases, sortField);
