@@ -14,6 +14,8 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
   const [endTime, setEndTime] = useState("");
   const [lawyerId, setLawyerId] = useState("");
   const [clientId, setClientId] = useState("");
+  const [existingAppointments, setExistingAppointments] = useState([]);
+  const [timeError, setTimeError] = useState("");
 
   useEffect(() => {
     fetchActiveLawyers();
@@ -27,7 +29,6 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
       );
       setStaff(response.data);
       console.log(response.data);
-      // console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -44,18 +45,77 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
     }
   };
 
+  // Fetch existing appointments when date or lawyer changes
   useEffect(() => {
-    if (selectedDate) {
-      // Fetch available times for the selected date (mocked for now)
-      setAvailableTimes(["09:00", "10:00", "11:00", "14:00", "15:00"]);
+    if (selectedDate && lawyerId) {
+      fetchExistingAppointments();
     }
-  }, [selectedDate]);
+  }, [selectedDate, lawyerId]);
+
+  const fetchExistingAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/appointments/date/${selectedDate}/lawyer/${lawyerId}`
+      );
+      setExistingAppointments(response.data || []);
+    } catch (error) {
+      console.log("Error fetching existing appointments:", error);
+      setExistingAppointments([]);
+    }
+  };
+
+  // Check for time conflicts when start or end time changes
+  useEffect(() => {
+    if (startTime && endTime && selectedDate && lawyerId) {
+      validateTimeConflict();
+    }
+  }, [startTime, endTime, existingAppointments]);
+
+  const validateTimeConflict = () => {
+    setTimeError("");
+
+    // Validate that end time is after start time
+    if (startTime >= endTime) {
+      setTimeError("End time must be after start time");
+      return false;
+    }
+
+    // Convert input times to minutes for easier comparison
+    const newStart = timeToMinutes(startTime);
+    const newEnd = timeToMinutes(endTime);
+
+    // Check for conflicts with existing appointments
+    for (const appointment of existingAppointments) {
+      const existingStart = timeToMinutes(appointment.startTime);
+      const existingEnd = timeToMinutes(appointment.endTime);
+
+      // Check if there's an overlap
+      if (
+        (newStart >= existingStart && newStart < existingEnd) || // New start time falls within existing appointment
+        (newEnd > existingStart && newEnd <= existingEnd) || // New end time falls within existing appointment
+        (newStart <= existingStart && newEnd >= existingEnd) // New appointment completely encompasses existing one
+      ) {
+        setTimeError(`Time conflict with existing appointment: ${appointment.eventTitle} (${appointment.startTime} - ${appointment.endTime})`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Helper function to convert time string (HH:MM) to minutes
+  const timeToMinutes = (timeStr) => {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const formData = new FormData(e.target);
-    // const appointmentData = Object.fromEntries(formData.entries());
-    // console.log("Admin Appointment Data:", appointmentData);
+
+    // Validate time conflicts before submission
+    if (!validateTimeConflict()) {
+      return; // Stop submission if there's a conflict
+    }
 
     const payload = {
       eventTitle: title,
@@ -64,8 +124,8 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
       notes,
       startTime,
       endTime,
-      lawyerId, // Include lawyerId
-      clientId, // Include clientId
+      lawyerId,
+      clientId,
       appointmentDate: selectedDate,
     };
 
@@ -74,23 +134,18 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
       const response = await axios.post(
         `http://localhost:3000/api/appointments`,
         payload
-      ); // route dapat to
+      );
       console.log(response);
       if (response.data.success) {
-        console.log(response.data.message);
+        alert("Appointment Scheduled by Admin successfully!");
+        onClose();
       } else {
-        console.log(response.data.message);
+        alert(response.data.message || "Failed to schedule appointment");
       }
     } catch (error) {
       console.log(error);
+      alert("Error scheduling appointment. Please try again.");
     }
-
-    // if (appointmentData.sendEmail) {
-    //   console.log("Notification email will be sent to the client.");
-    // }
-
-    alert("Appointment Scheduled by Admin! Check the console for details.");
-    onClose(); // Close the modal after submission
   };
 
   if (!isOpen) return null;
@@ -190,7 +245,7 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Start Time - Added from EventAddForm.jsx */}
+          {/* Start Time */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Start Time</label>
             <input
@@ -205,7 +260,7 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* End Time - Added from EventAddForm.jsx */}
+          {/* End Time */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">End Time</label>
             <input
@@ -219,6 +274,29 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
               name="endTime"
             />
           </div>
+
+          {/* Time conflict error message */}
+          {timeError && (
+            <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+              {timeError}
+            </div>
+          )}
+
+          {/* Existing appointments for the selected date and lawyer */}
+          {existingAppointments.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                Existing Appointments on {selectedDate}:
+              </h3>
+              <div className="max-h-40 overflow-y-auto bg-gray-50 p-2 rounded border">
+                {existingAppointments.map((apt, index) => (
+                  <div key={index} className="text-xs mb-1 p-1 border-b">
+                    <span className="font-semibold">{apt.eventTitle}</span>: {apt.startTime} - {apt.endTime}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="mb-4">
             <label
@@ -306,6 +384,7 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             <button
               type="submit"
               className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              disabled={!!timeError}
             >
               Schedule Appointment
             </button>
