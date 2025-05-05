@@ -66,7 +66,9 @@ const AppointmentScheduling = ({ clientId }) => {
         (newEnd > existingStart && newEnd <= existingEnd) || // New end time falls within existing appointment
         (newStart <= existingStart && newEnd >= existingEnd) // New appointment completely encompasses existing one
       ) {
-        setTimeError(`Time conflict with existing appointment: ${appointment.eventTitle} (${appointment.startTime} - ${appointment.endTime})`);
+        setTimeError(
+          `Time conflict with existing appointment: ${appointment.eventTitle} (${appointment.startTime} - ${appointment.endTime})`
+        );
         return false;
       }
     }
@@ -76,7 +78,7 @@ const AppointmentScheduling = ({ clientId }) => {
 
   // Helper function to convert time string (HH:MM) to minutes
   const timeToMinutes = (timeStr) => {
-    const [hours, minutes] = timeStr.split(':').map(Number);
+    const [hours, minutes] = timeStr.split(":").map(Number);
     return hours * 60 + minutes;
   };
 
@@ -114,6 +116,13 @@ const AppointmentScheduling = ({ clientId }) => {
       console.log(response);
       if (response.data.success) {
         alert("Appointment Scheduled! Wait for admin's approval.");
+        setSelectedDate("");
+        setTitle("");
+        setType("");
+        setLocation("");
+        setNotes("");
+        setStartTime("");
+        setEndTime("");
       } else {
         alert(response.data.message || "Failed to schedule appointment");
       }
@@ -204,7 +213,8 @@ const AppointmentScheduling = ({ clientId }) => {
             <div className="max-h-40 overflow-y-auto bg-gray-50 p-2 rounded border">
               {existingAppointments.map((apt, index) => (
                 <div key={index} className="text-xs mb-1 p-1 border-b">
-                  <span className="font-semibold">{apt.eventTitle}</span>: {apt.startTime} - {apt.endTime}
+                  <span className="font-semibold">{apt.eventTitle}</span>:{" "}
+                  {apt.startTime} - {apt.endTime}
                 </div>
               ))}
             </div>
@@ -220,6 +230,7 @@ const AppointmentScheduling = ({ clientId }) => {
           </label>
           <input
             type="text"
+            value={title}
             id="title"
             name="title"
             onChange={(e) => setTitle(e.target.value)}
@@ -230,14 +241,15 @@ const AppointmentScheduling = ({ clientId }) => {
 
         <div className="mb-4">
           <label
-            htmlFor="service"
+            htmlFor="type"
             className="block text-sm font-medium text-gray-700"
           >
             Service Type:
           </label>
           <select
-            id="service"
-            name="service"
+            id="type"
+            name="type"
+            value={type}
             onChange={(e) => setType(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
@@ -257,6 +269,7 @@ const AppointmentScheduling = ({ clientId }) => {
             Location:
           </label>
           <input
+            value={location}
             type="text"
             id="location"
             name="location"
