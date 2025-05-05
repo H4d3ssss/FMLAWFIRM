@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-cron.schedule("0 12 * * *", async () => {
+cron.schedule("23 21 * * *", async () => {
   console.log("Running daily notification check...");
 
   try {
@@ -39,7 +39,7 @@ WHERE DATE(a.appointment_date) = CURRENT_DATE + INTERVAL '1 day';
       <p>Hi <strong>${appointment.first_name} ${
           appointment.last_name
         }</strong>,</p>
-      <p>This is a friendly reminder that you have an upcoming appointment scheduled on:</p>
+      <p>This is a friendly reminder that you have an upcoming appointment tomorrow:</p>
       
       <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin: 15px 0;">
         <p><strong>Date:</strong> ${appointment.appointment_date.toDateString()}</p>
@@ -51,7 +51,7 @@ WHERE DATE(a.appointment_date) = CURRENT_DATE + INTERVAL '1 day';
         }</p>
       </div>
 
-      <p>Please arrive 10-15 minutes early. If you need to reschedule, feel free to contact us.</p>
+      <p>Please arrive 10-15 minutes early.</p>
 
       <p>Thank you,<br>F&M Law Firm</p>
       
