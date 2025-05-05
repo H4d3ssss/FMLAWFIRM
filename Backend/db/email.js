@@ -37,7 +37,7 @@ const sendAppointmentStatus = async (appointment) => {
             appointment.location || "F&M Law Firm"
           }</p>
         </div>
-        <p>Please arrive 10-15 minutes early. If you need to reschedule, feel free to contact us.</p>
+        <p>Please arrive 10-15 minutes early.</p>
         <p>Thank you,<br>F&M Law Firm</p>
         <hr style="margin-top: 30px;">
         <small style="color: #888;">This is an automated message. Please do not reply directly to this email.</small>
