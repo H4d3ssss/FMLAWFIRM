@@ -33,12 +33,13 @@ const ClientNavbar = () => {
           console.log(response);
           // Fetch client cases
           const casesResponse = await axios.get(
-            `http://localhost:3000/api/clients/${response.data.clientId}/cases`,
+            `http://localhost:3000/api/cases/case-by-client-id`,
             {
               withCredentials: true,
             }
           );
           if (casesResponse.data) {
+            console.log(casesResponse.data);
             setClientCases(casesResponse.data);
           }
         }
@@ -49,6 +50,8 @@ const ClientNavbar = () => {
 
     fetchClientInfo();
   }, []);
+
+  const [sortKey, setSortKey] = useState("case_title"); // or "caseTitle"
 
   const formatDate = () => {
     const options = {
@@ -101,28 +104,51 @@ const ClientNavbar = () => {
     }
   };
 
+  const quickSort = (arr, key) => {
+    if (arr.length <= 1) return arr;
+
+    const pivot = arr[0];
+    const left = [];
+    const right = [];
+
+    for (let i = 1; i < arr.length; i++) {
+      const a = arr[i][key]?.toString().toLowerCase() || "";
+      const b = pivot[key]?.toString().toLowerCase() || "";
+
+      if (a < b) left.push(arr[i]);
+      else right.push(arr[i]);
+    }
+
+    return [...quickSort(left, key), pivot, ...quickSort(right, key)];
+  };
+
   const handleSearch = (query) => {
     setSearchQuery(query);
 
-    // For clients, we only search through their cases
-    const filteredResults = clientCases
+    const normalize = (value) =>
+      value?.toString().toLowerCase().replace(/s$/, "") || "";
+
+    const filteredResults = (clientCases || [])
       .filter((caseItem) =>
-        Object.values(caseItem).some(
-          (value) =>
-            value &&
-            value.toString().toLowerCase().includes(query.toLowerCase())
+        Object.values(caseItem).some((value) =>
+          normalize(value).includes(normalize(query))
         )
       )
       .map((caseItem) => ({
         type: "Case",
-        id: caseItem.caseId, // Use caseId for redirection
+        id: caseItem.caseId,
         name: caseItem.caseTitle,
         status: caseItem.caseStatus,
       }));
 
-    setSearchResults(filteredResults);
+    const sortedResults = quickSort(filteredResults, sortKey);
+    setSearchResults(sortedResults);
     setShowAllResults(false);
   };
+
+  useEffect(() => {
+    if (searchQuery) handleSearch(searchQuery);
+  }, [sortKey]);
 
   return (
     <>
@@ -144,57 +170,6 @@ const ClientNavbar = () => {
                 className="w-full px-4 py-2 pl-10 pr-4 rounded-lg bg-white border-none focus:outline-none focus:ring-2 focus:ring-white/50"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-
-              {searchQuery && (
-                <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-full max-h-40 overflow-y-auto">
-                  {" "}
-                  {/* Set width to w-full */}
-                  {searchResults.length > 0 ? (
-                    <>
-                      {searchResults
-                        .slice(
-                          0,
-                          showAllResults ? searchResults.length : MAX_RESULTS
-                        )
-                        .map((result, index) => (
-                          <div
-                            key={index}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => handleResultClick(result)}
-                          >
-                            <p className="text-sm font-medium">
-                              {result.name} ({result.type})
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {result.status}
-                            </p>
-                          </div>
-                        ))}
-                      {searchResults.length > MAX_RESULTS &&
-                        !showAllResults && (
-                          <button
-                            className="w-full text-center px-4 py-2 text-sm text-blue-500 hover:underline"
-                            onClick={() => setShowAllResults(true)}
-                          >
-                            Show More
-                          </button>
-                        )}
-                      {showAllResults && (
-                        <button
-                          className="w-full text-center px-4 py-2 text-sm text-blue-500 hover:underline"
-                          onClick={() => setShowAllResults(false)}
-                        >
-                          Show Less
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <p className="px-4 py-2 text-sm text-gray-500">
-                      No results found.
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </div>

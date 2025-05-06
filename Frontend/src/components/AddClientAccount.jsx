@@ -174,8 +174,8 @@ const AddClientAccount = ({
       refreshTables(); // Refresh ClientAccountTable and AdminClientsTable
       closeModal(); // Close the modal
     } catch (err) {
-      console.log(err);
-      setServerMessage(err.response?.data?.message || "An error occurred.");
+      console.log(err.response.data.error);
+      setServerMessage(err.response.data.error || "An error occurred.");
     }
     getClients();
   };

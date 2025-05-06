@@ -60,10 +60,11 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
     const response = await insertClient(data);
-
+    const adminId = req.session.user.lawyerId;
+    console.log(adminId);
     if (response.success) {
       const data1 = {
-        adminId: data.adminId,
+        adminId,
         action: "CREATED CLIENT",
         description: "Created client: " + data.email,
         targetTable: "clients",

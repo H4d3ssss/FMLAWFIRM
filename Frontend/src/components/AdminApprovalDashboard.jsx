@@ -71,13 +71,13 @@ const AdminApprovalDashboard = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleApprove(appt.appointment_id)}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => handleReject(appt.appointment_id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
                 >
                   Reject
                 </button>

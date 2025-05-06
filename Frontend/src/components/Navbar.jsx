@@ -171,19 +171,19 @@ const Navbar = () => {
       value?.toString().toLowerCase().replace(/s$/, "") || "";
 
     const allData = [
-      ...clients.map((client) => ({
+      ...(clients || []).map((client) => ({
         type: "Client",
         id: client.client_id,
         name: `${client.first_name} ${client.last_name}`,
         email: client.email,
       })),
-      ...cases.map((caseItem) => ({
+      ...(cases || []).map((caseItem) => ({
         type: "Case",
         id: caseItem.case_id,
         name: caseItem.case_title,
         status: caseItem.case_status,
       })),
-      ...lawyers.map((lawyer) => ({
+      ...(lawyers || []).map((lawyer) => ({
         type: "Lawyer",
         id: lawyer.lawyer_id,
         name: `${lawyer.first_name} ${lawyer.last_name}`,
@@ -243,7 +243,7 @@ const Navbar = () => {
                       <div
                         key={index}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleResultClick(result)}
+                        // onClick={() => handleResultClick(result)}
                       >
                         {console.log(result)}
                         <p className="text-sm font-medium">{result.name}</p>
