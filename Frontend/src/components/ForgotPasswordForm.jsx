@@ -19,7 +19,7 @@ function ForgotPasswordForm() {
       );
       const temporaryPassword = response.data.temporaryPassword;
       // console.log(response.data);
-
+      console.log(response.data);
       const payLoad = {
         service_id: "service_93zdpcs",
         template_id: "template_fyaiqlb",

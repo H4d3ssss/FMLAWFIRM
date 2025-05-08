@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Search, LogOut, Plus, ChevronDown } from "lucide-react";
+import {
+  Search,
+  LogOut,
+  Plus,
+  ChevronDown,
+  User,
+  FileLock,
+} from "lucide-react";
 import { GoLaw } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import LogoutModal from "./LogoutModal";
@@ -7,6 +14,7 @@ import AddClientAccount from "./AddClientAccount";
 import AddAdminModal from "./AddAdminModal";
 import AddCaseModal from "./AddCaseModal";
 import AdminAppointmentScheduling from "./AdminAppointmentScheduling";
+import ChangePasswordModal from "./ChangePasswordModal";
 import axios from "axios";
 
 const Navbar = () => {
@@ -20,8 +28,12 @@ const Navbar = () => {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const dropdownRef1 = useRef(null);
   const navigate = useNavigate();
   const [adminData, setAdminData] = useState("");
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+
+  const [dropdownOpen1, setDropdownOpen1] = useState(false);
 
   const [clients, setClients] = useState([]);
   const [lawyers, setLawyers] = useState([]);
@@ -103,6 +115,22 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef1.current &&
+        !dropdownRef1.current.contains(event.target)
+      ) {
+        setDropdownOpen1(false);
       }
     };
 
@@ -205,6 +233,10 @@ const Navbar = () => {
   useEffect(() => {
     if (searchQuery) handleSearch(searchQuery);
   }, [sortKey]);
+
+  const handleChangePassword = () => {
+    setShowChangePasswordModal(true);
+  };
 
   return (
     <>
@@ -332,18 +364,42 @@ const Navbar = () => {
           </div>
 
           {/* Logout Icon */}
-          <div className="relative">
-            <button
-              onClick={handleLogout}
-              className="bg-[#ffb600] text-black flex items-center px-4 py-2 rounded-md hover:bg-[#e68900]"
-            >
-              <LogOut className="w-5 h-5 mr-2" />
-              Logout
-            </button>
+          <div className="flex items-center space-x-4">
+            <div className="relative" ref={dropdownRef1}>
+              <div
+                className="w-8 h-8 bg-white rounded-full overflow-hidden cursor-pointer flex items-center justify-center"
+                onClick={() => setDropdownOpen1(!dropdownOpen1)}
+              >
+                <User className="w-5 h-5 text-gray-700" />
+              </div>
+
+              {dropdownOpen1 && (
+                <div className="absolute right-0 mt-2 w-48 bg-[#ffb600] border border-[#e68900] rounded-lg shadow-lg">
+                  <button
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-[#e68900] rounded-lg"
+                    onClick={handleChangePassword}
+                  >
+                    <FileLock className="w-4 h-4 mr-2 text-black" />
+                    Change Password
+                  </button>
+                  <button
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-[#e68900] rounded-lg"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4 mr-2 text-black" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
 
+      <ChangePasswordModal
+        showModal={showChangePasswordModal}
+        closeModal={() => setShowChangePasswordModal(false)}
+      />
       {/* AdminAppointmentScheduling Modal */}
       <AdminAppointmentScheduling
         isOpen={isModalOpen}

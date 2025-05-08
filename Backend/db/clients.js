@@ -204,10 +204,12 @@ const generateTemporaryClientPassword = async (email) => {
         `UPDATE users SET temporary_password = $1 WHERE email = $2`,
         [hashedPassword, email]
       );
+      console.log(isExist);
       return {
         message: "Temporary password has been sent",
         temporaryPassword: unhashedTemporaryPassword,
-        fullName: isExist.response[0].full_name,
+        fullName:
+          isExist.response[0].first_name + " " + isExist.response[0].last_name,
       };
     } catch (error) {
       console.log("Database error:", error);
