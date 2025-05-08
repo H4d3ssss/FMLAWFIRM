@@ -288,8 +288,8 @@ const ArchiveClientTable = () => {
         <RestoreClientModal
           showModal={showRestoreModal}
           closeModal={() => setShowRestoreModal(false)}
-          clientData={clientToRestore}
           handleRestoreClient={handleRestoreClient}
+          clientData={clientToRestore}
         />
       )}
     </div>

@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { ArchiveRestore, Search } from "lucide-react"; // Use ArchiveRestore for the restore action
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import RestoreAdminModal from "./RestoreAdminModal";
 const ArchiveAdminTable = ({ handleRestore }) => {
   // State for search, sorting, and pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState(""); // State for sorting key
   const [sortOrder, setSortOrder] = useState("asc"); // State for sorting order
-
+  const [count, setCount] = useState(0);
+  const [showRestoreAdminModal, setShowRestoreAdminModal] = useState(false);
+  const [lawyerToRestore, setLawyerToRestore] = useState(null);
   const ITEMS_PER_PAGE = 10; // Number of rows per page
 
   const navigate = useNavigate();
@@ -35,86 +38,7 @@ const ArchiveAdminTable = ({ handleRestore }) => {
     };
     authenticateUser();
   }, []);
-  // Mock data for the table
-  const staticAdminData = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      password: "123456",
-      position: "Manager",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      password: "abcdef",
-      position: "Assistant",
-    },
-    {
-      id: 3,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      password: "qwerty",
-      position: "Supervisor",
-    },
-    {
-      id: 4,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      password: "password",
-      position: "Clerk",
-    },
-    {
-      id: 5,
-      name: "Charlie White",
-      email: "charlie@example.com",
-      password: "letmein",
-      position: "Admin",
-    },
-    {
-      id: 6,
-      name: "Diana Green",
-      email: "diana@example.com",
-      password: "admin123",
-      position: "Manager",
-    },
-    {
-      id: 6,
-      name: "Diana Green",
-      email: "diana@example.com",
-      password: "admin123",
-      position: "Manager",
-    },
-    {
-      id: 6,
-      name: "Diana Green",
-      email: "diana@example.com",
-      password: "admin123",
-      position: "Manager",
-    },
-    {
-      id: 6,
-      name: "Diana Green",
-      email: "diana@example.com",
-      password: "admin123",
-      position: "Manager",
-    },
-    {
-      id: 6,
-      name: "Diana Green",
-      email: "diana@example.com",
-      password: "admin123",
-      position: "Manager",
-    },
-    {
-      id: 6,
-      name: "Diana Green",
-      email: "diana@example.com",
-      password: "admin123",
-      position: "Manager",
-    },
-  ];
+
   const [archivedLawyers, setArchivedLawyers] = useState([]);
 
   const getArchivedLawyers = async () => {
@@ -129,20 +53,21 @@ const ArchiveAdminTable = ({ handleRestore }) => {
   };
   useEffect(() => {
     getArchivedLawyers();
-  }, []);
+  }, [count]);
 
-  const handleRestore1 = async (lawyerId) => {
-    try {
-      const response = await axios.patch(
-        "http://localhost:3000/api/lawyers/restore-archived-lawyer",
-        { lawyerId }
-      );
-      getArchivedLawyers();
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleRestore1 = async (lawyerId) => {
+  //   try {
+  //     const response = await axios.patch(
+  //       "http://localhost:3000/api/lawyers/restore-archived-lawyer",
+  //       { lawyerId }
+  //     );
+  //     getArchivedLawyers();
+  //     setCount((prev) => prev + 1);
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   // Filter and sort data
   // const filteredData = staticAdminData
@@ -278,7 +203,11 @@ const ArchiveAdminTable = ({ handleRestore }) => {
                     <td className="p-3 text-center">{lawyer.position}</td>
                     <td className="p-3 text-center flex justify-center space-x-2">
                       <button
-                        onClick={() => handleRestore1(lawyer.lawyer_id)}
+                        onClick={() => {
+                          // handleRestore1(lawyer.lawyer_id);
+                          setLawyerToRestore(lawyer);
+                          setShowRestoreAdminModal(true);
+                        }}
                         className="text-green-500 hover:text-green-700"
                       >
                         <ArchiveRestore className="w-5 h-5" />
@@ -321,6 +250,14 @@ const ArchiveAdminTable = ({ handleRestore }) => {
           </button>
         </div>
       </div>
+      {showRestoreAdminModal && lawyerToRestore && (
+        <RestoreAdminModal
+          showModal={showRestoreAdminModal}
+          closeModal={() => setShowRestoreAdminModal(false)}
+          adminData={lawyerToRestore}
+          setCount={setCount}
+        />
+      )}
     </div>
   );
 };
