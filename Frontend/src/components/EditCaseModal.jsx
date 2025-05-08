@@ -13,6 +13,7 @@ const EditCaseModal = ({
   const [useLink, setUseLink] = useState(!existingCase?.fileOrLink?.file); // Determine whether to use link or file based on existing case data
   const [caseToEdit, setCaseToEdit] = useState([]);
   const [natureOfCase, setNatureOfCase] = useState(null);
+  const [narratives, setNarratives] = useState(null);
 
   const handleUpdateCase = async (data) => {
     try {
@@ -36,6 +37,7 @@ const EditCaseModal = ({
 
     formData.append("caseId", event.target.caseNo.value);
     formData.append("caseTitle", natureOfCase);
+    formData.append("caseDescription", narratives);
     formData.append("caseStatus", event.target.status.value);
     formData.append("lawyerId", adminId); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
     if (useLink) {
@@ -74,12 +76,6 @@ const EditCaseModal = ({
 
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const handleChange = (option) => {
-    setSelectedOption(option);
-    setNatureOfCase(option ? option.value : null); // Set natureOfCase
-    console.log("Selected:", option?.value);
-  };
-
   const options = [
     { value: "Criminal Case", label: "Criminal Case" },
     { value: "Civil Case", label: "Civil Case" },
@@ -87,6 +83,31 @@ const EditCaseModal = ({
     { value: "Labor Case", label: "Labor Case" },
     { value: "Administrative Case", label: "Administrative Case" },
   ];
+  const handleChange = (option) => {
+    setSelectedOption(option);
+    setNatureOfCase(option ? option.value : null); // Set natureOfCase
+    console.log("Selected:", option?.value);
+  };
+
+  useEffect(() => {
+    if (existingCase?.case_title) {
+      setNatureOfCase(existingCase.case_title); // Make sure this exactly matches one of the option `value`s
+    }
+  }, [existingCase]);
+
+  // useEffect(() => {
+  //   if (existingCase?.case_description && narratives === null) {
+  //     setNarratives(existingCase.case_description);
+  //   }
+  // }, [existingCase, narratives]);
+
+  useEffect(() => {
+    if (existingCase?.case_description) {
+      setNarratives(existingCase.case_description);
+    } else {
+      setNarratives(""); // fallback to empty if no description
+    }
+  }, [existingCase]);
 
   if (!showModal) return null;
 
@@ -131,15 +152,14 @@ const EditCaseModal = ({
                 name="natureOfCase"
                 options={options}
                 value={
-                  natureOfCase
-                    ? { value: natureOfCase, label: natureOfCase }
-                    : null
-                } // Set value to the selected option
+                  options.find((option) => option.value === natureOfCase) ||
+                  null
+                }
                 onChange={handleChange}
                 defaultInputValue={existingCase?.case_title}
                 isClearable
                 isSearchable
-                placeholder="Type or select..."
+                placeholder="Select Nature of Case"
               />
             </div>
             {/* <div className="mb-4">
@@ -269,7 +289,7 @@ const EditCaseModal = ({
                 rows="10"
                 cols="50"
                 name="narratives"
-                value={existingCase?.case_description}
+                value={narratives}
                 onChange={(e) => setNarratives(e.target.value)}
                 placeholder="Type your narratives here..."
                 className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-2"

@@ -49,7 +49,7 @@ const ViewCaseModal = ({ showModal, closeModal, caseDetails }) => {
           </div>
           <div className="mb-4">
             <p className="text-sm font-medium">Case Narratives:</p>
-            <p className="text-lg">{caseDetails.case_description}</p>
+            <p className="text-lg">{caseDetails.case_description || "N / A"}</p>
           </div>
         </div>
       </div>

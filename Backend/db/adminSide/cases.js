@@ -253,6 +253,7 @@ const updateCase = async (data, fileName, filePath) => {
   const query1 = `UPDATE cases
 SET case_title = $1,
     case_status = $2,
+    case_description = $5,
     last_update = NOW(),
     updated_by = $3
 WHERE case_id = $4;`;
@@ -266,6 +267,7 @@ WHERE case_id = $3;`;
       data.caseStatus,
       data.lawyerId,
       data.caseId,
+      data.caseDescription,
     ]);
     const response1 = await pool.query(query2, [
       data.fileName,
@@ -276,6 +278,7 @@ WHERE case_id = $3;`;
     const oldCaseTitle = response3.rows[0].case_title;
     const oldCaseStatus = response3.rows[0].case_status;
     const oldFileName = response3.rows[0].file_name;
+    const oldCaseDescription = response3.rows[0].case_description;
 
     const data1 = {
       adminId: data.lawyerId,
@@ -286,6 +289,32 @@ WHERE case_id = $3;`;
     };
 
     if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseStatus !== data.caseStatus &&
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (case title, case narratives, case status, file name) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
       oldCaseTitle !== data.caseTitle &&
       oldCaseStatus !== data.caseStatus &&
       oldFileName !== data.fileName
@@ -303,6 +332,69 @@ WHERE case_id = $3;`;
         oldFileName +
         " TO " +
         data.fileName +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseStatus !== data.caseStatus &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (case title, case status, case narratives) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (case title, file name, case narratives) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseStatus !== data.caseStatus &&
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (case status, file name, case narratives) : FROM " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
         ", (Case ID: " +
         data.caseId +
         ")";
@@ -354,9 +446,57 @@ WHERE case_id = $3;`;
         ", (Case ID: " +
         data.caseId +
         ")";
+    } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (case title, case narratives) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseStatus !== data.caseStatus &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (case status, case narratives) : FROM " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription
+    ) {
+      data1.description =
+        "Changes are (file name, case narratives) : FROM " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
     } else if (oldCaseTitle !== data.caseTitle) {
       data1.description =
-        "Change is case title : FROM  " +
+        "Change is case title : FROM " +
         oldCaseTitle +
         " TO " +
         data.caseTitle +
@@ -365,7 +505,7 @@ WHERE case_id = $3;`;
         ")";
     } else if (oldCaseStatus !== data.caseStatus) {
       data1.description =
-        "Change is case status: FROM  " +
+        "Change is case status: FROM " +
         oldCaseStatus +
         " TO " +
         data.caseStatus +
@@ -378,6 +518,15 @@ WHERE case_id = $3;`;
         oldFileName +
         " TO " +
         data.fileName +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (oldCaseDescription !== data.caseDescription) {
+      data1.description =
+        "Change is case narratives : FROM " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
         ", (Case ID: " +
         data.caseId +
         ")";
