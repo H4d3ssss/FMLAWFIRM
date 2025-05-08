@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FileText, Link, X } from "lucide-react"; // Importing Lucide React icons
 import axios from "axios";
+import Select from "react-select";
 const EditCaseModal = ({
   showModal,
   closeModal,
@@ -11,6 +12,7 @@ const EditCaseModal = ({
 }) => {
   const [useLink, setUseLink] = useState(!existingCase?.fileOrLink?.file); // Determine whether to use link or file based on existing case data
   const [caseToEdit, setCaseToEdit] = useState([]);
+  const [natureOfCase, setNatureOfCase] = useState(null);
 
   const handleUpdateCase = async (data) => {
     try {
@@ -33,7 +35,7 @@ const EditCaseModal = ({
     const formData = new FormData();
 
     formData.append("caseId", event.target.caseNo.value);
-    formData.append("caseTitle", event.target.title.value);
+    formData.append("caseTitle", natureOfCase);
     formData.append("caseStatus", event.target.status.value);
     formData.append("lawyerId", adminId); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
     if (useLink) {
@@ -70,6 +72,22 @@ const EditCaseModal = ({
     closeModal(); // Close the modal
   };
 
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleChange = (option) => {
+    setSelectedOption(option);
+    setNatureOfCase(option ? option.value : null); // Set natureOfCase
+    console.log("Selected:", option?.value);
+  };
+
+  const options = [
+    { value: "Criminal Case", label: "Criminal Case" },
+    { value: "Civil Case", label: "Civil Case" },
+    { value: "Family Case", label: "Family Case" },
+    { value: "Labor Case", label: "Labor Case" },
+    { value: "Administrative Case", label: "Administrative Case" },
+  ];
+
   if (!showModal) return null;
 
   return (
@@ -105,20 +123,26 @@ const EditCaseModal = ({
             </div>
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium">
-                Title
+                Nature of Case
                 {/* {console.log(existingCase.case_id)} */}
                 {/* {console.log(JSON.stringify(existingCase))} */}
               </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                defaultValue={existingCase?.case_title}
-                className="border border-gray-300 rounded w-full px-3 py-2"
-                required
+              <Select
+                name="natureOfCase"
+                options={options}
+                value={
+                  natureOfCase
+                    ? { value: natureOfCase, label: natureOfCase }
+                    : null
+                } // Set value to the selected option
+                onChange={handleChange}
+                defaultInputValue={existingCase?.case_title}
+                isClearable
+                isSearchable
+                placeholder="Type or select..."
               />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label htmlFor="client" className="block text-sm font-medium">
                 Client
               </label>
@@ -133,7 +157,7 @@ const EditCaseModal = ({
                 className="border border-gray-300 rounded w-full px-3 py-2"
                 required
               />
-            </div>
+            </div> */}
             <div className="mb-4"></div>
             <div className="mb-4">
               <select
@@ -222,7 +246,7 @@ const EditCaseModal = ({
               )}
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label htmlFor="lawyer" className="block text-sm font-medium">
                 Lawyer
               </label>
@@ -230,12 +254,25 @@ const EditCaseModal = ({
                 type="text"
                 id="lawyer"
                 name="lawyer"
-                defaultValue={
+                value={
                   existingCase?.lawyer_fname + " " + existingCase?.lawyer_lname
                 }
-                value={existingCase?.lawyer_id}
                 className="border border-gray-300 rounded w-full px-3 py-2"
                 disabled
+              />
+            </div> */}
+            <div>
+              <label htmlFor="bigInput">Narratives:</label>
+              <br />
+              <textarea
+                id="bigInput"
+                rows="10"
+                cols="50"
+                name="narratives"
+                value={existingCase?.case_description}
+                onChange={(e) => setNarratives(e.target.value)}
+                placeholder="Type your narratives here..."
+                className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-2"
               />
             </div>
             <button

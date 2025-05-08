@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FileText, Link, X } from "lucide-react";
 import axios from "axios";
-
+import Select from "react-select";
 const AddCaseModal = ({
   showModal,
   closeModal,
@@ -14,18 +14,62 @@ const AddCaseModal = ({
   const [approvedClients, setApprovedClients] = useState([]);
   const [lawyers, setLawyers] = useState([]);
   const [loading, setLoading] = useState(false); // Optional: for UX
+  const [natureOfCase, setNatureOfCase] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedLawyer, setSelectedLawyer] = useState(null);
+  const [narratives, setNarratives] = useState(null);
+
+  const handleClientChange = (selectedOption) => {
+    setSelectedClient(selectedOption);
+  };
+
+  const handleStatusChange = (selectedOption) => {
+    setSelectedStatus(selectedOption);
+  };
+
+  const handleLawyerChange = (selectedOption) => {
+    setSelectedLawyer(selectedOption);
+  };
+
+  function transformArray(arr, valueKey, labelKey) {
+    return arr.map((item) => ({
+      value: item[valueKey],
+      label: item[labelKey],
+    }));
+  }
+
+  const clientOptions = transformArray(
+    approvedClients,
+    "client_id",
+    "full_name"
+  );
+
+  const options = [
+    { value: "Criminal Case", label: "Criminal Case" },
+    { value: "Civil Case", label: "Civil Case" },
+    { value: "Family Case", label: "Family Case" },
+    { value: "Labor Case", label: "Labor Case" },
+    { value: "Administrative Case", label: "Administrative Case" },
+  ];
+
+  const lawyerOptions = transformArray(lawyers, "lawyer_id", "full_name");
+  // console.log(clientOptions);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const formData = new FormData();
-    const title = event.target.title.value;
+    // const title = event.target.title.value;
     const clientId = event.target.client.value;
     const status = event.target.status.value;
     const lawyerId = event.target.lawyer.value;
+    const natureOfCase = event.target.natureOfCase.value;
+    const narratives = event.target.narratives.value;
 
-    formData.append("caseTitle", title);
+    formData.append("caseTitle", natureOfCase);
     formData.append("clientId", clientId);
+    formData.append("caseDescription", narratives);
     formData.append("status", status);
     formData.append("lawyerId", lawyerId);
 
@@ -41,6 +85,7 @@ const AddCaseModal = ({
         return;
       }
     }
+
     // console.log(event.target.file.files[0]);
 
     try {
@@ -88,6 +133,27 @@ const AddCaseModal = ({
     fetchAllCases();
   }, [count]);
 
+  const statusOptions = [
+    { value: "Active", label: "Active" },
+    { value: "In Progress", label: "In Progress" },
+    { value: "Pending", label: "Pending" },
+    { value: "Closed", label: "Closed" },
+    { value: "Resolved", label: "Resolved" },
+    { value: "On-Hold", label: "On-Hold" },
+    { value: "Dismissed", label: "Dismissed" },
+    { value: "Archived", label: "Archived" },
+    { value: "Under Review", label: "Under Review" },
+    { value: "Awaiting Trial", label: "Awaiting Trial" },
+  ];
+
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleChange = (option) => {
+    setSelectedOption(option);
+    setNatureOfCase(option ? option.value : null); // Set natureOfCase
+    console.log("Selected:", option?.value);
+  };
+
   if (!showModal) return null;
 
   return (
@@ -108,15 +174,36 @@ const AddCaseModal = ({
         <div className="p-6">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="title" className="block text-sm font-medium">
-                Title
+              <label className="block text-sm font-medium">
+                Nature of case
               </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                required
-                className="border border-gray-300 rounded w-full px-3 py-2"
+              <Select
+                name="natureOfCase"
+                options={options}
+                value={
+                  natureOfCase
+                    ? { value: natureOfCase, label: natureOfCase }
+                    : null
+                } // Set value to the selected option
+                onChange={handleChange}
+                isClearable
+                isSearchable
+                placeholder="Select Nature of Case"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="bigInput">Narratives:</label>
+              <br />
+              <textarea
+                id="bigInput"
+                rows="10"
+                cols="50"
+                name="narratives"
+                value={narratives}
+                onChange={(e) => setNarratives(e.target.value)}
+                placeholder="Type your narratives here..."
+                className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-1"
               />
             </div>
 
@@ -124,7 +211,17 @@ const AddCaseModal = ({
               <label htmlFor="client" className="block text-sm font-medium">
                 Client
               </label>
-              <select
+
+              <Select
+                name="client"
+                options={clientOptions}
+                value={selectedClient} // Set value to the selected option
+                onChange={handleClientChange}
+                isClearable
+                isSearchable
+                placeholder="Select Client"
+              />
+              {/* <select
                 name="client"
                 required
                 className="border border-gray-300 rounded w-full px-3 py-2"
@@ -135,14 +232,23 @@ const AddCaseModal = ({
                     {client.full_name}
                   </option>
                 ))}
-              </select>
+              </select> */}
             </div>
 
             <div className="mb-4">
               <label htmlFor="status" className="block text-sm font-medium">
                 Status
               </label>
-              <select
+              <Select
+                name="status"
+                options={statusOptions}
+                value={selectedStatus} // Set value to the selected option
+                onChange={handleStatusChange}
+                isClearable
+                isSearchable
+                placeholder="Select Status"
+              />
+              {/* <select
                 name="status"
                 required
                 className="border border-gray-300 rounded w-full px-3 py-2"
@@ -158,7 +264,7 @@ const AddCaseModal = ({
                 <option value="Archived">Archived</option>
                 <option value="Under Review">Under Review</option>
                 <option value="Awaiting Trial">Awaiting Trial</option>
-              </select>
+              </select> */}
             </div>
 
             <div className="mb-4">
@@ -222,7 +328,16 @@ const AddCaseModal = ({
               <label htmlFor="lawyer" className="block text-sm font-medium">
                 Lawyer
               </label>
-              <select
+              <Select
+                name="lawyer"
+                options={lawyerOptions}
+                value={selectedLawyer} // Set value to the selected option
+                onChange={handleLawyerChange}
+                isClearable
+                isSearchable
+                placeholder="Select Lawyer"
+              />
+              {/* <select
                 name="lawyer"
                 required
                 className="border border-gray-300 rounded w-full px-3 py-2"
@@ -233,7 +348,7 @@ const AddCaseModal = ({
                     {lawyer.full_name}
                   </option>
                 ))}
-              </select>
+              </select> */}
             </div>
 
             <button

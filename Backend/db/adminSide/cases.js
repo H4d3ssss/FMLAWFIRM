@@ -146,6 +146,7 @@ const fetchAwaitingTrialCases = async () => {
 
 const insertNewCase = async (
   caseTitle,
+  caseDescription,
   clientId,
   lawyerId,
   status,
@@ -156,15 +157,23 @@ const insertNewCase = async (
   try {
     const response = await pool.query(
       `WITH new_case AS (
-  INSERT INTO cases (case_title, client_id, lawyer_id, case_status)
-  VALUES ($1, $2, $3, $4)
+  INSERT INTO cases (case_title, case_description, client_id, lawyer_id, case_status)
+  VALUES ($1, $2, $3, $4, $5)
   RETURNING case_id
 )
 
 INSERT INTO documents (case_id, file_name, file_path)
-SELECT case_id, $5, $6
+SELECT case_id, $6, $7
 FROM new_case;`,
-      [caseTitle, clientId, lawyerId, status, fileName, filePath]
+      [
+        caseTitle,
+        caseDescription,
+        clientId,
+        lawyerId,
+        status,
+        fileName,
+        filePath,
+      ]
     );
     const data1 = {
       adminId,

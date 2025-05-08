@@ -165,7 +165,7 @@ const AdminCaseTable = () => {
             className="bg-white border border-gray-300 rounded-2xl px-3 py-2"
           >
             <option value="case_id">Sort by Case No.</option>
-            <option value="case_title">Sort by Case Title</option>
+            <option value="case_title">Sort by Nature of Case</option>
             <option value="case_status">Sort by Case Status</option>
             <option value="file_name">Sort by File Name</option>
             <option value="client_fname">Sort by Client Name</option>
@@ -189,7 +189,7 @@ const AdminCaseTable = () => {
           <thead className="bg-gray-200">
             <tr>
               <th className="p-3">Case No.</th>
-              <th className="p-3">Title</th>
+              <th className="p-3">Nature of Case</th>
               <th className="p-3">Client</th>
               <th className="p-3">Time & Date Added</th>
               <th className="p-3">Status</th>

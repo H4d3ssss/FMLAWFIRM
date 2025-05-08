@@ -298,10 +298,12 @@ const AddClientAccount = ({
                   type="date"
                   name="birthDate"
                   value={formData.birthDate}
+                  max={new Date().toISOString().split("T")[0]}
                   onChange={handleChange}
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   required
                 />
+                {console.log(new Date().toISOString().split("T")[0])}
                 {errors.birthDate && (
                   <p className="text-sm text-red-500">{errors.birthDate}</p>
                 )}

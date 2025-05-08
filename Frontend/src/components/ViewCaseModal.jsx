@@ -9,7 +9,7 @@ const ViewCaseModal = ({ showModal, closeModal, caseDetails }) => {
       <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative">
         {/* Modal Header */}
         <div className="bg-yellow-400 p-4 rounded-t-lg flex justify-between items-center">
-          <h2 className="text-lg font-bold text-black">View Case</h2>
+          <h2 className="text-lg font-bold text-black">Narratives</h2>
           <button onClick={closeModal} className="text-black text-xl font-bold">
             <X size={24} />
           </button>
@@ -31,16 +31,7 @@ const ViewCaseModal = ({ showModal, closeModal, caseDetails }) => {
               {caseDetails.client_fname} {caseDetails.client_lname}
             </p>
           </div>
-          <div className="mb-4">
-            <p className="text-sm font-medium">Time & Date Added:</p>
-            <p className="text-lg">
-              {caseDetails.time_only} | {caseDetails.date_only}
-            </p>
-          </div>
-          <div className="mb-4">
-            <p className="text-sm font-medium">Status:</p>
-            <p className="text-lg">{caseDetails.case_status}</p>
-          </div>
+
           {caseDetails.last_date_only && caseDetails.last_time_only && (
             <div className="mb-4">
               <p className="text-sm font-medium">Last Update:</p>
@@ -49,26 +40,16 @@ const ViewCaseModal = ({ showModal, closeModal, caseDetails }) => {
               </p>
             </div>
           )}
-          <div className="mb-4">
-            <p className="text-sm font-medium">File:</p>
-            {caseDetails.file_name ? (
-              <a
-                href={`http://localhost:3000/${caseDetails.file_path}`}
-                className="text-blue-500 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {caseDetails.file_name}
-              </a>
-            ) : (
-              <p className="text-lg">No file uploaded</p>
-            )}
-          </div>
+
           <div className="mb-4">
             <p className="text-sm font-medium">Lawyer:</p>
             <p className="text-lg">
               {caseDetails.lawyer_fname} {caseDetails.lawyer_lname}
             </p>
+          </div>
+          <div className="mb-4">
+            <p className="text-sm font-medium">Case Narratives:</p>
+            <p className="text-lg">{caseDetails.case_description}</p>
           </div>
         </div>
       </div>
