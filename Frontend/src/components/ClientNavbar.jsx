@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Search, LogOut, User } from "lucide-react";
+import { Search, LogOut, User, FileLock } from "lucide-react";
 import { GoLaw } from "react-icons/go";
 import { useNavigate, Link } from "react-router-dom";
 import LogoutModal from "./LogoutModal";
+import ChangePasswordModal from "./ChangePasswordModal";
 import axios from "axios";
 
 const ClientNavbar = () => {
@@ -52,7 +53,7 @@ const ClientNavbar = () => {
   }, []);
 
   const [sortKey, setSortKey] = useState("case_title"); // or "caseTitle"
-
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const formatDate = () => {
     const options = {
       weekday: "long",
@@ -74,6 +75,10 @@ const ClientNavbar = () => {
 
   const handleLogout = () => {
     setShowLogoutModal(true);
+  };
+
+  const handleChangePassword = () => {
+    setShowChangePasswordModal(true);
   };
 
   const handleConfirmLogout = async () => {
@@ -104,51 +109,54 @@ const ClientNavbar = () => {
     }
   };
 
-  const quickSort = (arr, key) => {
-    if (arr.length <= 1) return arr;
+  const quickSort = (array, field) => {
+    if (array.length <= 1) return array;
 
-    const pivot = arr[0];
+    const pivot = array[array.length - 1];
     const left = [];
     const right = [];
 
-    for (let i = 1; i < arr.length; i++) {
-      const a = arr[i][key]?.toString().toLowerCase() || "";
-      const b = pivot[key]?.toString().toLowerCase() || "";
-
-      if (a < b) left.push(arr[i]);
-      else right.push(arr[i]);
+    for (let i = 0; i < array.length - 1; i++) {
+      // Compare based on field
+      if (
+        String(array[i][field]).toLowerCase() <
+        String(pivot[field]).toLowerCase()
+      ) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
     }
 
-    return [...quickSort(left, key), pivot, ...quickSort(right, key)];
+    return [...quickSort(left, field), pivot, ...quickSort(right, field)];
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
+  const [sortField, setSortField] = useState("case_title");
 
-    const normalize = (value) =>
-      value?.toString().toLowerCase().replace(/s$/, "") || "";
+  const filteredCases = (Array.isArray(clientCases) ? clientCases : []).filter(
+    (item) => {
+      const query = searchQuery.toLowerCase();
 
-    const filteredResults = (clientCases || [])
-      .filter((caseItem) =>
-        Object.values(caseItem).some((value) =>
-          normalize(value).includes(normalize(query))
-        )
-      )
-      .map((caseItem) => ({
-        type: "Case",
-        id: caseItem.caseId,
-        name: caseItem.caseTitle,
-        status: caseItem.caseStatus,
-      }));
+      if (!query) return true;
 
-    const sortedResults = quickSort(filteredResults, sortKey);
-    setSearchResults(sortedResults);
-    setShowAllResults(false);
-  };
+      // Search across these fields
+      const searchableFields = ["case_id", "case_title", "case_status"];
 
-  useEffect(() => {
-    if (searchQuery) handleSearch(searchQuery);
-  }, [sortKey]);
+      return searchableFields.some((field) => {
+        const value = item[field];
+        return value && String(value).toLowerCase().includes(query);
+      });
+    }
+  );
+
+  // 🛠 Now sort it using quickSort
+  const sortedCases = quickSort(filteredCases, sortField);
+  console.log(clientCases);
+  console.log(sortedCases);
+  console.log(filteredCases);
+  // useEffect(() => {
+  //   if (searchQuery) handleSearch(searchQuery);
+  // }, [sortKey]);
 
   return (
     <>
@@ -166,10 +174,49 @@ const ClientNavbar = () => {
                 type="text"
                 placeholder="Search your cases..."
                 value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-4 py-2 pl-10 pr-4 rounded-lg bg-white border-none focus:outline-none focus:ring-2 focus:ring-white/50"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
+              {searchQuery && (
+                <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-full max-h-40 overflow-y-auto z-50">
+                  {sortedCases.length > 0 ? (
+                    sortedCases.map((result, index) => (
+                      <div
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        // onClick={() => handleResultClick(result)}
+                      >
+                        {console.log(result)}
+                        <p className="text-lg font-medium">
+                          <p className="text-xs text-gray-500 inline">
+                            Case ID:
+                          </p>
+                          {" " + result.case_id}
+                        </p>
+                        <p className="text-sm font-medium">
+                          {result.case_title}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {result.case_status}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="px-4 py-2 text-sm text-gray-500">
+                      No results found.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -193,6 +240,13 @@ const ClientNavbar = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-[#ffb600] border border-[#e68900] rounded-lg shadow-lg">
                   <button
                     className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-[#e68900] rounded-lg"
+                    onClick={handleChangePassword}
+                  >
+                    <FileLock className="w-4 h-4 mr-2 text-black" />
+                    Change Password
+                  </button>
+                  <button
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-black hover:bg-[#e68900] rounded-lg"
                     onClick={handleLogout}
                   >
                     <LogOut className="w-4 h-4 mr-2 text-black" />
@@ -209,6 +263,10 @@ const ClientNavbar = () => {
         showModal={showLogoutModal}
         closeModal={() => setShowLogoutModal(false)}
         handleConfirmLogout={handleConfirmLogout}
+      />
+      <ChangePasswordModal
+        showModal={showChangePasswordModal}
+        closeModal={() => setShowChangePasswordModal(false)}
       />
     </>
   );

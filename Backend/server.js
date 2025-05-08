@@ -8,6 +8,7 @@ import appointmentRoutes from "./routes/appointments.route.js";
 import authRoutes from "./routes/auth.route.js";
 import taskRoutes from "./routes/tasks.route.js";
 import activityRoutes from "./routes/activities.route.js";
+import accountRoutes from "./routes/accounts.route.js";
 import sessions from "express-session";
 import "./db/cron.js";
 dotenv.config();
@@ -50,6 +51,7 @@ app.use("/api/cases", caseRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/accounts", accountRoutes);
 
 app.listen(port, (err) => {
   if (err) throw err;
