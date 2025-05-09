@@ -20,6 +20,7 @@ const Todo = () => {
   const [dayInput, setDayInput] = useState("Today");
   const [assignedDay, setAssignedDay] = useState(""); // For "This Week" tasks
   const [unfinishedTasks, setUnfinishedTasks] = useState([]);
+  const [finishedTasks, setFinishedTasks] = useState([]); // New state for finished tasks
   const [adminId, setAdminId] = useState(null);
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
@@ -73,9 +74,22 @@ const Todo = () => {
     }
   };
 
+  // New function to fetch finished tasks
+  const fetchFinishedTasks = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/tasks/fetch-finished-tasks"
+      );
+      setFinishedTasks(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
     fetchUnfinishedTasks();
+    fetchFinishedTasks(); // Fetch finished tasks on component mount
   }, []);
 
   // Periodically check if completed tasks need to be auto-deleted
@@ -86,6 +100,10 @@ const Todo = () => {
 
     if (unfinishedTasks.length) {
       fetchUnfinishedTasks();
+    }
+
+    if (finishedTasks.length) {
+      fetchFinishedTasks();
     }
     // console.log(unfinishedTasks);
     // console.log("rendering");
@@ -262,6 +280,16 @@ const Todo = () => {
 
   const dayOptions = ["Today", "Tomorrow", "This Week"];
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF] flex flex-col items-center p-4">
       <div className="w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 mb-8">
@@ -323,11 +351,10 @@ const Todo = () => {
           {tasks.map((task, index) => (
             <li
               key={index}
-              className={`flex justify-between items-center p-2 rounded-md ${
-                task.completed
+              className={`flex justify-between items-center p-2 rounded-md ${task.completed
                   ? "bg-green-100 text-green-700"
                   : "bg-gray-100 text-gray-700"
-              }`}
+                }`}
             >
               <div>
                 <button
@@ -399,7 +426,7 @@ const Todo = () => {
       </div>
 
       {/* Unfinished Tasks */}
-      <div className="w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6">
+      <div className="w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 mb-8">
         <h2 className="text-xl font-bold text-gray-700 mb-4">
           Unfinished Tasks
         </h2>
@@ -438,6 +465,40 @@ const Todo = () => {
           ))}
           {unfinishedTasks.length === 0 && (
             <li className="text-gray-500 text-center">No unfinished tasks.</li>
+          )}
+        </ul>
+      </div>
+
+      {/* Finished Tasks - New Section */}
+      <div className="w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 className="text-xl font-bold text-gray-700 mb-4">
+          Finished Tasks
+        </h2>
+        <ul className="space-y-2">
+          {finishedTasks && finishedTasks.length > 0 ? (
+            finishedTasks.map((task, index) => (
+              <li
+                key={index}
+                className="flex justify-between items-center p-2 rounded-md bg-green-100 text-green-700"
+              >
+                <div className="w-full">
+                  <span className="font-medium">{task.task_description}</span>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-sm text-gray-600">
+                      Completed on: {formatDate(task.completed_at || task.assigned)}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      Due date: {formatDate(task.due_date)}
+                    </span>
+                  </div>
+                  <span className="block text-xs text-gray-500">
+                    {task.day_to_be_finished}
+                  </span>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li className="text-gray-500 text-center">No finished tasks.</li>
           )}
         </ul>
       </div>

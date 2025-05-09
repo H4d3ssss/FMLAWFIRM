@@ -160,6 +160,7 @@ const EditCaseModal = ({
                 isClearable
                 isSearchable
                 placeholder="Select Nature of Case"
+                required
               />
             </div>
             {/* <div className="mb-4">
@@ -184,6 +185,7 @@ const EditCaseModal = ({
                 name="status"
                 className="border border-gray-300 rounded w-full px-3 py-2"
                 defaultValue={existingCase?.case_status}
+                required
               >
                 <option value="" defaultChecked>
                   Status
@@ -231,6 +233,7 @@ const EditCaseModal = ({
                   name="fileOption"
                   checked={useLink}
                   onChange={() => setUseLink(true)}
+                  required
                 />
                 <label
                   htmlFor="useLink"
@@ -253,6 +256,7 @@ const EditCaseModal = ({
                   name="file"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   defaultChecked={existingCase?.file_name}
+                  required
                 />
               ) : (
                 <input
@@ -262,6 +266,7 @@ const EditCaseModal = ({
                   defaultValue={existingCase?.fileOrLink}
                   placeholder="Enter file link"
                   className="border border-gray-300 rounded w-full px-3 py-2"
+                  required
                 />
               )}
             </div>
@@ -293,6 +298,7 @@ const EditCaseModal = ({
                 onChange={(e) => setNarratives(e.target.value)}
                 placeholder="Type your narratives here..."
                 className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-2"
+                required
               />
             </div>
             <button

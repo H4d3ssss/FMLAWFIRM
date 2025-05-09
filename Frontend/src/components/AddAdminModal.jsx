@@ -18,6 +18,16 @@ const AddAdminModal = ({
     position: "",
     specialization: "",
   };
+  const [errors, setErrors] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+    address: false,
+    position: false,
+    specialization: false,
+  });
 
   // State for form data
   const [formData, setFormData] = useState(initialFormData);
@@ -46,7 +56,7 @@ const AddAdminModal = ({
     handleAddAdmin(formData);
 
     try {
-    } catch (error) {}
+    } catch (error) { }
 
     // Close the modal after submission
     closeModal();
@@ -109,34 +119,60 @@ const AddAdminModal = ({
         <div className="p-6">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-6">
-              {/* Name */}
+              {/* First Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium">
+                <label htmlFor="firstName" className="block text-sm font-medium">
                   Admin First Name
                 </label>
                 <input
                   type="text"
                   id="firstName"
                   name="firstName"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.firstName}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, firstName: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.firstName.trim() === '') {
+                      setErrors((prev) => ({ ...prev, firstName: true }));
+                    }
+                  }}
                   required
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-xs mt-1">First name is required</p>
+                )}
               </div>
+
+              {/* Last Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium">
+                <label htmlFor="lastName" className="block text-sm font-medium">
                   Admin Last Name
                 </label>
                 <input
                   type="text"
                   id="lastName"
                   name="lastName"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.lastName}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, lastName: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.lastName.trim() === '') {
+                      setErrors((prev) => ({ ...prev, lastName: true }));
+                    }
+                  }}
                   required
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-xs mt-1">Last name is required</p>
+                )}
               </div>
 
               {/* Email */}
@@ -148,11 +184,23 @@ const AddAdminModal = ({
                   type="email"
                   id="email"
                   name="email"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, email: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.email.trim() === '') {
+                      setErrors((prev) => ({ ...prev, email: true }));
+                    }
+                  }}
                   required
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">Email is required</p>
+                )}
               </div>
 
               {/* Password */}
@@ -161,12 +209,21 @@ const AddAdminModal = ({
                   Password
                 </label>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.password}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, password: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.password.trim() === '') {
+                      setErrors((prev) => ({ ...prev, password: true }));
+                    }
+                  }}
                   required
                 />
                 <button
@@ -176,23 +233,32 @@ const AddAdminModal = ({
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1">Password is required</p>
+                )}
               </div>
 
               {/* Confirm Password */}
               <div className="relative">
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium"
-                >
+                <label htmlFor="confirmPassword" className="block text-sm font-medium">
                   Confirm Password
                 </label>
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   id="confirmPassword"
                   name="confirmPassword"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.confirmPassword}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, confirmPassword: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.confirmPassword.trim() === '') {
+                      setErrors((prev) => ({ ...prev, confirmPassword: true }));
+                    }
+                  }}
                   required
                 />
                 <button
@@ -200,27 +266,39 @@ const AddAdminModal = ({
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">Confirm password is required</p>
+                )}
               </div>
 
+              {/* Address */}
               <div>
-                <label htmlFor="position" className="block text-sm font-medium">
+                <label htmlFor="address" className="block text-sm font-medium">
                   Address
                 </label>
                 <input
                   type="text"
                   id="address"
                   name="address"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.address}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, address: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.address.trim() === '') {
+                      setErrors((prev) => ({ ...prev, address: true }));
+                    }
+                  }}
                   required
                 />
+                {errors.address && (
+                  <p className="text-red-500 text-xs mt-1">Address is required</p>
+                )}
               </div>
 
               {/* Position */}
@@ -232,28 +310,51 @@ const AddAdminModal = ({
                   type="text"
                   id="position"
                   name="position"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.position ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.position}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, position: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.position.trim() === '') {
+                      setErrors((prev) => ({ ...prev, position: true }));
+                    }
+                  }}
                   required
                 />
+                {errors.position && (
+                  <p className="text-red-500 text-xs mt-1">Position is required</p>
+                )}
               </div>
+
+              {/* Specialization */}
               <div>
-                <label
-                  htmlFor="specialization"
-                  className="block text-sm font-medium"
-                >
+                <label htmlFor="specialization" className="block text-sm font-medium">
                   Specialization
                 </label>
                 <input
                   type="text"
                   id="specialization"
                   name="specialization"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.specialization ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                   value={formData.specialization}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setErrors((prev) => ({ ...prev, specialization: false }));
+                  }}
+                  onBlur={() => {
+                    if (formData.specialization.trim() === '') {
+                      setErrors((prev) => ({ ...prev, specialization: true }));
+                    }
+                  }}
                   required
                 />
+                {errors.specialization && (
+                  <p className="text-red-500 text-xs mt-1">Specialization is required</p>
+                )}
               </div>
             </div>
 
