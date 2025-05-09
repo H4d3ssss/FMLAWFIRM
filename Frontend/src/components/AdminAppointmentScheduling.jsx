@@ -16,6 +16,45 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
   const [clientId, setClientId] = useState("");
   const [existingAppointments, setExistingAppointments] = useState([]);
   const [timeError, setTimeError] = useState("");
+  const [errors, setErrors] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    lawyerId: false,
+    clientId: false,
+    date: false
+  });
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'title':
+        setErrors(prev => ({ ...prev, title: !value.trim() }));
+        break;
+      case 'type':
+        setErrors(prev => ({ ...prev, type: !value }));
+        break;
+      case 'location':
+        setErrors(prev => ({ ...prev, location: !value.trim() }));
+        break;
+      case 'startTime':
+        setErrors(prev => ({ ...prev, startTime: !value }));
+        break;
+      case 'endTime':
+        setErrors(prev => ({ ...prev, endTime: !value }));
+        break;
+      case 'lawyerId':
+        setErrors(prev => ({ ...prev, lawyerId: !value }));
+        break;
+      case 'clientId':
+        setErrors(prev => ({ ...prev, clientId: !value }));
+        break;
+      case 'date':
+        setErrors(prev => ({ ...prev, date: !value }));
+        break;
+    }
+  };
 
   useEffect(() => {
     fetchActiveLawyers();
@@ -111,6 +150,25 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Reset errors
+    const newErrors = {
+      title: !title.trim(),
+      type: !type,
+      location: !location.trim(),
+      startTime: !startTime,
+      endTime: !endTime,
+      lawyerId: !lawyerId,
+      clientId: !clientId,
+      date: !selectedDate
+    };
+
+    setErrors(newErrors);
+
+    // Check if any errors exist
+    if (Object.values(newErrors).some(error => error)) {
+      return;
+    }
 
     // Validate time conflicts before submission
     if (!validateTimeConflict()) {
@@ -309,10 +367,17 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
               type="text"
               id="title"
               name="title"
-              onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setErrors(prev => ({ ...prev, title: false }));
+              }}
+              className={`mt-1 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2
+                ${errors.title ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
               required
             />
+            {errors.title && (
+              <p className="text-red-500 text-xs mt-1">Title is required</p>
+            )}
           </div>
 
           {/* Service Type */}
@@ -372,23 +437,12 @@ const AdminAppointmentScheduling = ({ isOpen, onClose }) => {
             ></textarea>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-2 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              disabled={!!timeError}
-            >
-              Schedule Appointment
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Schedule Appointment
+          </button>
         </form>
       </div>
     </div>
