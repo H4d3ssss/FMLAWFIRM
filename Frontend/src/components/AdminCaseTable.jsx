@@ -169,7 +169,7 @@ const AdminCaseTable = () => {
             <option value="case_status">Sort by Case Status</option>
             <option value="file_name">Sort by File Name</option>
             <option value="client_fname">Sort by Client Name</option>
-            <option value="lawyer_fname">Sort by Lawyer Title</option>
+            <option value="lawyer_fname">Sort by Lawyer Name</option>
           </select>
         </div>
         <button
