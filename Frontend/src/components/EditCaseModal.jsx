@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FileText, Link, X } from "lucide-react"; // Importing Lucide React icons
+import { Clock, FileText, Link, X } from "lucide-react"; // Importing Lucide React icons
 import axios from "axios";
 import Select from "react-select";
 const EditCaseModal = ({
@@ -15,6 +15,9 @@ const EditCaseModal = ({
   const [natureOfCase, setNatureOfCase] = useState(null);
   const [narratives, setNarratives] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedParty, setSelectedParty] = useState(null);
+  const [party, setParty] = useState(null);
+  const [status, setStatus] = useState(null);
 
   const handleUpdateCase = async (data) => {
     try {
@@ -31,22 +34,37 @@ const EditCaseModal = ({
     }
   };
 
+  const partyOptions = [
+    { value: "Plaintiff", label: "Plaintiff" },
+    { value: "Defendant", label: "Defendant" },
+    { value: "Petitioner", label: "Petitioner" },
+    { value: "Respondent", label: "Respondent" },
+    {
+      value: "Cross-complainant/defendant",
+      label: "Cross-complainant/defendant",
+    },
+    { value: "Complainant", label: "Complainant" },
+    { value: "Promisor", label: "Promisor" },
+    { value: "Promisee", label: "Promisee" },
+    { value: "Beneficiary", label: "Beneficiary" },
+  ];
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // console.log(adminId);
     const formData = new FormData();
 
     formData.append("caseId", event.target.caseNo.value);
     formData.append("caseTitle", natureOfCase);
     formData.append("caseDescription", narratives);
-    formData.append("caseStatus", event.target.status.value);
-    formData.append("lawyerId", adminId); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
+    formData.append("caseStatus", status);
+    formData.append("party", party); // Use selectedParty state instead
+    formData.append("lawyerId", adminId);
+
     if (useLink) {
       formData.append("file", event.target.link.value);
       formData.append("fileLink", event.target.link.value);
     } else {
       const file = event.target.file.files[0];
-      // console.log(event.target.file.files[0]);
       if (file) {
         formData.append("file", file);
       }
@@ -68,6 +86,10 @@ const EditCaseModal = ({
     // };
 
     // console.log(formData);
+    console.log(natureOfCase);
+    console.log(party);
+    console.log(status);
+    // return;
     handleUpdateCase(formData);
     fetchAllCases();
 
@@ -97,15 +119,39 @@ const EditCaseModal = ({
     { value: "Under Review", label: "Under Review" },
     { value: "Awaiting Trial", label: "Awaiting Trial" },
   ];
+
   const handleChange = (option) => {
     setSelectedOption(option);
     setNatureOfCase(option ? option.value : null); // Set natureOfCase
     console.log("Selected:", option?.value);
   };
 
+  const handlePartyChange = (selectedOption) => {
+    setSelectedParty(selectedOption);
+    setParty(selectedOption ? selectedOption.value : null); // Set natureOfCase
+    // Update the selected party
+  };
+
+  const handleStatusChange = (selectedOption) => {
+    setSelectedStatus(selectedOption);
+    setStatus(selectedOption ? selectedOption.value : null); // Set natureOfCase
+  };
+
   useEffect(() => {
     if (existingCase?.case_title) {
       setNatureOfCase(existingCase.case_title); // Make sure this exactly matches one of the option `value`s
+    }
+  }, [existingCase]);
+
+  useEffect(() => {
+    if (existingCase?.case_status) {
+      setStatus(existingCase.case_status); // Make sure this exactly matches one of the option `value`s
+    }
+  }, [existingCase]);
+
+  useEffect(() => {
+    if (existingCase?.party) {
+      setParty(existingCase.party); // Make sure this exactly matches one of the option `value`s
     }
   }, [existingCase]);
 
@@ -122,10 +168,6 @@ const EditCaseModal = ({
       setNarratives(""); // fallback to empty if no description
     }
   }, [existingCase]);
-
-  const handleStatusChange = (selectedOption) => {
-    setSelectedStatus(selectedOption);
-  };
 
   if (!showModal) return null;
 
@@ -180,6 +222,28 @@ const EditCaseModal = ({
                 placeholder="Select Nature of Case"
               />
             </div>
+
+            <div className="mb-4">
+              <label htmlFor="client" className="block text-sm font-medium">
+                Party of the client
+              </label>
+
+              <Select
+                name="party"
+                options={partyOptions}
+                // value={selectedParty}
+                value={
+                  partyOptions.find((option) => option.value === party) || null
+                }
+                onChange={handlePartyChange}
+                defaultInputValue={existingCase?.party}
+                isClearable
+                isSearchable
+                placeholder="Select Party"
+                required
+              />
+            </div>
+
             {/* <div className="mb-4">
               <label htmlFor="client" className="block text-sm font-medium">
                 Client
@@ -217,16 +281,22 @@ const EditCaseModal = ({
                 <option value="Awaiting Trial">Awaiting Trial</option>
               </select>
             </div> */}
-
+            <label htmlFor="client" className="block text-sm font-medium">
+              Case Status
+            </label>
             <Select
               name="status"
               options={statusOptions}
-              value={selectedStatus} // Set value to the selected option
+              // value={selectedStatus} // Set value to the selected option
+              value={
+                statusOptions.find((option) => option.value === status) || null
+              }
               onChange={handleStatusChange}
               defaultInputValue={existingCase?.case_status}
               isClearable
               isSearchable
               placeholder="Select Status"
+              required
             />
 
             {/* File Upload or Link Input */}

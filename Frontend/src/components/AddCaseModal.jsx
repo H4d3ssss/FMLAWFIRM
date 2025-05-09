@@ -18,10 +18,14 @@ const AddCaseModal = ({
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedLawyer, setSelectedLawyer] = useState(null);
+  const [selectedParty, setSelectedParty] = useState(null);
   const [narratives, setNarratives] = useState(null);
 
   const handleClientChange = (selectedOption) => {
     setSelectedClient(selectedOption);
+  };
+  const handlePartyChange = (selectedOption) => {
+    setSelectedParty(selectedOption);
   };
 
   const handleStatusChange = (selectedOption) => {
@@ -53,6 +57,21 @@ const AddCaseModal = ({
     { value: "Administrative Case", label: "Administrative Case" },
   ];
 
+  const partyOptions = [
+    { value: "Plaintiff", label: "Plaintiff" },
+    { value: "Defendant", label: "Defendant" },
+    { value: "Petitioner", label: "Petitioner" },
+    { value: "Respondent", label: "Respondent" },
+    {
+      value: "Cross-complainant/defendant",
+      label: "Cross-complainant/defendant",
+    },
+    { value: "Complainant", label: "Complainant" },
+    { value: "Promisor", label: "Promisor" },
+    { value: "Promisee", label: "Promisee" },
+    { value: "Beneficiary", label: "Beneficiary" },
+  ];
+
   const lawyerOptions = transformArray(lawyers, "lawyer_id", "full_name");
   // console.log(clientOptions);
 
@@ -66,10 +85,12 @@ const AddCaseModal = ({
     const lawyerId = event.target.lawyer.value;
     const natureOfCase = event.target.natureOfCase.value;
     const narratives = event.target.narratives.value;
+    const party = event.target.party.value;
 
     formData.append("caseTitle", natureOfCase);
     formData.append("clientId", clientId);
     formData.append("caseDescription", narratives);
+    formData.append("party", party);
     formData.append("status", status);
     formData.append("lawyerId", lawyerId);
 
@@ -189,7 +210,37 @@ const AddCaseModal = ({
                 isClearable
                 isSearchable
                 placeholder="Select Nature of Case"
+                required
               />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="client" className="block text-sm font-medium">
+                Party of the client
+              </label>
+
+              <Select
+                name="party"
+                options={partyOptions}
+                value={selectedParty} // Set value to the selected option
+                onChange={handlePartyChange}
+                isClearable
+                isSearchable
+                placeholder="Select Party"
+                required
+              />
+              {/* <select
+                name="client"
+                required
+                className="border border-gray-300 rounded w-full px-3 py-2"
+              >
+                <option value="">Select a client</option>
+                {approvedClients.map((client, index) => (
+                  <option key={index} value={client.client_id}>
+                    {client.full_name}
+                  </option>
+                ))}
+              </select> */}
             </div>
 
             <div>
@@ -204,6 +255,7 @@ const AddCaseModal = ({
                 onChange={(e) => setNarratives(e.target.value)}
                 placeholder="Type your narratives here..."
                 className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-1"
+                required
               />
             </div>
 
@@ -220,6 +272,7 @@ const AddCaseModal = ({
                 isClearable
                 isSearchable
                 placeholder="Select Client"
+                required
               />
               {/* <select
                 name="client"
@@ -247,6 +300,7 @@ const AddCaseModal = ({
                 isClearable
                 isSearchable
                 placeholder="Select Status"
+                required
               />
               {/* <select
                 name="status"

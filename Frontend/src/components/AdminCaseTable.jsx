@@ -190,6 +190,7 @@ const AdminCaseTable = () => {
             <tr>
               <th className="p-3">Case No.</th>
               <th className="p-3">Nature of Case</th>
+              <th className="p-3">Party</th>
               <th className="p-3">Client</th>
               <th className="p-3">Time & Date Added</th>
               <th className="p-3">Status</th>
@@ -206,6 +207,7 @@ const AdminCaseTable = () => {
                 <tr key={index} className="odd:bg-white even:bg-gray-100">
                   <td className="p-3">CASE - {caseValue.case_id}</td>
                   <td className="p-3">{caseValue.case_title}</td>
+                  <td className="p-3">{caseValue.party || "N / A"}</td>
                   <td className="p-3">
                     {caseValue.client_fname} {caseValue.client_lname}
                   </td>
