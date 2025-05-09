@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ActiveCaseCard from "../components/ActiveCaseCard";
@@ -35,6 +35,23 @@ const ClientDashboard = () => {
     authenticateUser();
   }, []);
 
+  const [caseCount, setCaseCount] = useState(0);
+
+  const getActiveCasesCount = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/cases/active-cases-count"
+      );
+      setCaseCount(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getActiveCasesCount();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F9C545] to-[#FFFFFF]">
       <ClientNavbar /> {/* Add ClientNavbar */}
@@ -44,7 +61,7 @@ const ClientDashboard = () => {
             Client Dashboard
           </h1>
           <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap justify-center">
-            <ActiveCaseCard />
+            <ActiveCaseCard caseCount={caseCount || 0} />
             <CloseCaseCard /> {/* Add CloseCaseCard */}
             <AppointmentView /> {/* Replace UpcomingAppointmentCard */}
           </div>

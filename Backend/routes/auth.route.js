@@ -8,6 +8,7 @@ import {
   generateTemporaryClientPassword,
   validatePasswordOrTemporaryPassword,
 } from "../db/clients.js";
+import { ifLawyerExist } from "../db/adminSide/lawyers.js";
 import bcrypt from "bcrypt";
 import { userExist } from "../db/users.js";
 import { createActivityLog } from "../db/activities.js";
@@ -46,6 +47,12 @@ router.post("/signup", async (req, res) => {
     const clientExistAndForApproval = await ifClientExistAndForApproval(
       data.email
     );
+
+    const lawyerExist = await ifLawyerExist(data.email);
+
+    if (lawyerExist)
+      return res.status(409).json({ error: "Email already exists" });
+
     if (clientExist) {
       if (clientExistAndForApproval) {
         return res.status(202).json({ message: "Wait for admin's approval" });

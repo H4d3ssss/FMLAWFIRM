@@ -35,7 +35,7 @@ const AddAdminModal = ({
   // State for password visibility
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const [showError, setShowError] = useState(false);
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,10 +53,13 @@ const AddAdminModal = ({
 
     // Static logic: Pass admin data to the parent component
     getLawyers();
-    handleAddAdmin(formData);
-
-    try {
-    } catch (error) { }
+    const isContinue = await handleAddAdmin(formData);
+    if (!isContinue) {
+      console.log("Email already exists");
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
 
     // Close the modal after submission
     closeModal();
@@ -198,8 +201,8 @@ const AddAdminModal = ({
                   }}
                   required
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">Email is required</p>
+                {showError && (
+                  <p className="mt-2 text-red-600">Email already exists</p>
                 )}
               </div>
 

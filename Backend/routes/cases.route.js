@@ -301,8 +301,15 @@ router.post("/new-case", upload.single("file"), async (req, res) => {
   }
   try {
     // console.log(req.file.originalname);
-    const { caseTitle, clientId, lawyerId, status, link, caseDescription } =
-      req.body;
+    const {
+      caseTitle,
+      clientId,
+      lawyerId,
+      status,
+      link,
+      caseDescription,
+      party,
+    } = req.body;
     console.log(req.body);
     const adminId = req.session.user.lawyerId;
     const filePath = req.file ? req.file.path : link;
@@ -316,7 +323,8 @@ router.post("/new-case", upload.single("file"), async (req, res) => {
       status,
       fileName,
       filePath,
-      adminId
+      adminId,
+      party
     );
     if (response.success) {
       res.status(200).json(response);

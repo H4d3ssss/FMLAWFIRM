@@ -154,6 +154,12 @@ const AppointmentScheduling = ({ clientId }) => {
             onChange={(e) => setSelectedDate(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
+            min={new Date().toISOString().split("T")[0]}
+            max={
+              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Add 7 days
+                .toISOString()
+                .split("T")[0]
+            }
           />
         </div>
 

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Select from "react-select";
 const eventTypes = [
   "Consultation",
   "Meeting",
   "Case Hearing",
   "Filing",
   "Follow-up",
-  "Other",
 ];
 
 const eventTypeColors = {
@@ -39,6 +39,30 @@ const EventAddForm = ({
 
   const [lawyers, setLawyers] = useState([]);
   const [clients, setClients] = useState([]);
+
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedLawyer, setSelectedLawyer] = useState(null);
+
+  const handleClientChange = (selectedOption) => {
+    setSelectedClient(selectedOption);
+    setClientId(selectedOption.value);
+  };
+
+  const handleLawyerChange = (selectedOption) => {
+    setSelectedLawyer(selectedOption);
+    setLawyerId(selectedOption.value);
+  };
+
+  function transformArray(arr, valueKey, labelKey) {
+    return arr.map((item) => ({
+      value: item[valueKey],
+      label: item[labelKey],
+    }));
+  }
+
+  const clientOptions = transformArray(clients, "client_id", "full_name");
+
+  const lawyerOptions = transformArray(lawyers, "lawyer_id", "full_name");
 
   const fetchActiveLawyers = async () => {
     try {
@@ -205,7 +229,7 @@ const EventAddForm = ({
           <label className="block text-sm font-medium mb-1">
             Assign Lawyer
           </label>
-          <select
+          {/* <select
             value={lawyerId}
             onChange={(e) => setLawyerId(e.target.value)}
             className="w-full p-2 border rounded"
@@ -219,14 +243,23 @@ const EventAddForm = ({
                 {lawyer.full_name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            name="lawyers"
+            options={lawyerOptions}
+            value={selectedLawyer} // Set value to the selected option
+            onChange={handleLawyerChange}
+            isClearable
+            isSearchable
+            placeholder="Select Lawyer"
+          />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">
             Assign Client
           </label>
-          <select
+          {/* <select
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
             className="w-full p-2 border rounded"
@@ -240,7 +273,16 @@ const EventAddForm = ({
                 {client.full_name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            name="client"
+            options={clientOptions}
+            value={selectedClient} // Set value to the selected option
+            onChange={handleClientChange}
+            isClearable
+            isSearchable
+            placeholder="Select Client"
+          />
         </div>
 
         <div>

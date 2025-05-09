@@ -139,8 +139,10 @@ const AdminAccountTable = ({ admins }) => {
       });
       console.log(response);
       refreshTable(); // Refresh table after adding
+      return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
 

@@ -163,7 +163,7 @@ const AddClientAccount = ({
       password: formData.password,
       confirmPassword: formData.confirmPassword,
     };
-    console.log(payload);
+
     try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/signup", // Backend endpoint
@@ -177,6 +177,7 @@ const AddClientAccount = ({
       console.log(err.response.data.error);
       setServerMessage(err.response.data.error || "An error occurred.");
     }
+    setIsLoading(false);
     getClients();
   };
 

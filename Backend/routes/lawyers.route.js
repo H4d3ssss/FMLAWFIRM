@@ -9,6 +9,7 @@ import {
   fetchArchivedLawyers,
   restoreArchivedLawyer,
 } from "../db/adminSide/lawyers.js";
+import { ifClientExist } from "../db/clients.js";
 import bcrypt from "bcrypt";
 import { createActivityLog } from "../db/activities.js";
 
@@ -59,10 +60,14 @@ router.post("/", async (req, res) => {
     ) {
       return res.status(400).json({ error: "Please fill in all fields" });
     }
+    const clientExist = await ifClientExist(data.email);
+
+    if (clientExist)
+      return res.status(401).json({ error: "Email already exists" });
 
     const lawyerExists = await ifLawyerExist(data.email);
     if (lawyerExists) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(401).json({ error: "Email already exists" });
     }
 
     if (data.password !== data.confirmPassword) {

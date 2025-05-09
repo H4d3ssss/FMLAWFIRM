@@ -131,11 +131,11 @@ const AdminDashboard = () => {
               Manage the law firm's operations
             </p>
           </header>
-
+          {console.log(activeCases.length)}
           {/* Stats Cards Section */}
           <section className="mb-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ActiveCaseCard count={activeCases.length} />
+              <ActiveCaseCard caseCount={activeCases.length} />
               <PendingCaseCard count={pendingCases.length} />
               <UpcomingEventCard
                 count={upcomingEvents.length || 0}

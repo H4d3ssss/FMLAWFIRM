@@ -152,21 +152,23 @@ const insertNewCase = async (
   status,
   fileName,
   filePath,
-  adminId
+  adminId,
+  party
 ) => {
   try {
     const response = await pool.query(
       `WITH new_case AS (
-  INSERT INTO cases (case_title, case_description, client_id, lawyer_id, case_status)
-  VALUES ($1, $2, $3, $4, $5)
+  INSERT INTO cases (case_title, party, case_description, client_id, lawyer_id, case_status)
+  VALUES ($1, $2, $3, $4, $5, $6)
   RETURNING case_id
 )
 
 INSERT INTO documents (case_id, file_name, file_path)
-SELECT case_id, $6, $7
+SELECT case_id, $7, $8
 FROM new_case;`,
       [
         caseTitle,
+        party,
         caseDescription,
         clientId,
         lawyerId,
@@ -244,6 +246,7 @@ const fetchCaseByCaseId = async (case_id) => {
 // WAIT FETCH MUNA DETAISL PARA SA EDIT CASE MODAL PS PA ADD NUNG LAST UPDATED BY AND YUNG NAME
 const updateCase = async (data, fileName, filePath) => {
   // console.log(data.lawyerId);
+  console.log(data.party);
   const response3 = await pool.query(
     // this fetches the old data before it'll change
     `SELECT * FROM "viewAllCases2" WHERE case_id = $1`,
@@ -255,7 +258,8 @@ SET case_title = $1,
     case_status = $2,
     case_description = $5,
     last_update = NOW(),
-    updated_by = $3
+    updated_by = $3,
+    party = $6
 WHERE case_id = $4;`;
   const query2 = `UPDATE documents
 SET file_name = $1,
@@ -268,6 +272,7 @@ WHERE case_id = $3;`;
       data.lawyerId,
       data.caseId,
       data.caseDescription,
+      data.party,
     ]);
     const response1 = await pool.query(query2, [
       data.fileName,
@@ -275,10 +280,13 @@ WHERE case_id = $3;`;
       data.caseId,
     ]);
 
+    // console.log(response);
+
     const oldCaseTitle = response3.rows[0].case_title;
     const oldCaseStatus = response3.rows[0].case_status;
     const oldFileName = response3.rows[0].file_name;
     const oldCaseDescription = response3.rows[0].case_description;
+    const oldParty = response3.rows[0].party;
 
     const data1 = {
       adminId: data.lawyerId,
@@ -288,7 +296,147 @@ WHERE case_id = $3;`;
       target_id: data.caseId,
     };
 
+    // Five changes: title, status, file, description, and party
     if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseStatus !== data.caseStatus &&
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, case narratives, case status, file name, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    }
+    // Four changes combinations with party
+    else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseStatus !== data.caseStatus &&
+      oldFileName !== data.fileName &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, case status, file name, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseStatus !== data.caseStatus &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, case status, case narratives, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, file name, case narratives, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseStatus !== data.caseStatus &&
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case status, file name, case narratives, party) : FROM " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    }
+    // Original four changes without party
+    else if (
       oldCaseTitle !== data.caseTitle &&
       oldCaseStatus !== data.caseStatus &&
       oldFileName !== data.fileName &&
@@ -314,7 +462,137 @@ WHERE case_id = $3;`;
         ", (Case ID: " +
         data.caseId +
         ")";
+    }
+    // Three changes combinations with party
+    else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseStatus !== data.caseStatus &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, case status, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
     } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldFileName !== data.fileName &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, file name, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseStatus !== data.caseStatus &&
+      oldFileName !== data.fileName &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case status, file name, party) : FROM " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseTitle !== data.caseTitle &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case title, case narratives, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldCaseStatus !== data.caseStatus &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case status, case narratives, party) : FROM " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (
+      oldFileName !== data.fileName &&
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (file name, case narratives, party) : FROM " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    }
+    // Original three changes combinations without party
+    else if (
       oldCaseTitle !== data.caseTitle &&
       oldCaseStatus !== data.caseStatus &&
       oldFileName !== data.fileName
@@ -398,7 +676,66 @@ WHERE case_id = $3;`;
         ", (Case ID: " +
         data.caseId +
         ")";
+    }
+    // Two changes combinations with party
+    else if (oldCaseTitle !== data.caseTitle && oldParty !== data.party) {
+      data1.description =
+        "Changes are (case title, party) : FROM " +
+        oldCaseTitle +
+        " TO " +
+        data.caseTitle +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (oldCaseStatus !== data.caseStatus && oldParty !== data.party) {
+      data1.description =
+        "Changes are (case status, party) : FROM " +
+        oldCaseStatus +
+        " TO " +
+        data.caseStatus +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    } else if (oldFileName !== data.fileName && oldParty !== data.party) {
+      data1.description =
+        "Changes are (file name, party) : FROM " +
+        oldFileName +
+        " TO " +
+        data.fileName +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
     } else if (
+      oldCaseDescription !== data.caseDescription &&
+      oldParty !== data.party
+    ) {
+      data1.description =
+        "Changes are (case narratives, party) : FROM " +
+        oldCaseDescription +
+        " TO " +
+        data.caseDescription +
+        ", " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    }
+    // Original two changes combinations without party
+    else if (
       oldCaseTitle !== data.caseTitle &&
       oldCaseStatus !== data.caseStatus
     ) {
@@ -494,7 +831,9 @@ WHERE case_id = $3;`;
         ", (Case ID: " +
         data.caseId +
         ")";
-    } else if (oldCaseTitle !== data.caseTitle) {
+    }
+    // Single changes
+    else if (oldCaseTitle !== data.caseTitle) {
       data1.description =
         "Change is case title : FROM " +
         oldCaseTitle +
@@ -531,6 +870,17 @@ WHERE case_id = $3;`;
         data.caseId +
         ")";
     }
+    // Added single change for party
+    else if (oldParty !== data.party) {
+      data1.description =
+        "Change is party : FROM " +
+        oldParty +
+        " TO " +
+        data.party +
+        ", (Case ID: " +
+        data.caseId +
+        ")";
+    }
 
     // console.log(response);
 
@@ -541,6 +891,7 @@ WHERE case_id = $3;`;
       return { success: true, response: "Failed to update" };
     }
   } catch (error) {
+    console.log(error);
     return { error };
   }
 };
