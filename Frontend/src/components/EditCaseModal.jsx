@@ -14,6 +14,7 @@ const EditCaseModal = ({
   const [caseToEdit, setCaseToEdit] = useState([]);
   const [natureOfCase, setNatureOfCase] = useState(null);
   const [narratives, setNarratives] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const handleUpdateCase = async (data) => {
     try {
@@ -83,6 +84,19 @@ const EditCaseModal = ({
     { value: "Labor Case", label: "Labor Case" },
     { value: "Administrative Case", label: "Administrative Case" },
   ];
+
+  const statusOptions = [
+    { value: "Active", label: "Active" },
+    { value: "In Progress", label: "In Progress" },
+    { value: "Pending", label: "Pending" },
+    { value: "Closed", label: "Closed" },
+    { value: "Resolved", label: "Resolved" },
+    { value: "On-Hold", label: "On-Hold" },
+    { value: "Dismissed", label: "Dismissed" },
+    { value: "Archived", label: "Archived" },
+    { value: "Under Review", label: "Under Review" },
+    { value: "Awaiting Trial", label: "Awaiting Trial" },
+  ];
   const handleChange = (option) => {
     setSelectedOption(option);
     setNatureOfCase(option ? option.value : null); // Set natureOfCase
@@ -108,6 +122,10 @@ const EditCaseModal = ({
       setNarratives(""); // fallback to empty if no description
     }
   }, [existingCase]);
+
+  const handleStatusChange = (selectedOption) => {
+    setSelectedStatus(selectedOption);
+  };
 
   if (!showModal) return null;
 
@@ -178,8 +196,7 @@ const EditCaseModal = ({
                 required
               />
             </div> */}
-            <div className="mb-4"></div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <select
                 name="status"
                 className="border border-gray-300 rounded w-full px-3 py-2"
@@ -199,7 +216,18 @@ const EditCaseModal = ({
                 <option value="Under Review">Under Review</option>
                 <option value="Awaiting Trial">Awaiting Trial</option>
               </select>
-            </div>
+            </div> */}
+
+            <Select
+              name="status"
+              options={statusOptions}
+              value={selectedStatus} // Set value to the selected option
+              onChange={handleStatusChange}
+              defaultInputValue={existingCase?.case_status}
+              isClearable
+              isSearchable
+              placeholder="Select Status"
+            />
 
             {/* File Upload or Link Input */}
             <div className="mb-4">
