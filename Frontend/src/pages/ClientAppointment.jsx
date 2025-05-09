@@ -40,9 +40,6 @@ const ClientAppointment = () => {
       <ClientNavbar /> {/* Add ClientNavbar */}
       <div className="flex flex-1">
         <div className="flex-1 p-6">
-          <h1 className="text-2xl font-bold mb-4 text-black">
-            Schedule an Appointment
-          </h1>
           <div className="max-w-6xl mx-auto flex gap-6 items-stretch">
             {" "}
             {/* Add items-stretch */}

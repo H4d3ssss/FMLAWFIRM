@@ -13,6 +13,22 @@ const AppointmentScheduling = ({ clientId }) => {
   const [availableTimes, setAvailableTimes] = useState([]);
   const [existingAppointments, setExistingAppointments] = useState([]);
   const [timeError, setTimeError] = useState("");
+  const [errors, setErrors] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    selectedDate: false,
+  });
+  const [touched, setTouched] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    selectedDate: false,
+  });
 
   // Fetch existing appointments when date changes
   useEffect(() => {
@@ -80,6 +96,17 @@ const AppointmentScheduling = ({ clientId }) => {
   const timeToMinutes = (timeStr) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours * 60 + minutes;
+  };
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    let hasError = false;
+    if (field === "title" || field === "type" || field === "location") {
+      hasError = !value || value.trim() === "";
+    } else if (field === "startTime" || field === "endTime" || field === "selectedDate") {
+      hasError = !value;
+    }
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
   };
 
   const handleSubmit = async (e) => {
@@ -152,15 +179,19 @@ const AppointmentScheduling = ({ clientId }) => {
             name="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
+            onBlur={(e) => handleBlur("selectedDate", e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
             min={new Date().toISOString().split("T")[0]}
             max={
-              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Add 7 days
+              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
                 .toISOString()
                 .split("T")[0]
             }
           />
+          {errors.selectedDate && touched.selectedDate && (
+            <p className="text-red-500 text-xs mt-1">Date is required</p>
+          )}
         </div>
 
         {/* Time Range Section */}
@@ -176,12 +207,16 @@ const AppointmentScheduling = ({ clientId }) => {
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
+              onBlur={(e) => handleBlur("startTime", e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               required
               min="08:00"
               max="20:00"
               name="startTime"
             />
+            {errors.startTime && touched.startTime && (
+              <p className="text-red-500 text-xs mt-1">Start time is required</p>
+            )}
           </div>
 
           {/* End Time */}
@@ -191,15 +226,16 @@ const AppointmentScheduling = ({ clientId }) => {
               type="time"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
+              onBlur={(e) => handleBlur("endTime", e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               required
               min="08:00"
               max="20:00"
               name="endTime"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Appointments must not exceed 2 hours
-            </p>
+            {errors.endTime && touched.endTime && (
+              <p className="text-red-500 text-xs mt-1">End time is required</p>
+            )}
           </div>
         </div>
 
@@ -240,9 +276,13 @@ const AppointmentScheduling = ({ clientId }) => {
             id="title"
             name="title"
             onChange={(e) => setTitle(e.target.value)}
+            onBlur={(e) => handleBlur("title", e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
           />
+          {errors.title && touched.title && (
+            <p className="text-red-500 text-xs mt-1">Event title is required</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -257,6 +297,7 @@ const AppointmentScheduling = ({ clientId }) => {
             name="type"
             value={type}
             onChange={(e) => setType(e.target.value)}
+            onBlur={(e) => handleBlur("type", e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
           >
@@ -265,6 +306,9 @@ const AppointmentScheduling = ({ clientId }) => {
             <option value="follow-up">Follow-up</option>
             <option value="legal-advice">Legal Advice</option>
           </select>
+          {errors.type && touched.type && (
+            <p className="text-red-500 text-xs mt-1">Service type is required</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -280,9 +324,13 @@ const AppointmentScheduling = ({ clientId }) => {
             id="location"
             name="location"
             onChange={(e) => setLocation(e.target.value)}
+            onBlur={(e) => handleBlur("location", e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
             required
           />
+          {errors.location && touched.location && (
+            <p className="text-red-500 text-xs mt-1">Location is required</p>
+          )}
         </div>
 
         {/* Additional Notes */}

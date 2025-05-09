@@ -37,6 +37,41 @@ const EventAddForm = ({
   const [clientId, setClientId] = useState("");
   const [error, setError] = useState("");
 
+  const [errors, setErrors] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    lawyerId: false,
+    clientId: false,
+  });
+  const [touched, setTouched] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    lawyerId: false,
+    clientId: false,
+  });
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    let hasError = false;
+    if (field === "title" || field === "type" || field === "location") {
+      hasError = !value || value.trim() === "";
+    } else if (
+      field === "startTime" ||
+      field === "endTime" ||
+      field === "lawyerId" ||
+      field === "clientId"
+    ) {
+      hasError = !value;
+    }
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
+  };
+
   const [lawyers, setLawyers] = useState([]);
   const [clients, setClients] = useState([]);
 
@@ -202,10 +237,14 @@ const EventAddForm = ({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onBlur={(e) => handleBlur("title", e.target.value)}
             placeholder="Enter title"
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${errors.title && touched.title ? "border-red-500 bg-red-50" : ""}`}
             required
           />
+          {errors.title && touched.title && (
+            <p className="text-red-500 text-xs mt-1">Title is required</p>
+          )}
         </div>
 
         <div>
@@ -215,7 +254,8 @@ const EventAddForm = ({
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("type", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.type && touched.type ? "border-red-500 bg-red-50" : ""}`}
           >
             {eventTypes.map((t) => (
               <option key={t} value={t}>
@@ -223,6 +263,9 @@ const EventAddForm = ({
               </option>
             ))}
           </select>
+          {errors.type && touched.type && (
+            <p className="text-red-500 text-xs mt-1">Type is required</p>
+          )}
         </div>
 
         <div>
@@ -247,42 +290,35 @@ const EventAddForm = ({
           <Select
             name="lawyers"
             options={lawyerOptions}
-            value={selectedLawyer} // Set value to the selected option
+            value={selectedLawyer}
             onChange={handleLawyerChange}
+            onBlur={() => handleBlur("lawyerId", lawyerId)}
             isClearable
             isSearchable
             placeholder="Select Lawyer"
           />
+          {errors.lawyerId && touched.lawyerId && (
+            <p className="text-red-500 text-xs mt-1">Lawyer is required</p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">
             Assign Client
           </label>
-          {/* <select
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="" disabled>
-              Select a client
-            </option>
-            {clients.map((client) => (
-              <option key={client.client_id} value={client.client_id}>
-                {client.full_name}
-              </option>
-            ))}
-          </select> */}
           <Select
             name="client"
             options={clientOptions}
-            value={selectedClient} // Set value to the selected option
+            value={selectedClient}
             onChange={handleClientChange}
+            onBlur={() => handleBlur("clientId", clientId)}
             isClearable
             isSearchable
             placeholder="Select Client"
           />
+          {errors.clientId && touched.clientId && (
+            <p className="text-red-500 text-xs mt-1">Client is required</p>
+          )}
         </div>
 
         <div>
@@ -291,9 +327,13 @@ const EventAddForm = ({
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            onBlur={(e) => handleBlur("location", e.target.value)}
             placeholder="e.g. RTC Branch 12"
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${errors.location && touched.location ? "border-red-500 bg-red-50" : ""}`}
           />
+          {errors.location && touched.location && (
+            <p className="text-red-500 text-xs mt-1">Location is required</p>
+          )}
         </div>
 
         <div>
@@ -313,11 +353,15 @@ const EventAddForm = ({
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("startTime", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.startTime && touched.startTime ? "border-red-500 bg-red-50" : ""}`}
             required
             min="08:00"
             max="20:00"
           />
+          {errors.startTime && touched.startTime && (
+            <p className="text-red-500 text-xs mt-1">Start time is required</p>
+          )}
         </div>
 
         <div>
@@ -326,11 +370,15 @@ const EventAddForm = ({
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("endTime", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.endTime && touched.endTime ? "border-red-500 bg-red-50" : ""}`}
             required
             min="08:00"
             max="20:00"
           />
+          {errors.endTime && touched.endTime && (
+            <p className="text-red-500 text-xs mt-1">End time is required</p>
+          )}
         </div>
 
         <button

@@ -147,7 +147,7 @@ const AccountsPage = () => {
       <Navbar />
 
       {/* Main content fills remaining space */}
-      <div className="flex-grow p-4 container mx-auto">
+      <main className="flex-grow p-4 container mx-auto flex flex-col">
         <h1 className="text-2xl font-bold mb-6 text-center">
           Account Management
         </h1>
@@ -156,30 +156,27 @@ const AccountsPage = () => {
         <div className="flex justify-center mb-6">
           <div className="bg-white rounded-lg shadow-md inline-flex flex-wrap">
             <button
-              className={`px-6 py-3 ${
-                activeTab === "admin"
-                  ? "bg-[#FFB600] text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
+              className={`px-6 py-3 ${activeTab === "admin"
+                ? "bg-[#FFB600] text-white"
+                : "bg-white text-gray-700 hover:bg-gray-100"
               } ${activeTab === "admin" ? "rounded-l-lg" : ""}`}
               onClick={() => setActiveTab("admin")}
             >
               Admin Accounts
             </button>
             <button
-              className={`px-6 py-3 ${
-                activeTab === "clients"
-                  ? "bg-[#FFB600] text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
+              className={`px-6 py-3 ${activeTab === "clients"
+                ? "bg-[#FFB600] text-white"
+                : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("clients")}
             >
               Client Accounts
             </button>
             <button
-              className={`px-6 py-3 ${
-                activeTab === "approvals"
-                  ? "bg-[#FFB600] text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
+              className={`px-6 py-3 ${activeTab === "approvals"
+                ? "bg-[#FFB600] text-white"
+                : "bg-white text-gray-700 hover:bg-gray-100"
               } ${activeTab === "approvals" ? "rounded-r-lg" : ""}`}
               onClick={() => setActiveTab("approvals")}
             >
@@ -189,33 +186,35 @@ const AccountsPage = () => {
         </div>
 
         {/* Conditional Rendering based on active tab */}
-        {activeTab === "admin" && (
-          <AdminAccountTable
-            admins={admins}
-            onView={handleView}
-            onEdit={handleEdit}
-            onArchive={handleArchive}
-          />
-        )}
+        <div className="flex-1">
+          {activeTab === "admin" && (
+            <AdminAccountTable
+              admins={admins}
+              onView={handleView}
+              onEdit={handleEdit}
+              onArchive={handleArchive}
+            />
+          )}
 
-        {activeTab === "clients" && (
-          <ClientAccountTable
-            clients={clients}
-            onEdit={handleEditClient}
-            onArchive={handleArchiveClient}
-            lawyerId={adminId}
-          />
-        )}
+          {activeTab === "clients" && (
+            <ClientAccountTable
+              clients={clients}
+              onEdit={handleEditClient}
+              onArchive={handleArchiveClient}
+              lawyerId={adminId}
+            />
+          )}
 
-        {activeTab === "approvals" && (
-          <AccountApprovalTable
-            approvals={approvals}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            lawyerId={adminId}
-          />
-        )}
-      </div>
+          {activeTab === "approvals" && (
+            <AccountApprovalTable
+              approvals={approvals}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              lawyerId={adminId}
+            />
+          )}
+        </div>
+      </main>
 
       {/* Sticky Footer */}
       <Footer />

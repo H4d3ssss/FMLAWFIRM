@@ -207,7 +207,7 @@ function RegisterForm() {
     <div className="min-h-screen flex items-center justify-center px-4 pt-8">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg space-y-4"
+        className="w-full max-w-5xl bg-white p-8 rounded-2xl shadow-lg space-y-4"
       >
         <h2 className="text-2xl font-bold text-center text-black mb-6">
           Create Your Account

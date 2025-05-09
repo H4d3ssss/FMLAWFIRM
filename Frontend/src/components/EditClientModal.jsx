@@ -5,6 +5,7 @@ import provincesData from "./data/provinces.json";
 import citiesData from "./data/cities.json";
 import barangaysData from "./data/barangays.json";
 import axios from "axios";
+
 const EditClientModal = ({
   showModal,
   closeModal,
@@ -19,12 +20,40 @@ const EditClientModal = ({
   });
 
   const [formData, setFormData] = useState(clientData);
-  // const [myAddress, setMyAddress] = useState([]);
-  // useEffect(() => {
-  //   if (!clientData) return;
-  //   setMyAddress(clientData.address.split(","));
-  //   console.log(clientData.address);
-  // }, [clientData]);
+  const [errors, setErrors] = useState({
+    first_name: false,
+    last_name: false,
+    not_formatted_date_of_birth: false,
+    sex: false,
+    contact_number: false,
+    houseNumber: false,
+    streetName: false,
+    region: false,
+    province: false,
+    city: false,
+    barangay: false,
+    postalCode: false,
+  });
+  const [touched, setTouched] = useState({
+    first_name: false,
+    last_name: false,
+    not_formatted_date_of_birth: false,
+    sex: false,
+    contact_number: false,
+    houseNumber: false,
+    streetName: false,
+    region: false,
+    province: false,
+    city: false,
+    barangay: false,
+    postalCode: false,
+  });
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    let hasError = !value || value.trim() === "";
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
+  };
 
   const [addressParts, setAddressParts] = useState({
     houseNumber: "",
@@ -259,11 +288,15 @@ const EditClientModal = ({
                   type="text"
                   id="first_name"
                   name="first_name"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.first_name && touched.first_name ? "border-red-500 bg-red-50" : ""}`}
                   value={formData.first_name}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("first_name", e.target.value)}
                   required
                 />
+                {errors.first_name && touched.first_name && (
+                  <p className="text-red-500 text-xs mt-1">First name is required</p>
+                )}
               </div>
 
               {/* Last Name */}
@@ -278,8 +311,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.last_name}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("last_name", e.target.value)}
                   required
                 />
+                {errors.last_name && touched.last_name && (
+                  <span className="text-red-500 text-sm">Last name is required.</span>
+                )}
               </div>
               {/* {console.log(JSON.stringify(formData))} */}
 
@@ -294,7 +331,6 @@ const EditClientModal = ({
                   name="email"
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.email}
-                  onChange={handleChange}
                   required
                   disabled
                 />
@@ -315,8 +351,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.not_formatted_date_of_birth}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("not_formatted_date_of_birth", e.target.value)}
                   required
                 />
+                {errors.not_formatted_date_of_birth && touched.not_formatted_date_of_birth && (
+                  <span className="text-red-500 text-sm">Birth date is required.</span>
+                )}
               </div>
 
               {/* Sex */}
@@ -330,12 +370,16 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={formData.sex}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("sex", e.target.value)}
                   required
                 >
                   <option value="">Select Sex</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
+                {errors.sex && touched.sex && (
+                  <span className="text-red-500 text-sm">Sex is required.</span>
+                )}
               </div>
 
               {/* Phone */}
@@ -351,8 +395,12 @@ const EditClientModal = ({
                   placeholder="+63 999-999-9999"
                   value={formData.contact_number}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("contact_number", e.target.value)}
                   required
                 />
+                {errors.contact_number && touched.contact_number && (
+                  <span className="text-red-500 text-sm">Phone number is required.</span>
+                )}
               </div>
 
               {/* House/Block No. */}
@@ -370,8 +418,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.houseNumber}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("houseNumber", e.target.value)}
                   required
                 />
+                {errors.houseNumber && touched.houseNumber && (
+                  <span className="text-red-500 text-sm">House/Block No. is required.</span>
+                )}
               </div>
 
               {/* Street Name */}
@@ -389,8 +441,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.streetName}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("streetName", e.target.value)}
                   required
                 />
+                {errors.streetName && touched.streetName && (
+                  <span className="text-red-500 text-sm">Street name is required.</span>
+                )}
               </div>
 
               {/* Region */}
@@ -405,8 +461,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.region}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("region", e.target.value)}
                   required
                 />
+                {errors.region && touched.region && (
+                  <span className="text-red-500 text-sm">Region is required.</span>
+                )}
               </div>
 
               {/* Province */}
@@ -421,8 +481,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.province}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("province", e.target.value)}
                   required
                 />
+                {errors.province && touched.province && (
+                  <span className="text-red-500 text-sm">Province is required.</span>
+                )}
               </div>
 
               {/* City */}
@@ -437,8 +501,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.city}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("city", e.target.value)}
                   required
                 />
+                {errors.city && touched.city && (
+                  <span className="text-red-500 text-sm">City/Municipality is required.</span>
+                )}
               </div>
 
               {/* Barangay */}
@@ -453,8 +521,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.barangay}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("barangay", e.target.value)}
                   required
                 />
+                {errors.barangay && touched.barangay && (
+                  <span className="text-red-500 text-sm">Barangay is required.</span>
+                )}
               </div>
 
               {/* ZIP Code */}
@@ -469,8 +541,12 @@ const EditClientModal = ({
                   className="border border-gray-300 rounded w-full px-3 py-2"
                   value={addressParts.postalCode}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("postalCode", e.target.value)}
                   required
                 />
+                {errors.postalCode && touched.postalCode && (
+                  <span className="text-red-500 text-sm">ZIP Code is required.</span>
+                )}
               </div>
             </div>
 

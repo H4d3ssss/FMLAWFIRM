@@ -35,6 +35,40 @@ const AddClientModal = ({
     city: "",
   });
 
+  // Enhanced error state with boolean values for each field
+  const [errors, setErrors] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    birthDate: false,
+    sex: false,
+    phone: false,
+    houseNumber: false,
+    streetName: false,
+    region: false,
+    province: false,
+    city: false,
+    barangay: false,
+    zipCode: false,
+  });
+
+  // Track which fields have been touched by the user
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    birthDate: false,
+    sex: false,
+    phone: false,
+    houseNumber: false,
+    streetName: false,
+    region: false,
+    province: false,
+    city: false,
+    barangay: false,
+    zipCode: false,
+  });
+
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [filteredBarangays, setFilteredBarangays] = useState([]);
@@ -47,6 +81,8 @@ const AddClientModal = ({
       setFilteredProvinces([]);
       setFilteredCities([]);
       setFilteredBarangays([]);
+      setErrors({});
+      setTouched({});
     }
   }, [showModal]);
 
@@ -101,20 +137,83 @@ const AddClientModal = ({
     }
   }, [locationIds.city, locationIds.province, locationIds.region]);
 
+  // Generic onBlur handler for all fields
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    let hasError = false;
+    const value = formData[field];
+
+    // Field-specific validation
+    if (field === 'email') {
+      hasError = !value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    } else if (field === 'phone') {
+      hasError = !value || value.trim() === '';
+    } else {
+      // General validation for other fields
+      hasError = !value || value.trim() === '';
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
+  };
+
+  const validate = () => {
+    const newErrors = {
+      firstName: !formData.firstName.trim(),
+      lastName: !formData.lastName.trim(),
+      email: !formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
+      birthDate: !formData.birthDate.trim(),
+      sex: !formData.sex,
+      phone: !formData.phone.trim(),
+      houseNumber: !formData.houseNumber.trim(),
+      streetName: !formData.streetName.trim(),
+      region: !formData.region,
+      province: !formData.province,
+      city: !formData.city,
+      barangay: !formData.barangay,
+      zipCode: !formData.zipCode.trim(),
+    };
+
+    setErrors(newErrors);
+
+    // Mark all fields as touched to show all errors
+    setTouched({
+      firstName: true,
+      lastName: true,
+      email: true,
+      birthDate: true,
+      sex: true,
+      phone: true,
+      houseNumber: true,
+      streetName: true,
+      region: true,
+      province: true,
+      city: true,
+      barangay: true,
+      zipCode: true,
+    });
+
+    return !Object.values(newErrors).some(error => error);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (["region", "province", "city", "barangay"].includes(name)) {
       setLocationIds((prev) => ({ ...prev, [name]: value }));
       setFormData((prev) => ({ ...prev, [name]: value })); // Store the ID
+      setErrors((prev) => ({ ...prev, [name]: false }));
       return;
     }
 
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     const regionName =
       regionsData.find((r) => r.id === locationIds.region)?.name || "";
@@ -181,11 +280,16 @@ const AddClientModal = ({
                   type="text"
                   id="firstName"
                   name="firstName"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.firstName && touched.firstName ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.firstName}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("firstName")}
                   required
                 />
+                {errors.firstName && touched.firstName && (
+                  <p className="text-red-500 text-xs mt-1">First name is required</p>
+                )}
               </div>
 
               {/* Last Name */}
@@ -197,11 +301,16 @@ const AddClientModal = ({
                   type="text"
                   id="lastName"
                   name="lastName"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.lastName && touched.lastName ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.lastName}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("lastName")}
                   required
                 />
+                {errors.lastName && touched.lastName && (
+                  <p className="text-red-500 text-xs mt-1">Last name is required</p>
+                )}
               </div>
 
               {/* Email */}
@@ -213,11 +322,18 @@ const AddClientModal = ({
                   type="email"
                   id="email"
                   name="email"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.email && touched.email ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("email")}
                   required
                 />
+                {errors.email && touched.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {!formData.email.trim() ? "Email is required" : "Invalid email format"}
+                  </p>
+                )}
               </div>
 
               {/* Birth Date */}
@@ -232,11 +348,16 @@ const AddClientModal = ({
                   type="date"
                   id="birthDate"
                   name="birthDate"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.birthDate && touched.birthDate ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.birthDate}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("birthDate")}
                   required
                 />
+                {errors.birthDate && touched.birthDate && (
+                  <p className="text-red-500 text-xs mt-1">Birth date is required</p>
+                )}
               </div>
 
               {/* Sex */}
@@ -247,15 +368,20 @@ const AddClientModal = ({
                 <select
                   id="sex"
                   name="sex"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.sex && touched.sex ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.sex}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("sex")}
                   required
                 >
                   <option value="">Select Sex</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
+                {errors.sex && touched.sex && (
+                  <p className="text-red-500 text-xs mt-1">Sex is required</p>
+                )}
               </div>
 
               {/* Phone */}
@@ -267,12 +393,17 @@ const AddClientModal = ({
                   type="text"
                   id="phone"
                   name="phone"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.phone && touched.phone ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   placeholder="+63 999-999-9999"
                   value={formData.phone}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("phone")}
                   required
                 />
+                {errors.phone && touched.phone && (
+                  <p className="text-red-500 text-xs mt-1">Phone number is required</p>
+                )}
               </div>
 
               {/* House/Block No. */}
@@ -287,11 +418,16 @@ const AddClientModal = ({
                   type="text"
                   id="houseNumber"
                   name="houseNumber"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.houseNumber && touched.houseNumber ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.houseNumber}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("houseNumber")}
                   required
                 />
+                {errors.houseNumber && touched.houseNumber && (
+                  <p className="text-red-500 text-xs mt-1">House/Block No. is required</p>
+                )}
               </div>
 
               {/* Street Name */}
@@ -306,11 +442,16 @@ const AddClientModal = ({
                   type="text"
                   id="streetName"
                   name="streetName"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.streetName && touched.streetName ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.streetName}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("streetName")}
                   required
                 />
+                {errors.streetName && touched.streetName && (
+                  <p className="text-red-500 text-xs mt-1">Street name is required</p>
+                )}
               </div>
 
               {/* Region */}
@@ -321,9 +462,11 @@ const AddClientModal = ({
                 <select
                   id="region"
                   name="region"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.region && touched.region ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={locationIds.region}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("region")}
                   required
                 >
                   <option value="">Select Region</option>
@@ -333,6 +476,9 @@ const AddClientModal = ({
                     </option>
                   ))}
                 </select>
+                {errors.region && touched.region && (
+                  <p className="text-red-500 text-xs mt-1">Region is required</p>
+                )}
               </div>
 
               {/* Province */}
@@ -343,9 +489,11 @@ const AddClientModal = ({
                 <select
                   id="province"
                   name="province"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.province && touched.province ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={locationIds.province}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("province")}
                   disabled={!filteredProvinces.length}
                   required
                 >
@@ -356,6 +504,9 @@ const AddClientModal = ({
                     </option>
                   ))}
                 </select>
+                {errors.province && touched.province && (
+                  <p className="text-red-500 text-xs mt-1">Province is required</p>
+                )}
               </div>
 
               {/* City */}
@@ -366,9 +517,11 @@ const AddClientModal = ({
                 <select
                   id="city"
                   name="city"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.city && touched.city ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={locationIds.city}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("city")}
                   disabled={!filteredCities.length}
                   required
                 >
@@ -379,6 +532,9 @@ const AddClientModal = ({
                     </option>
                   ))}
                 </select>
+                {errors.city && touched.city && (
+                  <p className="text-red-500 text-xs mt-1">City is required</p>
+                )}
               </div>
 
               {/* Barangay */}
@@ -389,9 +545,11 @@ const AddClientModal = ({
                 <select
                   id="barangay"
                   name="barangay"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.barangay && touched.barangay ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.barangay}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("barangay")}
                   disabled={!filteredBarangays.length}
                   required
                 >
@@ -402,6 +560,9 @@ const AddClientModal = ({
                     </option>
                   ))}
                 </select>
+                {errors.barangay && touched.barangay && (
+                  <p className="text-red-500 text-xs mt-1">Barangay is required</p>
+                )}
               </div>
 
               {/* ZIP Code */}
@@ -413,11 +574,16 @@ const AddClientModal = ({
                   type="text"
                   id="zipCode"
                   name="zipCode"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border rounded w-full px-3 py-2 ${errors.zipCode && touched.zipCode ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
                   value={formData.zipCode}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("zipCode")}
                   required
                 />
+                {errors.zipCode && touched.zipCode && (
+                  <p className="text-red-500 text-xs mt-1">ZIP code is required</p>
+                )}
               </div>
             </div>
 

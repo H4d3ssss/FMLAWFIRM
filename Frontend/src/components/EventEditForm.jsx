@@ -27,6 +27,40 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
   const [lawyerId, setLawyerId] = useState("");
   const [clientId, setClientId] = useState("");
   const [date, setDate] = useState("");
+  const [errors, setErrors] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    lawyerId: false,
+    clientId: false,
+  });
+  const [touched, setTouched] = useState({
+    title: false,
+    type: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    lawyerId: false,
+    clientId: false,
+  });
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    let hasError = false;
+    if (field === "title" || field === "type" || field === "location") {
+      hasError = !value || value.trim() === "";
+    } else if (
+      field === "startTime" ||
+      field === "endTime" ||
+      field === "lawyerId" ||
+      field === "clientId"
+    ) {
+      hasError = !value;
+    }
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
+  };
 
   // Example data for lawyers and clients
   const [lawyers, setLawyers] = useState([]);
@@ -179,11 +213,15 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
             type="text"
             name="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)} // Editable title
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={(e) => handleBlur("title", e.target.value)}
             placeholder="Enter title"
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${errors.title && touched.title ? "border-red-500 bg-red-50" : ""}`}
             required
           />
+          {errors.title && touched.title && (
+            <p className="text-red-500 text-xs mt-1">Title is required</p>
+          )}
         </div>
 
         <div>
@@ -193,7 +231,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("type", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.type && touched.type ? "border-red-500 bg-red-50" : ""}`}
           >
             {eventTypes.map((t) => (
               <option key={t} value={t}>
@@ -201,6 +240,9 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
               </option>
             ))}
           </select>
+          {errors.type && touched.type && (
+            <p className="text-red-500 text-xs mt-1">Type is required</p>
+          )}
         </div>
 
         <div>
@@ -210,7 +252,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
           <select
             value={lawyerId}
             onChange={(e) => setLawyerId(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("lawyerId", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.lawyerId && touched.lawyerId ? "border-red-500 bg-red-50" : ""}`}
             required
           >
             <option value="" disabled>
@@ -222,6 +265,9 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
               </option>
             ))}
           </select>
+          {errors.lawyerId && touched.lawyerId && (
+            <p className="text-red-500 text-xs mt-1">Lawyer is required</p>
+          )}
         </div>
 
         <div>
@@ -231,7 +277,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
           <select
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("clientId", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.clientId && touched.clientId ? "border-red-500 bg-red-50" : ""}`}
             required
           >
             <option value="" disabled>
@@ -243,6 +290,9 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
               </option>
             ))}
           </select>
+          {errors.clientId && touched.clientId && (
+            <p className="text-red-500 text-xs mt-1">Client is required</p>
+          )}
         </div>
 
         <div>
@@ -251,9 +301,15 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            onBlur={(e) => handleBlur("location", e.target.value)}
             placeholder="e.g. RTC Branch 12"
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${
+              touched.location && errors.location ? "border-red-500" : ""
+            }`}
           />
+          {touched.location && errors.location && (
+            <p className="text-red-500 text-sm">Location is required.</p>
+          )}
         </div>
 
         <div>
@@ -273,8 +329,14 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("startTime", e.target.value)}
+            className={`w-full p-2 border rounded ${
+              touched.startTime && errors.startTime ? "border-red-500" : ""
+            }`}
           />
+          {touched.startTime && errors.startTime && (
+            <p className="text-red-500 text-sm">Start time is required.</p>
+          )}
         </div>
 
         <div>
@@ -283,8 +345,12 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-            className="w-full p-2 border rounded"
+            onBlur={(e) => handleBlur("endTime", e.target.value)}
+            className={`w-full p-2 border rounded ${errors.endTime && touched.endTime ? "border-red-500 bg-red-50" : ""}`}
           />
+          {errors.endTime && touched.endTime && (
+            <p className="text-red-500 text-xs mt-1">End time is required</p>
+          )}
         </div>
 
         <button

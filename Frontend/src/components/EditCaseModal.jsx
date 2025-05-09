@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Clock, FileText, Link, X } from "lucide-react"; // Importing Lucide React icons
+import { FileText, Link, X } from "lucide-react"; // Importing Lucide React icons
 import axios from "axios";
 import Select from "react-select";
 const EditCaseModal = ({
@@ -14,10 +14,41 @@ const EditCaseModal = ({
   const [caseToEdit, setCaseToEdit] = useState([]);
   const [natureOfCase, setNatureOfCase] = useState(null);
   const [narratives, setNarratives] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  const [selectedParty, setSelectedParty] = useState(null);
   const [party, setParty] = useState(null);
   const [status, setStatus] = useState(null);
+  const [errors, setErrors] = useState({
+    natureOfCase: false,
+    party: false,
+    narratives: false,
+    status: false,
+    file: false,
+    link: false,
+  });
+  const [touched, setTouched] = useState({
+    natureOfCase: false,
+    party: false,
+    narratives: false,
+    status: false,
+    file: false,
+    link: false,
+  });
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    let hasError = false;
+    if (field === "natureOfCase" || field === "party" || field === "status") {
+      hasError = !value;
+    } else if (field === "narratives") {
+      hasError = !value || value.trim() === "";
+    } else if (field === "file" && !useLink) {
+      hasError = !value;
+    } else if (field === "link" && useLink) {
+      hasError = !value || value.trim() === "";
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
+  };
 
   const handleUpdateCase = async (data) => {
     try {
@@ -34,37 +65,22 @@ const EditCaseModal = ({
     }
   };
 
-  const partyOptions = [
-    { value: "Plaintiff", label: "Plaintiff" },
-    { value: "Defendant", label: "Defendant" },
-    { value: "Petitioner", label: "Petitioner" },
-    { value: "Respondent", label: "Respondent" },
-    {
-      value: "Cross-complainant/defendant",
-      label: "Cross-complainant/defendant",
-    },
-    { value: "Complainant", label: "Complainant" },
-    { value: "Promisor", label: "Promisor" },
-    { value: "Promisee", label: "Promisee" },
-    { value: "Beneficiary", label: "Beneficiary" },
-  ];
-
   const handleSubmit = (event) => {
     event.preventDefault();
+    // console.log(adminId);
     const formData = new FormData();
 
     formData.append("caseId", event.target.caseNo.value);
     formData.append("caseTitle", natureOfCase);
     formData.append("caseDescription", narratives);
     formData.append("caseStatus", status);
-    formData.append("party", party); // Use selectedParty state instead
-    formData.append("lawyerId", adminId);
-
+    formData.append("lawyerId", adminId); // THIS SHOULD BE DYNAMIC LIKE WHOS THE LAWYER THAT IS CURRENTLY LOGGED IN
     if (useLink) {
       formData.append("file", event.target.link.value);
       formData.append("fileLink", event.target.link.value);
     } else {
       const file = event.target.file.files[0];
+      // console.log(event.target.file.files[0]);
       if (file) {
         formData.append("file", file);
       }
@@ -86,10 +102,6 @@ const EditCaseModal = ({
     // };
 
     // console.log(formData);
-    console.log(natureOfCase);
-    console.log(party);
-    console.log(status);
-    // return;
     handleUpdateCase(formData);
     fetchAllCases();
 
@@ -106,7 +118,12 @@ const EditCaseModal = ({
     { value: "Labor Case", label: "Labor Case" },
     { value: "Administrative Case", label: "Administrative Case" },
   ];
-
+  const partyOptions = [
+    { value: "Plaintiff", label: "Plaintiff" },
+    { value: "Defendant", label: "Defendant" },
+    { value: "Witness", label: "Witness" },
+    { value: "Other", label: "Other" },
+  ];
   const statusOptions = [
     { value: "Active", label: "Active" },
     { value: "In Progress", label: "In Progress" },
@@ -119,22 +136,20 @@ const EditCaseModal = ({
     { value: "Under Review", label: "Under Review" },
     { value: "Awaiting Trial", label: "Awaiting Trial" },
   ];
-
   const handleChange = (option) => {
     setSelectedOption(option);
     setNatureOfCase(option ? option.value : null); // Set natureOfCase
     console.log("Selected:", option?.value);
   };
 
-  const handlePartyChange = (selectedOption) => {
-    setSelectedParty(selectedOption);
-    setParty(selectedOption ? selectedOption.value : null); // Set natureOfCase
-    // Update the selected party
+  const handlePartyChange = (option) => {
+    setParty(option ? option.value : null); // Set party
+    console.log("Selected Party:", option?.value);
   };
 
-  const handleStatusChange = (selectedOption) => {
-    setSelectedStatus(selectedOption);
-    setStatus(selectedOption ? selectedOption.value : null); // Set natureOfCase
+  const handleStatusChange = (option) => {
+    setStatus(option ? option.value : null); // Set status
+    console.log("Selected Status:", option?.value);
   };
 
   useEffect(() => {
@@ -144,28 +159,22 @@ const EditCaseModal = ({
   }, [existingCase]);
 
   useEffect(() => {
-    if (existingCase?.case_status) {
-      setStatus(existingCase.case_status); // Make sure this exactly matches one of the option `value`s
+    if (existingCase?.case_description) {
+      setNarratives(existingCase.case_description);
+    } else {
+      setNarratives(""); // fallback to empty if no description
     }
   }, [existingCase]);
 
   useEffect(() => {
     if (existingCase?.party) {
-      setParty(existingCase.party); // Make sure this exactly matches one of the option `value`s
+      setParty(existingCase.party); // Set party from existing case
     }
   }, [existingCase]);
 
-  // useEffect(() => {
-  //   if (existingCase?.case_description && narratives === null) {
-  //     setNarratives(existingCase.case_description);
-  //   }
-  // }, [existingCase, narratives]);
-
   useEffect(() => {
-    if (existingCase?.case_description) {
-      setNarratives(existingCase.case_description);
-    } else {
-      setNarratives(""); // fallback to empty if no description
+    if (existingCase?.case_status) {
+      setStatus(existingCase.case_status); // Set status from existing case
     }
   }, [existingCase]);
 
@@ -216,90 +225,64 @@ const EditCaseModal = ({
                   null
                 }
                 onChange={handleChange}
+                onBlur={() => handleBlur("natureOfCase", natureOfCase)}
                 defaultInputValue={existingCase?.case_title}
                 isClearable
                 isSearchable
                 placeholder="Select Nature of Case"
                 required
               />
+              {errors.natureOfCase && touched.natureOfCase && (
+                <p className="text-red-500 text-xs mt-1">
+                  Nature of case is required
+                </p>
+              )}
             </div>
-
             <div className="mb-4">
-              <label htmlFor="client" className="block text-sm font-medium">
-                Party of the client
+              <label htmlFor="party" className="block text-sm font-medium">
+                Party
               </label>
-
               <Select
                 name="party"
                 options={partyOptions}
-                // value={selectedParty}
                 value={
                   partyOptions.find((option) => option.value === party) || null
                 }
                 onChange={handlePartyChange}
+                onBlur={() => handleBlur("party", party)}
                 defaultInputValue={existingCase?.party}
                 isClearable
                 isSearchable
                 placeholder="Select Party"
                 required
               />
+              {errors.party && touched.party && (
+                <p className="text-red-500 text-xs mt-1">Party is required</p>
+              )}
             </div>
-
-            {/* <div className="mb-4">
-              <label htmlFor="client" className="block text-sm font-medium">
-                Client
+            <div className="mb-4">
+              <label htmlFor="status" className="block text-sm font-medium">
+                Status
               </label>
-              <input
-                type="text"
-                id="client"
-                name="client"
-                disabled
-                defaultValue={
-                  existingCase?.client_fname + " " + existingCase?.client_lname
+              <Select
+                name="status"
+                options={statusOptions}
+                value={
+                  statusOptions.find((option) => option.value === status) ||
+                  null
                 }
-                className="border border-gray-300 rounded w-full px-3 py-2"
+                onChange={handleStatusChange}
+                onBlur={() => handleBlur("status", status)}
+                defaultInputValue={existingCase?.case_status}
+                isClearable
+                isSearchable
+                placeholder="Select Status"
                 required
               />
-            </div> */}
-            {/* <div className="mb-4">
-              <select
-                name="status"
-                className="border border-gray-300 rounded w-full px-3 py-2"
-                defaultValue={existingCase?.case_status}
-                required
-              >
-                <option value="" defaultChecked>
-                  Status
-                </option>
-                <option value="Active">Active</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Pending">Pending</option>
-                <option value="Closed">Closed</option>
-                <option value="Resolved">Resolved</option>
-                <option value="On-Hold">On-Hold</option>
-                <option value="Dismissed">Dismissed</option>
-                <option value="Archived">Archived</option>
-                <option value="Under Review">Under Review</option>
-                <option value="Awaiting Trial">Awaiting Trial</option>
-              </select>
-            </div> */}
-            <label htmlFor="client" className="block text-sm font-medium">
-              Case Status
-            </label>
-            <Select
-              name="status"
-              options={statusOptions}
-              // value={selectedStatus} // Set value to the selected option
-              value={
-                statusOptions.find((option) => option.value === status) || null
-              }
-              onChange={handleStatusChange}
-              defaultInputValue={existingCase?.case_status}
-              isClearable
-              isSearchable
-              placeholder="Select Status"
-              required
-            />
+              {errors.status && touched.status && (
+                <p className="text-red-500 text-xs mt-1">Status is required</p>
+              )}
+            </div>
 
             {/* File Upload or Link Input */}
             <div className="mb-4">
@@ -348,42 +331,39 @@ const EditCaseModal = ({
                 </p>
               )}
               {!useLink ? (
-                <input
-                  type="file"
-                  id="file"
-                  name="file"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
-                  defaultChecked={existingCase?.file_name}
-                  required
-                />
+                <div>
+                  <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.file && touched.file ? "border-red-500 bg-red-50" : ""}`}
+                    defaultChecked={existingCase?.file_name}
+                    required
+                    onBlur={(e) => handleBlur("file", e.target.files[0])}
+                  />
+                  {errors.file && touched.file && (
+                    <p className="text-red-500 text-xs mt-1">File is required</p>
+                  )}
+                </div>
               ) : (
-                <input
-                  type="url"
-                  id="link"
-                  name="link"
-                  defaultValue={existingCase?.fileOrLink}
-                  placeholder="Enter file link"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
-                  required
-                />
+                <div>
+                  <input
+                    type="url"
+                    id="link"
+                    name="link"
+                    defaultValue={existingCase?.fileOrLink}
+                    placeholder="Enter file link"
+                    className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.link && touched.link ? "border-red-500 bg-red-50" : ""}`}
+                    required
+                    onBlur={(e) => handleBlur("link", e.target.value)}
+                  />
+                  {errors.link && touched.link && (
+                    <p className="text-red-500 text-xs mt-1">Link is required</p>
+                  )}
+                </div>
               )}
             </div>
 
-            {/* <div className="mb-4">
-              <label htmlFor="lawyer" className="block text-sm font-medium">
-                Lawyer
-              </label>
-              <input
-                type="text"
-                id="lawyer"
-                name="lawyer"
-                value={
-                  existingCase?.lawyer_fname + " " + existingCase?.lawyer_lname
-                }
-                className="border border-gray-300 rounded w-full px-3 py-2"
-                disabled
-              />
-            </div> */}
             <div>
               <label htmlFor="bigInput">Narratives:</label>
               <br />
@@ -394,10 +374,14 @@ const EditCaseModal = ({
                 name="narratives"
                 value={narratives}
                 onChange={(e) => setNarratives(e.target.value)}
+                onBlur={() => handleBlur("narratives", narratives)}
                 placeholder="Type your narratives here..."
-                className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-2"
+                className={`w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 h-40 mb-2 ${errors.narratives && touched.narratives ? "border-red-500 bg-red-50" : ""}`}
                 required
               />
+              {errors.narratives && touched.narratives && (
+                <p className="text-red-500 text-xs mt-1">Narratives are required</p>
+              )}
             </div>
             <button
               type="submit"

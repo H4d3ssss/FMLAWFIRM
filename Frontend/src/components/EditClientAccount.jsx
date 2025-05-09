@@ -23,6 +23,30 @@ const EditClientAccount = ({
 
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [clients, setClients] = useState([]);
+  const [errors, setErrors] = useState({
+    first_name: false,
+    last_name: false,
+    contact_number: false,
+    status: false,
+  });
+  const [touched, setTouched] = useState({
+    first_name: false,
+    last_name: false,
+    contact_number: false,
+    status: false,
+  });
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    let hasError = false;
+    if (field === "first_name" || field === "last_name" || field === "status") {
+      hasError = !value || value.trim() === "";
+    } else if (field === "contact_number") {
+      hasError = !value || value.trim() === "";
+    }
+    setErrors((prev) => ({ ...prev, [field]: hasError }));
+  };
+
   // Populate form fields with the current client details when the modal opens
   useEffect(() => {
     const getSpecificClient = async () => {
@@ -141,11 +165,15 @@ const EditClientAccount = ({
                   type="text"
                   id="first_name"
                   name="first_name"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.first_name && touched.first_name ? "border-red-500 bg-red-50" : ""}`}
                   value={formData.first_name}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("first_name", e.target.value)}
                   required
                 />
+                {errors.first_name && touched.first_name && (
+                  <p className="text-red-500 text-xs mt-1">First name is required</p>
+                )}
               </div>
 
               <div>
@@ -159,11 +187,15 @@ const EditClientAccount = ({
                   type="text"
                   id="last_name"
                   name="last_name"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.last_name && touched.last_name ? "border-red-500 bg-red-50" : ""}`}
                   value={formData.last_name}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("last_name", e.target.value)}
                   required
                 />
+                {errors.last_name && touched.last_name && (
+                  <p className="text-red-500 text-xs mt-1">Last name is required</p>
+                )}
               </div>
 
               {/* Email */}
@@ -192,11 +224,15 @@ const EditClientAccount = ({
                   type="text"
                   id="contact_number"
                   name="contact_number"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.contact_number && touched.contact_number ? "border-red-500 bg-red-50" : ""}`}
                   value={formData.contact_number}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("contact_number", e.target.value)}
                   required
                 />
+                {errors.contact_number && touched.contact_number && (
+                  <p className="text-red-500 text-xs mt-1">Contact number is required</p>
+                )}
               </div>
 
               {/* Status */}
@@ -207,9 +243,10 @@ const EditClientAccount = ({
                 <select
                   id="status"
                   name="status"
-                  className="border border-gray-300 rounded w-full px-3 py-2"
+                  className={`border border-gray-300 rounded w-full px-3 py-2 ${errors.status && touched.status ? "border-red-500 bg-red-50" : ""}`}
                   value={formData.status}
                   onChange={handleChange}
+                  onBlur={(e) => handleBlur("status", e.target.value)}
                   required
                   defaultValue=""
                 >
@@ -219,6 +256,9 @@ const EditClientAccount = ({
                   <option value="Approved">Approved</option>
                   <option value="Inactive">Inactive</option>
                 </select>
+                {errors.status && touched.status && (
+                  <p className="text-red-500 text-xs mt-1">Status is required</p>
+                )}
               </div>
 
               {/* Password */}
