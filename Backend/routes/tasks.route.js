@@ -7,6 +7,7 @@ import {
   markAsDeletedTask,
   markAsUnfinishedTask,
   fetchTasksDueDateToday,
+  fetchFinishedTasks,
 } from "../db/tasks.js";
 const router = express.Router();
 
@@ -68,6 +69,19 @@ router.get("/fetch-inprogress-tasks", async (req, res) => {
 router.get("/fetch-unfinished-tasks", async (req, res) => {
   try {
     const response = await fetchUnfinishedTasks();
+    if (response.success) {
+      res.status(200).json(response.response);
+    } else {
+      res.status(500).json(response.response);
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/fetch-finished-tasks", async (req, res) => {
+  try {
+    const response = await fetchFinishedTasks();
     if (response.success) {
       res.status(200).json(response.response);
     } else {

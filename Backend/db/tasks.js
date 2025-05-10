@@ -61,6 +61,28 @@ WHERE task_status = 'In Progress' ORDER BY due_date ASC`);
   }
 };
 
+const fetchFinishedTasks = async () => {
+  try {
+    const response = await pool.query(`SELECT task_id,
+	task_description,
+	deadline,
+	due_date,
+	day_to_be_finished,
+	assigned,
+	created_at,
+	task_status
+FROM tasks  
+WHERE task_status = 'Finished' ORDER BY task_id DESC`);
+    if (response.rowCount > 0) {
+      return { success: true, response: response.rows };
+    } else {
+      return { success: true, message: "No in progress tasks", response: [] };
+    }
+  } catch (error) {
+    return { response: false, error };
+  }
+};
+
 const fetchUnfinishedTasks = async () => {
   try {
     const response = await pool.query(`
@@ -217,4 +239,5 @@ export {
   markAsDeletedTask,
   markAsUnfinishedTask,
   fetchTasksDueDateToday,
+  fetchFinishedTasks,
 };

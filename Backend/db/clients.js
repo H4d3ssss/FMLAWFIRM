@@ -133,7 +133,7 @@ const ifClientExistAndForApproval = async (email) => {
       `SELECT * FROM "viewClients" WHERE email = $1 AND account_status = 'For Approval'`,
       [email]
     );
-    console.log(response.rowCount);
+    // console.log(response.rowCount);
     return response.rowCount;
   } catch (error) {
     console.log(error.stack);
@@ -204,7 +204,7 @@ const generateTemporaryClientPassword = async (email) => {
         `UPDATE users SET temporary_password = $1 WHERE email = $2`,
         [hashedPassword, email]
       );
-      console.log(isExist);
+      // console.log(isExist);
       return {
         message: "Temporary password has been sent",
         temporaryPassword: unhashedTemporaryPassword,
@@ -263,11 +263,12 @@ const updateArchiveClient = async (clientId, adminId) => {
     };
     // console.log(data1);
     const response3 = await createActivityLog(data1);
-    console.log(response3);
-    console.log("nakapag create ng activity log");
+    // console.log(response3);
+    // console.log("nakapag create ng activity log");
     return { success: true, response: "Updated Successfully" };
   } catch (error) {
     console.log(error);
+    return { error };
   }
 };
 
@@ -287,12 +288,13 @@ const approveClient = async (clientId, adminId) => {
       targetTable: "clients",
       target_id: clientId,
     };
-    console.log(data1);
+    // console.log(data1);
     const response3 = await createActivityLog(data1);
-    console.log(response3);
+    // console.log(response3);
     return { success: true, response: "Updated Successfully" };
   } catch (error) {
     console.log(error);
+    return { error };
   }
 };
 
@@ -314,7 +316,7 @@ const cancelClient = async (clientId, adminId) => {
     };
     // console.log(data1);
     const response3 = await createActivityLog(data1);
-    console.log(response3);
+    // console.log(response3);
     return { success: true, response: "Updated Successfully" };
   } catch (error) {
     console.log(error);
@@ -346,9 +348,9 @@ const updateClientDetails = async (data) => {
       targetTable: "clients",
       target_id: data.client_id,
     };
-    console.log(data1);
+    // console.log(data1);
     const response3 = await createActivityLog(data1);
-    console.log(response3);
+    // console.log(response3);
 
     return { success: true, message: "NAKAPAGUPDATE KA NG CLIENTS HIHIHI" };
   } catch (error) {

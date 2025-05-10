@@ -103,7 +103,11 @@ const AppointmentScheduling = ({ clientId }) => {
     let hasError = false;
     if (field === "title" || field === "type" || field === "location") {
       hasError = !value || value.trim() === "";
-    } else if (field === "startTime" || field === "endTime" || field === "selectedDate") {
+    } else if (
+      field === "startTime" ||
+      field === "endTime" ||
+      field === "selectedDate"
+    ) {
       hasError = !value;
     }
     setErrors((prev) => ({ ...prev, [field]: hasError }));
@@ -215,7 +219,9 @@ const AppointmentScheduling = ({ clientId }) => {
               name="startTime"
             />
             {errors.startTime && touched.startTime && (
-              <p className="text-red-500 text-xs mt-1">Start time is required</p>
+              <p className="text-red-500 text-xs mt-1">
+                Start time is required
+              </p>
             )}
           </div>
 
@@ -307,7 +313,9 @@ const AppointmentScheduling = ({ clientId }) => {
             <option value="legal-advice">Legal Advice</option>
           </select>
           {errors.type && touched.type && (
-            <p className="text-red-500 text-xs mt-1">Service type is required</p>
+            <p className="text-red-500 text-xs mt-1">
+              Service type is required
+            </p>
           )}
         </div>
 
