@@ -88,6 +88,48 @@ const EditClientModal = ({
     console.log("Address parsed:", parts);
   }, [clientData]);
 
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        first_name: false,
+        last_name: false,
+        not_formatted_date_of_birth: false,
+        sex: false,
+        contact_number: false,
+        houseNumber: false,
+        streetName: false,
+        region: false,
+        province: false,
+        city: false,
+        barangay: false,
+        postalCode: false,
+      });
+      setTouched({
+        first_name: false,
+        last_name: false,
+        not_formatted_date_of_birth: false,
+        sex: false,
+        contact_number: false,
+        houseNumber: false,
+        streetName: false,
+        region: false,
+        province: false,
+        city: false,
+        barangay: false,
+        postalCode: false,
+      });
+      setAddressParts({
+        houseNumber: "",
+        streetName: "",
+        barangay: "",
+        city: "",
+        province: "",
+        region: "",
+        postalCode: "",
+      });
+    }
+  }, [showModal]);
+
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [filteredBarangays, setFilteredBarangays] = useState([]);

@@ -119,6 +119,38 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
     }
   }, [isOpen, eventData]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle("");
+      setType(eventTypes[0]);
+      setLocation("");
+      setNotes("");
+      setStartTime("");
+      setEndTime("");
+      setLawyerId("");
+      setClientId("");
+      setDate("");
+      setErrors({
+        title: false,
+        type: false,
+        location: false,
+        startTime: false,
+        endTime: false,
+        lawyerId: false,
+        clientId: false,
+      });
+      setTouched({
+        title: false,
+        type: false,
+        location: false,
+        startTime: false,
+        endTime: false,
+        lawyerId: false,
+        clientId: false,
+      });
+    }
+  }, [isOpen]);
+
   // ✅ REPLACE your hasTimeConflict with this version
   const hasTimeConflict = (start, end) => {
     return events.some((event) => {
@@ -303,9 +335,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
             onChange={(e) => setLocation(e.target.value)}
             onBlur={(e) => handleBlur("location", e.target.value)}
             placeholder="e.g. RTC Branch 12"
-            className={`w-full p-2 border rounded ${
-              touched.location && errors.location ? "border-red-500" : ""
-            }`}
+            className={`w-full p-2 border rounded ${touched.location && errors.location ? "border-red-500" : ""
+              }`}
           />
           {touched.location && errors.location && (
             <p className="text-red-500 text-sm">Location is required.</p>
@@ -330,9 +361,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData, events }) => {
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             onBlur={(e) => handleBlur("startTime", e.target.value)}
-            className={`w-full p-2 border rounded ${
-              touched.startTime && errors.startTime ? "border-red-500" : ""
-            }`}
+            className={`w-full p-2 border rounded ${touched.startTime && errors.startTime ? "border-red-500" : ""
+              }`}
           />
           {touched.startTime && errors.startTime && (
             <p className="text-red-500 text-sm">Start time is required.</p>

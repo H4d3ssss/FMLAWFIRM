@@ -227,6 +227,40 @@ const AddCaseModal = ({
     fetchAllCases();
   }, [count]);
 
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        natureOfCase: false,
+        party: false,
+        narratives: false,
+        client: false,
+        status: false,
+        lawyer: false,
+        file: false,
+        link: false,
+      });
+      setTouched({
+        natureOfCase: false,
+        party: false,
+        narratives: false,
+        client: false,
+        status: false,
+        lawyer: false,
+        file: false,
+        link: false,
+      });
+      setNatureOfCase(null);
+      setSelectedClient(null);
+      setSelectedStatus(null);
+      setSelectedLawyer(null);
+      setSelectedParty(null);
+      setNarratives("");
+      setFileInput(null);
+      setLinkInput("");
+      setUseLink(false);
+    }
+  }, [showModal]);
+
   const statusOptions = [
     { value: "Active", label: "Active" },
     { value: "In Progress", label: "In Progress" },

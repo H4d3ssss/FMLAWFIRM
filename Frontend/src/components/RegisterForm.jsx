@@ -207,7 +207,7 @@ function RegisterForm() {
     <div className="min-h-screen flex items-center justify-center px-4 pt-8">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-5xl bg-white p-8 rounded-2xl shadow-lg space-y-4"
+        className="w-full max-w-7xl bg-white p-8 rounded-2xl shadow-lg space-y-4"
       >
         <h2 className="text-2xl font-bold text-center text-black mb-6">
           Create Your Account
@@ -573,11 +573,10 @@ function RegisterForm() {
 
         {serverMessage && (
           <p
-            className={`text-sm text-center ${
-              serverMessage.includes("success")
+            className={`text-sm text-center ${serverMessage.includes("success")
                 ? "text-green-600"
                 : "text-red-600"
-            }`}
+              }`}
           >
             {serverMessage}
           </p>
@@ -585,11 +584,10 @@ function RegisterForm() {
 
         <button
           type="submit"
-          className={`w-full py-2 cursor-pointer rounded-md transition ${
-            isLoading
+          className={`w-full py-2 cursor-pointer rounded-md transition ${isLoading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-[#FFB600] text-white hover:bg-yellow-600"
-          }`}
+            }`}
           disabled={isLoading}
         >
           {isLoading ? "Processing..." : "Register"}

@@ -132,6 +132,75 @@ const AddClientAccount = ({
     }
   }, [locationIds.city, locationIds.province, locationIds.region]);
 
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        firstName: false,
+        lastName: false,
+        email: false,
+        phone: false,
+        birthDate: false,
+        sex: false,
+        houseNumber: false,
+        streetName: false,
+        region: false,
+        province: false,
+        city: false,
+        barangay: false,
+        zipCode: false,
+        password: false,
+        confirmPassword: false,
+      });
+      setTouched({
+        firstName: false,
+        lastName: false,
+        email: false,
+        phone: false,
+        birthDate: false,
+        sex: false,
+        houseNumber: false,
+        streetName: false,
+        region: false,
+        province: false,
+        city: false,
+        barangay: false,
+        zipCode: false,
+        password: false,
+        confirmPassword: false,
+      });
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        birthDate: "",
+        sex: "",
+        houseNumber: "",
+        streetName: "",
+        region: "",
+        province: "",
+        city: "",
+        barangay: "",
+        zipCode: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setServerMessage("");
+      setShowPassword({
+        password: false,
+        confirmPassword: false,
+      });
+      setLocationIds({
+        region: "",
+        province: "",
+        city: "",
+      });
+      setFilteredProvinces([]);
+      setFilteredCities([]);
+      setFilteredBarangays([]);
+    }
+  }, [showModal]);
+
   // Generic onBlur handler for all fields
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -273,8 +342,8 @@ const AddClientAccount = ({
           {serverMessage && (
             <p
               className={`text-sm mb-4 ${serverMessage.includes("successfully")
-                  ? "text-green-500"
-                  : "text-red-500"
+                ? "text-green-500"
+                : "text-red-500"
                 }`}
             >
               {serverMessage}
@@ -614,8 +683,8 @@ const AddClientAccount = ({
             <button
               type="submit"
               className={`w-full py-2 mt-4 rounded-md transition ${isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-green-500 text-white hover:bg-green-600"
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-500 text-white hover:bg-green-600"
                 }`}
               disabled={isLoading}
             >

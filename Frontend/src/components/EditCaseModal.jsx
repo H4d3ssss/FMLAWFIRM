@@ -178,6 +178,33 @@ const EditCaseModal = ({
     }
   }, [existingCase]);
 
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        natureOfCase: false,
+        party: false,
+        narratives: false,
+        status: false,
+        file: false,
+        link: false,
+      });
+      setTouched({
+        natureOfCase: false,
+        party: false,
+        narratives: false,
+        status: false,
+        file: false,
+        link: false,
+      });
+      setNatureOfCase(null);
+      setParty(null);
+      setStatus(null);
+      setNarratives("");
+      setUseLink(false);
+      // Optionally reset file/link input states if you have them
+    }
+  }, [showModal]);
+
   if (!showModal) return null;
 
   return (

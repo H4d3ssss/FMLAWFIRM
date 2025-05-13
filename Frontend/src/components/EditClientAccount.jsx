@@ -76,6 +76,33 @@ const EditClientAccount = ({
     // }
   }, [clientDetails]);
 
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        first_name: false,
+        last_name: false,
+        contact_number: false,
+        status: false,
+      });
+      setTouched({
+        first_name: false,
+        last_name: false,
+        contact_number: false,
+        status: false,
+      });
+      setFormData({
+        adminId: adminId,
+        user_id: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        contact_number: "",
+        status: "",
+        client_id: "",
+      });
+    }
+  }, [showModal, adminId]);
+
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -422,6 +422,7 @@ const AdminAccountTable = ({ admins }) => {
               </th>
               <th className="p-3">Status</th>
               <th className="p-3">Position</th>
+              <th className="p-3">Specialization</th>
               <th className="p-3">Action</th>
             </tr>
           </thead>
@@ -438,16 +439,16 @@ const AdminAccountTable = ({ admins }) => {
                 <td className="p-3 text-center">{lawyer.email}</td>
                 <td className="p-3 text-center">
                   <span
-                    className={`px-2 py-1 rounded ${
-                      lawyer.account_status === "Active"
+                    className={`px-2 py-1 rounded ${lawyer.account_status === "Active"
                         ? "bg-green-100 text-green-500"
                         : "bg-red-100 text-red-500"
-                    }`}
+                      }`}
                   >
                     {lawyer.account_status}
                   </span>
                 </td>
                 <td className="p-3 text-center">{lawyer.position}</td>
+                <td className="p-3 text-center">{lawyer.specialization}</td>
                 <td className="p-3 text-center flex justify-center space-x-2">
                   <button onClick={() => handleEditClick(lawyer)}>
                     <Edit className="w-5 h-5 text-blue-500 hover:text-blue-700" />

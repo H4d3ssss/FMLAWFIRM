@@ -81,8 +81,36 @@ const AddClientModal = ({
       setFilteredProvinces([]);
       setFilteredCities([]);
       setFilteredBarangays([]);
-      setErrors({});
-      setTouched({});
+      setErrors({
+        firstName: false,
+        lastName: false,
+        email: false,
+        birthDate: false,
+        sex: false,
+        phone: false,
+        houseNumber: false,
+        streetName: false,
+        region: false,
+        province: false,
+        city: false,
+        barangay: false,
+        zipCode: false,
+      });
+      setTouched({
+        firstName: false,
+        lastName: false,
+        email: false,
+        birthDate: false,
+        sex: false,
+        phone: false,
+        houseNumber: false,
+        streetName: false,
+        region: false,
+        province: false,
+        city: false,
+        barangay: false,
+        zipCode: false,
+      });
     }
   }, [showModal]);
 

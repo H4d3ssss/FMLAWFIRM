@@ -40,7 +40,34 @@ const EditAdminModal = ({
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error state
 
-  useEffect(() => { }, []);
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        firstName: false,
+        lastName: false,
+        email: false,
+        accountStatus: false,
+        position: false,
+      });
+      setTouched({
+        firstName: false,
+        lastName: false,
+        email: false,
+        accountStatus: false,
+        position: false,
+      });
+      setFormData({
+        userId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        accountStatus: "",
+        position: "",
+      });
+      setError(null);
+      setIsLoading(false);
+    }
+  }, [showModal]);
 
   // Populate form fields with the current admin details when the modal opens
   useEffect(() => {

@@ -139,6 +139,40 @@ const EventAddForm = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle("");
+      setType(eventTypes[0]);
+      setLocation("");
+      setNotes("");
+      setStartTime("");
+      setEndTime("");
+      setLawyerId("");
+      setClientId("");
+      setSelectedClient(null);
+      setSelectedLawyer(null);
+      setError("");
+      setErrors({
+        title: false,
+        type: false,
+        location: false,
+        startTime: false,
+        endTime: false,
+        lawyerId: false,
+        clientId: false,
+      });
+      setTouched({
+        title: false,
+        type: false,
+        location: false,
+        startTime: false,
+        endTime: false,
+        lawyerId: false,
+        clientId: false,
+      });
+    }
+  }, [isOpen]);
+
   const hasTimeConflict = (start, end) => {
     return events.some((event) => {
       const eventStart = new Date(event.start).getTime();

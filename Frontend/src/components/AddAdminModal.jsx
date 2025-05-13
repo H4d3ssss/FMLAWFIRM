@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
+import Select from "react-select";
 
 const AddAdminModal = ({
   showModal,
@@ -36,11 +37,43 @@ const AddAdminModal = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  // Options for position and specialization
+  const positionOptions = [
+    { value: "Manager", label: "Manager" },
+    { value: "Assistant", label: "Assistant" },
+    { value: "Intern", label: "Intern" },
+  ];
+
+  const specializationOptions = [
+    { value: "Corporate Law", label: "Corporate Law" },
+    { value: "Criminal Law", label: "Criminal Law" },
+    { value: "Family Law", label: "Family Law" },
+  ];
+
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Reset errors and formData when modal closes
+  useEffect(() => {
+    if (!showModal) {
+      setErrors({
+        firstName: false,
+        lastName: false,
+        email: false,
+        password: false,
+        confirmPassword: false,
+        address: false,
+        position: false,
+        specialization: false,
+      });
+      setFormData(initialFormData);
+      setShowError(false);
+    }
+  }, [showModal]);
 
   // Static logic for testing
   const handleSubmit = async (e) => {
@@ -279,23 +312,23 @@ const AddAdminModal = ({
                   <label htmlFor="position" className="block text-sm font-medium">
                     Position
                   </label>
-                  <input
-                    type="text"
+                  <Select
                     id="position"
                     name="position"
-                    className={`border rounded w-full px-3 py-2 ${errors.position ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                      }`}
-                    value={formData.position}
-                    onChange={(e) => {
-                      handleChange(e);
-                      setErrors((prev) => ({ ...prev, position: false }));
+                    options={positionOptions}
+                    value={positionOptions.find(opt => opt.value === formData.position)}
+                    onChange={option => {
+                      setFormData(prev => ({ ...prev, position: option ? option.value : "" }));
+                      setErrors(prev => ({ ...prev, position: false }));
                     }}
                     onBlur={() => {
-                      if (formData.position.trim() === '') {
-                        setErrors((prev) => ({ ...prev, position: true }));
+                      if (!formData.position) {
+                        setErrors(prev => ({ ...prev, position: true }));
                       }
                     }}
-                    required
+                    classNamePrefix="react-select"
+                    placeholder="Select position"
+                    isClearable
                   />
                   {errors.position && (
                     <p className="text-red-500 text-xs mt-1">Position is required</p>
@@ -342,23 +375,23 @@ const AddAdminModal = ({
                   <label htmlFor="specialization" className="block text-sm font-medium">
                     Specialization
                   </label>
-                  <input
-                    type="text"
+                  <Select
                     id="specialization"
                     name="specialization"
-                    className={`border rounded w-full px-3 py-2 ${errors.specialization ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                      }`}
-                    value={formData.specialization}
-                    onChange={(e) => {
-                      handleChange(e);
-                      setErrors((prev) => ({ ...prev, specialization: false }));
+                    options={specializationOptions}
+                    value={specializationOptions.find(opt => opt.value === formData.specialization)}
+                    onChange={option => {
+                      setFormData(prev => ({ ...prev, specialization: option ? option.value : "" }));
+                      setErrors(prev => ({ ...prev, specialization: false }));
                     }}
                     onBlur={() => {
-                      if (formData.specialization.trim() === '') {
-                        setErrors((prev) => ({ ...prev, specialization: true }));
+                      if (!formData.specialization) {
+                        setErrors(prev => ({ ...prev, specialization: true }));
                       }
                     }}
-                    required
+                    classNamePrefix="react-select"
+                    placeholder="Select specialization"
+                    isClearable
                   />
                   {errors.specialization && (
                     <p className="text-red-500 text-xs mt-1">Specialization is required</p>
